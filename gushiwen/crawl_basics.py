@@ -73,4 +73,4 @@ def crawl_loop(get_one_page, seed, max_loop=-1):
 if __name__ == '__main__':
 	res_all = crawl_loop(get_shiwen_page, "https://www.gushiwen.org/shiwen/", max_loop=-1)
 	with codecs.open('data/res_test.json', 'w', encoding='utf-8') as f:
-		json.dump(res_all, f, indent=4)
+		json.dump(res_all, f, indent=4, encoding='utf-8')
