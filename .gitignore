@@ -1,5 +1,7 @@
-# my
+# gushiwen
 datasets/
+# shiying
+.idea/
 shiying/rawpage/
 shiying/test.py
 # Byte-compiled / optimized / DLL files

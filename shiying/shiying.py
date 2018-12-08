@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import os
 import urllib2
@@ -5,6 +6,7 @@ from bs4 import BeautifulSoup
 import re
 import urlparse
 import codecs
+import json
 
 base_url='http://www.zgshige.com'
 def crawl_page():
@@ -51,24 +53,77 @@ def crawl_content():
             f.write(content)
             f.close()
 def fetch_info(path):
-    print path
     if not os.path.isfile(path):
         return
-    print path
+    item={}
+    item['text']=""
+    isTitle=False
     f = open(path, 'r')
     content = f.read()
-    soup = BeautifulSoup(content)
+    soup = BeautifulSoup(content,features='html.parser')
     f.close()
-    for i in soup.findAll('div', {'class', 'm-lg article'}):
-        p=re.compile('<p>.*</p')
-        print re.findall(p,str(i))
+    # get author and likes
+    author=""
+    likes=None
+    i=soup.find('div',{'class','m-b-sm'})
+    if not i:
+        print 'Cannot find author and likes'
+    try:
+        likes=i.find('span',{'class','badge'}).text
+    except:
+        print 'Cannot find likes'
+        likes=None
+    try:
+        au=i.text.split()[0]
+        if au.find(u'：')!=-1:
+            author=au.split(u'：')[1]
+    except:
+        print 'Cannot get author'
+    item['author']=author.encode('utf8')
+    item['likes']=likes.encode('utf8')
+    i=soup.find('div', {'class', 'm-lg article'})
+    if not i:
+        print 'Cannot find content'
+        return
+    for p in i.findAll('p'):
+        img=p.find('img')
+        # if has image
+        if img:
+            # clear previous
+            if len(item.keys())==5 and item['text']:
+                item['text']=item['text'].encode('utf8')
+                data.append(item.copy())
+            item['img']=''
+            item['title']=''
+            item['text']=''
+            # get image src
+            src=img.get('src')
+            item['img']=base_url+src
+            isTitle=True
+            # print src
+        # if is author info
+        if p.text and len(p.text)>60:
+            break
+        # if is title
+        if p.text:
+            if isTitle:
+                item['title']=p.text.encode('utf8')
+                isTitle=False
+                continue
+                # print p.text
+            # if is text
+            if not isTitle:
+                item['text']+=(p.text+'\n')
 
-
+data=[]
 
 if __name__ == '__main__':
     #crawl_page()
     #crawl_content()
-    for filename in os.listdir('shiying'):
-        path='shiying/'+filename
+    for filename in os.listdir('rawpage'):
+        print 'Extracting info from %s'%filename
+        path='rawpage/'+filename
         fetch_info(path)
-        break
+
+    with codecs.open('shiying_data.json','w') as f:
+        json.dump(data,f,ensure_ascii=False,indent=4)
