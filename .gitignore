@@ -1,9 +1,10 @@
-# gushiwen
+
 datasets/
-# shiying
-.idea/
+models/
 shiying/rawpage/
 shiying/test.py
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
