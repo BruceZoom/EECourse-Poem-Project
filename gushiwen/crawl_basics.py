@@ -1,5 +1,6 @@
 #coding=utf-8
 
+from selenium import webdriver
 from bs4 import BeautifulSoup
 import urllib2
 import urlparse
@@ -7,7 +8,7 @@ import json
 import codecs
 
 
-def get_shiwen_page(base):
+def get_shiwen_page(base, driver=None):
 	req = urllib2.Request(base, None, {'User-Agent': 'Custom User Agent'})
 	response = urllib2.urlopen(req)
 	soup = BeautifulSoup(response.read())
@@ -70,7 +71,24 @@ def crawl_loop(get_one_page, seed, max_loop=-1):
 	return res_all
 
 
+def crawl_loop_js(get_one_page, seed, max_loop=-1):
+	res_all = []
+	next_url = seed
+	cnt = 0
+	driver = webdriver.Firefox()
+	while next_url and (max_loop <= -1 or max_loop > 0):
+		if cnt % 10 == 0:
+			print 'current page', cnt+1
+		try:
+			res_page, next_url = get_one_page(next_url, driver)
+		except:
+			break
+		res_all += res_page
+		max_loop -= 1
+		cnt += 1
+	return res_all
+
 if __name__ == '__main__':
-	res_all = crawl_loop(get_shiwen_page, "https://www.gushiwen.org/shiwen/", max_loop=-1)
+	res_all = crawl_loop(get_shiwen_page, "https://www.gushiwen.org/shiwen/", max_loop=5)
 	with codecs.open('data/res_test.json', 'w', encoding='utf-8') as f:
-		json.dump(res_all, f, indent=4, encoding='utf-8')
+		json.dump(res_all, f, indent=4, encoding='utf-8', ensure_ascii=False)
