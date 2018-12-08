@@ -73,10 +73,36 @@ def crawl():
                 # print page
                 pass
 
+def get_seed(resNum):
+    # resNum=126, starts from pageNum=10000
+    pageNum = (resNum - 1) * 25
+    seeds=[]
+    for i in range(pageNum,pageNum+24,3):
+        print 'Getting seed from page %s'%i
+        url = 'http://www.zgshige.com/zcms/catalog/15130/pc/index_' + str(i) + '.shtml'
+        try:
+            content = urllib2.urlopen(url).read()
+        except:
+            print 'Connection failed'
+            continue
+        soup=BeautifulSoup(content,features="html.parser")
+        a=soup.find('a',{'class':'fc-green text-uppercase'})
+        if not a:
+            print 'Cannot get info'
+            continue
+        seed=a.get('href','')
+        if seed:
+            seeds.append(seed)
+    print seeds
+    return seeds,150*len(seeds)
+
+
 
 NUM = 4
-pages = ['http://www.zgshige.com/c/2018-12-08/7898144.shtml','http://www.zgshige.com/c/2018-12-06/7889857.shtml','http://www.zgshige.com/c/2018-12-06/7881165.shtml','http://www.zgshige.com/c/2018-12-07/7872589.shtml','http://www.zgshige.com/c/2018-12-05/7864418.shtml','http://www.zgshige.com/c/2018-12-04/7855168.shtml','http://www.zgshige.com/c/2018-12-03/7847124.shtml','http://www.zgshige.com/c/2018-12-02/7838128.shtml']
-max_count = 50
+resNum = 401
+
+pages,max_count=get_seed(resNum) # 401 for seeds start from page 10000, 25 page per turn
+print 'max_count:%s'%max_count
 count = 0
 q = Queue.Queue()
 resList = []
@@ -102,6 +128,6 @@ for t in threads:
     t.join()
 
 print "length of crawled:",len(crawled)
-with codecs.open("result1.json", 'w') as f:
+with codecs.open("result"+str(resNum)+".json", 'w') as f:
     json.dump(resList, f, ensure_ascii=False, indent=4)
 
