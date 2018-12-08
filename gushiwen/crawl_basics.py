@@ -6,6 +6,7 @@ import urllib2
 import urlparse
 import json
 import codecs
+import sys
 
 
 def get_shiwen_page(base, url, driver=None, skip=False):
@@ -152,19 +153,29 @@ def crawl_loop_js(get_one_page, seed, max_loop=-1, skip_to=None, batch=10):
 			res_all += res_page
 			max_loop -= 1
 		else:
+			print cnt, skip_to * batch
 			_, next_url = get_one_page(seed, next_url, driver, skip=True)
-			if cnt > 0 and cnt % batch == 0:
-				skip_to -= 1
-				if skip_to < 1:
-					skip_to = None
+			if cnt >= skip_to * batch:
+				skip_to = None
+			# if cnt > 0 and cnt % batch == 0:
+			# 	skip_to -= 1
+			# 	if skip_to < 1:
+			# 		skip_to = None
 		cnt += 1
+		print 'current progress: ', cnt
 	driver.quit()
 	with codecs.open('data/res_test_tail.json', 'w', encoding='utf-8') as f:
 		json.dump(res_all, f, indent=4, encoding='utf-8', ensure_ascii=False)
 	return res_all
 
 if __name__ == '__main__':
-	res_all = crawl_loop_js(get_shiwen_page, "https://www.gushiwen.org/shiwen/", max_loop=-1, skip_to=None)
+	max_loop = -1
+	skip_to = None
+	if len(sys.argv) >= 2:
+		max_loop = int(sys.argv[1])
+	if len(sys.argv) >= 3:
+		skip_to = int(sys.argv[2])
+	res_all = crawl_loop_js(get_shiwen_page, "https://www.gushiwen.org/shiwen/", max_loop=max_loop, skip_to=skip_to)
 	# res_all = crawl_loop(get_shiwen_page, "https://www.gushiwen.org/shiwen/", max_loop=3)
 	# with codecs.open('data/res_test.json', 'w', encoding='utf-8') as f:
 	# 	json.dump(res_all, f, indent=4, encoding='utf-8', ensure_ascii=False)
