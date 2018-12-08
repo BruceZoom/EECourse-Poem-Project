@@ -29,7 +29,7 @@ def get_shiwen_page(url):
 			info = [e.string for e in cont.find('p', {'class': r'source'}).findAll('a')]
 			contsons = cont.find('div', {'class': r'contson'})
 			try:
-				song = ''.join([sent.strip() for sent in contsons.contents[::2]])
+				song = ''.join([sent.string.strip() for sent in contsons.contents[::2]])
 			except:
 				print 'song format changed to <p>'
 				song = ''.join([p.string for p in contsons.findAll('p')])

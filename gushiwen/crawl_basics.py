@@ -8,8 +8,8 @@ import json
 import codecs
 
 
-def get_shiwen_page(base, driver=None):
-	req = urllib2.Request(base, None, {'User-Agent': 'Custom User Agent'})
+def get_shiwen_page(base, url, driver=None):
+	req = urllib2.Request(url, None, {'User-Agent': 'Custom User Agent'})
 	response = urllib2.urlopen(req)
 	soup = BeautifulSoup(response.read())
 	res = []
@@ -20,30 +20,91 @@ def get_shiwen_page(base, driver=None):
 		try:
 			sons = left[1].findAll('div', {'class': r'sons'})
 		except:
-			print 'no division named "left" is found'
+			# print 'no division named "left" is found'
 			sons = soup.findAll('div', {'class': r'sons'})
 		for son in sons:
+			#  retrieve basic info
 			cont = son.find('div', {'class': r'cont'})
 			title = cont.p.a.b.string
 			info = [e.string for e in cont.find('p', {'class': r'source'}).findAll('a')]
+
+			#  prepare for js retrieval
 			contsons = cont.find('div', {'class': r'contson'})
+			id_suffix = contsons['id'][7:]
+			if driver:
+				driver.get(url)
+				id_prefixes = ['zhushi', 'yiwen']
+				contson_elem = driver.find_element_by_css_selector('#contson' + id_suffix)
+			extra = {}
+
+			#  retrieve song content
 			try:
-				song = ''.join([sent.strip() for sent in contsons.contents[::2]])
+				# song = [sent.strip() for sent in contsons.contents[::2]]
+				song = []
+				for sent in contsons.contents:
+					try:
+						if sent.strip() != '':
+							song.append(sent.strip())
+					except:
+						for sent1 in sent.contents:
+							try:
+								if sent1.strip() != '':
+									song.append(sent1.strip())
+							except:
+								pass
+						pass
+				assert ''.join(song) != ''
 			except:
-				print 'song format changed to <p>'
-				song = ''.join([p.string for p in contsons.findAll('p')])
+				# print 'song format changed to <p>'
+				song = []
+				for p in contsons.findAll('p'):
+					try:
+						if p.string.strip() != '':
+							song.append(p.string.strip())
+					except:
+						pass
+
+			#  retrieve js
+			if driver:
+				for prefix in id_prefixes:
+					btn_id = '#btn' + prefix.title() + id_suffix
+					driver.find_element_by_css_selector(btn_id).click()
+					extra[prefix] = []
+					ps = contson_elem.find_elements_by_tag_name('p')
+					for p in ps:
+						try:
+							extra[prefix].append(p.find_element_by_tag_name('span').text)
+						except:
+							pass
+					driver.find_element_by_css_selector(btn_id).click()
+
+			#  retrieve shangxi
+			if driver:
+				try:
+					btn_id = '#btnShangxi' + id_suffix
+					driver.find_element_by_css_selector(btn_id).click()
+					ps = contson_elem.find_elements_by_tag_name('p')[len(song):]
+					extra['shangxi'] = [p.text for p in ps]
+					driver.find_element_by_css_selector(btn_id).click()
+				except Exception, e:
+					print e.message
+					extra['shangxi'] = []
+
+			#  retrieve other things
 			rating = int(son.find('div', {'class': r'good'}).a.span.string.strip())
 			try:
 				tags = [tag.string for tag in son.find('div', {'class': r'tag'}).findAll('a')]
 			except:
-				print 'no division named "tag" is found'
+				# print 'no division named "tag" is found'
 				tags = []
+
 			res.append({
 				'title': title,
 				'info': info,
 				'song': song,
 				'rating': rating,
-				'tags': tags
+				'tags': tags,
+				'extra': extra
 			})
 	except Exception, e:
 		print e.message
@@ -62,7 +123,7 @@ def crawl_loop(get_one_page, seed, max_loop=-1):
 		if cnt % 10 == 0:
 			print 'current page', cnt+1
 		try:
-			res_page, next_url = get_one_page(next_url)
+			res_page, next_url = get_one_page(seed, next_url)
 		except:
 			break
 		res_all += res_page
@@ -80,15 +141,18 @@ def crawl_loop_js(get_one_page, seed, max_loop=-1):
 		if cnt % 10 == 0:
 			print 'current page', cnt+1
 		try:
-			res_page, next_url = get_one_page(next_url, driver)
-		except:
+			res_page, next_url = get_one_page(seed, next_url, driver)
+		except Exception, e:
+			print e
 			break
 		res_all += res_page
 		max_loop -= 1
 		cnt += 1
+	driver.quit()
 	return res_all
 
 if __name__ == '__main__':
-	res_all = crawl_loop(get_shiwen_page, "https://www.gushiwen.org/shiwen/", max_loop=5)
+	res_all = crawl_loop_js(get_shiwen_page, "https://www.gushiwen.org/shiwen/", max_loop=3)
+	# res_all = crawl_loop(get_shiwen_page, "https://www.gushiwen.org/shiwen/", max_loop=3)
 	with codecs.open('data/res_test.json', 'w', encoding='utf-8') as f:
 		json.dump(res_all, f, indent=4, encoding='utf-8', ensure_ascii=False)
