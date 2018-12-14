@@ -1,0 +1,19 @@
+.fileinput-span {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    transform: translateY(5px);
+}
+
+.fileinput-span span{
+    margin-top: 10px;
+}
+
+.fileinput-span input{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    opacity: 0;
+    -ms-filter: 'alpha(opacity=0)';
+    font-size: 200px;
+}
