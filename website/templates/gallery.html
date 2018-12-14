@@ -14,109 +14,14 @@ $def with (data=None)
   <meta name="author" content="Pingendo">
   <!-- CSS dependencies -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
-  <link rel="stylesheet" href="../static/css/wireframe.css">
+  <link rel="stylesheet" href="/static/css/wireframe.css">
+    <!-- Auxiliary resources -->
   <link rel="stylesheet" href="/static/css/auxiliary.css">
   <script type="text/javascript" src="/static/js/auxiliary.js"></script>
 </head>
 
 <body>
-  <form action="/query" method="post" enctype="multipart/form-data">
-    <div class="navbar navbar-dark bg-dark">
-      <div class="container d-flex justify-content-between">
-        <div class="form-inline my-2 my-lg-0">
-          <table>
-            <tr><th></th>
-            <td><a class="navbar-brand" href="#"><i class="fa d-inline fa-lg fa-bullseye">&nbspPoems</i></a></td>
-            </tr>
-            <tr><th></th>
-            <td>
-              <select name="searchType" class="form-control" style="width: 85px;padding: 5px">
-                  <option value="all" selected>全部</option>
-                  <option value="gushiwen">古诗文</option>
-                  <option value="xiandaishi">现代诗</option>
-              </select>&nbsp
-              <input class="form-control" type="text" name="query" style="width: 150px;" id="queryTextInput">
-              <button class="btn btn-link my-2 my-sm-0" type="submit"><i class="fa d-inline fa-lg fa-search text-primary"></i></button>
-              <span class="fileinput-span">
-                <span><i class="navbar-brand fa d-inline fa-camera mr-2"></i></span>
-              <!--<form id="imageSubmission">-->
-                <input type="file" name="image" capture="camera" accept="image/" onchange="imageUploadChanged('queryTextInput')">
-              <!--</form>-->
-              </span>
-            </td></tr>
-          </table>
-
-          <!--<a type="file" name=“file” capture="camera" accept="image/"><i class="navbar-brand fa d-inline fa-camera mr-2"></i></a>-->
-          <!--<div class="custom-file">-->
-            <!--<input type="file" class="custom-file-input" id="customFile">-->
-            <!--<label class="custom-file-label" for="customFile"><i class="navbar-brand fa d-inline fa-camera mr-2"></i></label>-->
-          <!--</div>-->
-        </div>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader"> <span class="navbar-toggler-icon"></span> </button>
-      </div>
-    </div>
-    <div class="collapse bg-dark" id="navbarHeader" style="opacity: 0.8">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-7 py-4">
-            <h4>About</h4>
-            <p class="text-info">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-          </div>
-          <div class="col-md-3 offset-md-1 py-4">
-            <h4>Contact</h4>
-            <ul class="list-unstyled">
-              <li>
-                <a href="#" class="text-secondary">Follow on Twitter</a>
-              </li>
-              <li>
-                <a href="#" class="text-secondary">Like on Facebook</a>
-              </li>
-              <li>
-                <a href="#" class="text-secondary">Email me</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
-  <form<!--&gt;
-    <div class="collapse bg-dark" id="navbarHeader">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-7 py-4">
-            <h4>About</h4>
-            <p class="text-info">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-          </div>
-          <div class="col-md-3 offset-md-1 py-4">
-            <h4>Contact</h4>
-            <ul class="list-unstyled">
-              <li>
-                <a href="#" class="text-secondary">Follow on Twitter</a>
-              </li>
-              <li>
-                <a href="#" class="text-secondary">Like on Facebook</a>
-              </li>
-              <li>
-                <a href="#" class="text-secondary">Email me</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="navbar navbar-dark bg-dark">
-      <div class="container d-flex justify-content-between">
-        <div class="form-inline my-2 my-lg-0">
-        <a class="navbar-brand" href="#"><i class="fa d-inline fa-lg fa-bullseye">&nbspPoems</i></a>
-          <input class="form-control" type="text">
-          <button class="btn btn-link my-2 my-sm-0" type="submit"><i class="fa d-inline fa-lg fa-search text-primary"></i></button>
-          <a href="#" class="navbar-brand d-flex align-items-center"><i class="fa d-inline fa-camera mr-2"></i></a>
-        </div>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader"> <span class="navbar-toggler-icon"></span> </button>
-      </div>
-    </div>
-  </form>-->
+  $:data['header']
   <div class="text-center py-5">
     <div class="container">
       <div class="row my-5 justify-content-center">
