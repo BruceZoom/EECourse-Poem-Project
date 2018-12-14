@@ -4,6 +4,7 @@ models/
 shiying/rawpage/
 shiying/test.py
 .idea/
+tmp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
