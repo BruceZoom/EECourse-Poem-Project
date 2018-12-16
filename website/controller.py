@@ -1,3 +1,4 @@
+# coding:utf-8
 import web
 import sys
 import cv2
@@ -9,8 +10,9 @@ import utils
 render = web.template.render('templates')
 
 urls = (
-	'/', 'index',
+	'/index', 'index',
 	'/query', 'query',
+	'/gallery', 'gallery',
 )
 
 EMPTY_QUERY = 0
@@ -22,6 +24,7 @@ class index:
 		data = {
 			'form': utils.FORM_INIT,
 			'header': utils.HEADER,
+			'landing': utils.LANDING_DATA_DEFAULT,
 		}
 		return render.index(data=data)
 
@@ -36,6 +39,7 @@ class query:
 		}
 		validation = Validator.form_validate(inputs)
 		if validation == EMPTY_QUERY:
+			data['landing'] = utils.LANDING_DATA_DEFAULT
 			return render.index(data=data)
 		elif validation == VALID_QUERY:
 			data['form'] = {key: inputs[key] for key in utils.FORM_INIT}
@@ -52,6 +56,15 @@ class query:
 			return render.gallery(data=data)
 		else:
 			pass
+
+
+class gallery:
+	def GET(self):
+		data = {
+			'form': utils.FORM_INIT,
+			'header': utils.HEADER,
+		}
+		return render.gallery(data=data)
 
 
 class Validator:
