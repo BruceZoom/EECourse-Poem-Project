@@ -36,13 +36,16 @@ class query:
 		data = {
 			'form': utils.FORM_INIT,
 			'header': utils.HEADER,
+			'pagi': utils.PAGI_INIT,
 		}
 		validation = Validator.form_validate(inputs)
 		if validation == EMPTY_QUERY:
 			data['landing'] = utils.LANDING_DATA_DEFAULT
 			return render.index(data=data)
 		elif validation == VALID_QUERY:
-			data['form'] = {key: inputs[key] for key in utils.FORM_INIT}
+			data['results'] = utils.ENTRY_SAMPLES
+			data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
+			data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
 			return render.gallery(data=data)
 		elif validation == VALID_IMAGE:
 			image_inputs = web.input(image={})
@@ -53,6 +56,8 @@ class query:
 			# # img = io.imread(filename)
 			# # io.imshow(img)
 			# cv2.imshow('loaded', cv2.imread(filename, cv2.IMREAD_COLOR))
+			data['results'] = utils.ENTRY_SAMPLES
+			data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
 			return render.gallery(data=data)
 		else:
 			pass
@@ -60,11 +65,27 @@ class query:
 
 class gallery:
 	def GET(self):
+		inputs = web.input()
+		print inputs
 		data = {
 			'form': utils.FORM_INIT,
 			'header': utils.HEADER,
+			'pagi': utils.PAGI_INIT,
+			'results': utils.ENTRY_SAMPLES,
 		}
-		return render.gallery(data=data)
+		data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
+		if 'query' in inputs.keys():
+			data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
+			data['url_prefix_form'] = '&'.join([key+'='+data['form'][key] for key in data['form'].keys()])+'&'
+			try:
+				inputs['page'] = int(inputs['page'])
+			except Exception, e:
+				print e.message
+				inputs['page'] = 1
+			data['pagi']['cur_page'] = inputs['page']
+			return render.gallery(data=data)
+		else:
+			return render.gallery(data=data)
 
 
 class Validator:
