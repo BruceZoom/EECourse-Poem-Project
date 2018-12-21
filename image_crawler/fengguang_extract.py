@@ -9,22 +9,38 @@ import codecs
 import sys
 import os
 
-def save_page(driver, url, filename):
-	driver.get(url)
-	html = driver.execute_script("return document.documentElement.outerHTML")
-	with codecs.open(filename, 'w', encoding='utf-8') as fout:
-		fout.write(html)
+def extract_page(filename, img_list):
+	with codecs.open(filename, 'r', encoding='utf-8') as fin:
+		html = fin.read()
+		soup = BeautifulSoup(html)
+	for imgsec in soup.findAll('a', {'class': 'search_result_asset_link'}):
+		try:
+			item = {
+				'source': imgsec['href'],
+				'imgurl': imgsec.img['src'],
+			}
+			try:
+				item['alt'] = imgsec.img['alt']
+			except:
+				item['alt'] = ''
+			img_list.append(item)
+		except Exception, e:
+			print 'failed', e,message
 
 if __name__ == '__main__':
-	f = 1
-	t = (4531586 + 199) // 200
-	if len(sys.argv) > 1:
-		f = sys.argv[2]
-	if len(sys.argv) > 2:
-		t = sys.argv[3]
-
-	driver = webdriver.Firefox()
-	for i in range(f, t+1):
-		url = "https://www.veer.com/query/photo?phrase=%E9%A3%8E%E5%85%89&page={}&perpage=200".format(i)
-		filename = "veer/fengguang/page-{}.html".format(i)
-		save_page(driver, url, filename)
+	directory = 'veer/fengguang/'
+	img_list = []
+	files = os.listdir(directory)
+	cnt = 0
+	for filename in files:
+		print 'current file: ' + filename, 'progress:', cnt, '', len(files)
+		extract_page(directory+filename, img_list)
+		cnt += 1
+		if cnt % 200 == 0:
+			print 'saving file...'
+			with codecs.open('veer/fengguang.json', 'w', encoding='utf-8') as fout:
+				json.dump(img_list, fout, ensure_ascii=False, encoding='utf-8', indent=4)
+	if cnt % 200 != 0:
+		print 'saving file...'
+		with codecs.open('veer/fengguang.json', 'w', encoding='utf-8') as fout:
+			json.dump(img_list, fout, ensure_ascii=False, encoding='utf-8', indent=4)
