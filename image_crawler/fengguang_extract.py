@@ -36,11 +36,11 @@ if __name__ == '__main__':
 		print 'current file: ' + filename, 'progress:', cnt, '', len(files)
 		extract_page(directory+filename, img_list)
 		cnt += 1
-		if cnt % 200 == 0:
+		if cnt % 500 == 0:
 			print 'saving file...'
 			with codecs.open('veer/fengguang.json', 'w', encoding='utf-8') as fout:
 				json.dump(img_list, fout, ensure_ascii=False, encoding='utf-8', indent=4)
-	if cnt % 200 != 0:
+	if cnt % 500 != 0:
 		print 'saving file...'
 		with codecs.open('veer/fengguang.json', 'w', encoding='utf-8') as fout:
 			json.dump(img_list, fout, ensure_ascii=False, encoding='utf-8', indent=4)
