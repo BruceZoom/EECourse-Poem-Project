@@ -84,7 +84,7 @@ def getHybridFeature(img_url):
             scene.append([classes[idx[i]],probs[i]])
             io_image+=labels_IO[idx[i]-1000]
 
-    io_image = io_image/5 # vote for the indoor or outdoor
+    io_image = io_image/6 # vote for the indoor or outdoor
     if io_image<0.5:
         return object,scene,'室内'
     else:return object,scene,'室外'

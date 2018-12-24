@@ -46,7 +46,7 @@ $def with (data=None)
         
           <p class="lead text-muted">#考虑将以上str换为带超链接或者div鼠标悬浮显示的，显示出近义古诗、词语（近义列表后面会做）<br>#另外，最好这个页面是动态加载出来的，防止模型计算过长时间 <br>#能否在浏览这个页面的同时在后台加载下个页面（运行写诗程序）</p>
           <a href="#" class="btn btn-primary m-2">以图搜诗</a>
-          <a href="http://0.0.0.0:8080/gallery_poem?image=$data['form']['image']&" class="btn btn-secondary m-2">以图作诗</a>
+          <a href="/gallery_poem?image=$data['form']['image']&" class="btn btn-secondary m-2">以图作诗</a>
         </div>
       </div>
     </div>
