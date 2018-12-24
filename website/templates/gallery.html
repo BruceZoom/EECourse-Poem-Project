@@ -17,7 +17,6 @@ $def with (data=None)
   <link rel="stylesheet" href="/static/css/wireframe.css">
     <!-- Auxiliary resources -->
   <link rel="stylesheet" href="/static/css/auxiliary.css">
-  <script type="text/javascript" src="/static/js/auxiliary.js"></script>
 </head>
 
 <body>
@@ -37,10 +36,12 @@ $def with (data=None)
   <div class="py-4 bg-light">
     <div class="container">
       <div class="row">
+        $ cnt=0
         $for entry in data['results']:
           <div class="col-md-4 p-3">
             <div class="card box-shadow">
-              <img class="card-img-top" src="$entry['imgurl']">
+              <!--<img class="card-img-top" src="$entry['imgurl']">-->
+              <img id="card-img-$cnt" class="card-img-top" src="$entry['imgurl']">
               <div class="card-body">
                 <p class="card-text">
                   <a href="$entry['poemurl']">
@@ -60,118 +61,7 @@ $def with (data=None)
               </div>
             </div>
           </div>
-        <!--<div class="col-md-4 p-3">
-          <div class="card box-shadow">
-            <img class="card-img-top" src="https://pingendo.com/assets/photos/wireframe/photo-1.jpg">
-            <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                </div> <small class="text-muted">9 mins</small>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 p-3">
-          <div class="card box-shadow">
-            <img class="card-img-top" src="https://pingendo.com/assets/photos/wireframe/photo-1.jpg">
-            <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                </div> <small class="text-muted">9 mins</small>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 p-3">
-          <div class="card box-shadow">
-            <img class="card-img-top" src="https://pingendo.com/assets/photos/wireframe/photo-1.jpg">
-            <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                </div> <small class="text-muted">9 mins</small>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 p-3">
-          <div class="card box-shadow">
-            <img class="card-img-top" src="https://pingendo.com/assets/photos/wireframe/photo-1.jpg">
-            <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                </div> <small class="text-muted">9 mins</small>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 p-3">
-          <div class="card box-shadow">
-            <img class="card-img-top" src="https://pingendo.com/assets/photos/wireframe/photo-1.jpg">
-            <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                </div> <small class="text-muted">9 mins</small>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 p-3">
-          <div class="card box-shadow">
-            <img class="card-img-top" src="https://pingendo.com/assets/photos/wireframe/photo-1.jpg">
-            <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                </div> <small class="text-muted">9 mins</small>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 p-3">
-          <div class="card box-shadow">
-            <img class="card-img-top" src="https://pingendo.com/assets/photos/wireframe/photo-1.jpg">
-            <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                </div> <small class="text-muted">9 mins</small>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 p-3">
-          <div class="card box-shadow">
-            <img class="card-img-top" src="https://pingendo.com/assets/photos/wireframe/photo-1.jpg">
-            <div class="card-body">
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                </div> <small class="text-muted">9 mins</small>
-              </div>
-            </div>
-          </div>
-        </div>-->
+          $ cnt = cnt + 1
       </div>
       <div class="row justify-content-center pt-3">
         <ul class="pagination">
@@ -207,9 +97,25 @@ $def with (data=None)
       <p>Album template is based on Bootstrap © examples.&nbsp; <br>New to Bootstrap? <a href="#">Visit the homepage</a> or read our <a href="#">getting started guide</a>.</p>
     </div>
   </footer>
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/static/js/jquery/jquery.js"></script>
+  <!--<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script type="text/javascript">
+    jQuery(document).ready(function() {
+        // jQuery("#test").text('test text');
+        // jQuery.post("/jstest", function(data, status){
+        //     for (var i=0;i<$(len(data['results']));i++){
+        //         jQuery("#card-img-"+i).attr({
+        //             "src": data
+        //         });
+        //     }
+        //     console.log(data);
+        // });
+    });
+  </script>
+
+  <script type="text/javascript" src="/static/js/auxiliary.js"></script>
 </body>
 
 </html>
