@@ -1,10 +1,12 @@
 # /usr/bin/env python
 # -*- coding: utf-8 -*-
 import urllib.parse
-import execjs,requests
+import execjs, requests
 import random
 
-ua='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
+ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
+
+
 class Return_tk():
     def __init__(self):
         self.ctx = execjs.compile("""
@@ -47,13 +49,16 @@ class Return_tk():
         return a
     }
     """)
+
     def getTk(self, text):
         return self.ctx.call("TL", text)
+
 
 def open_url(url):
     headers = {'User-Agent': ua}
     req = requests.get(url=url, headers=headers)
     return req.content.decode('utf-8')
+
 
 def en_to_zn_translate(content):
     '''
@@ -68,21 +73,22 @@ def en_to_zn_translate(content):
     '''
     js = Return_tk()
     tk = js.getTk(content)
-    numOfLines=content.count('\n')+1
+    numOfLines = content.count('\n') + 1
     content = urllib.parse.quote(content)
-    #英译汉
+    # 英译汉
     url = "http://translate.google.cn/translate_a/single?client=t" \
           "&sl=en&tl=zh-CN&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca" \
           "&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&clearbtn=1&otf=1&pc=1" \
           "&srcrom=0&ssel=0&tsel=0&kc=2&tk=%s&q=%s" % (tk, content)
     result = open_url(url)[4:]
-    finalRes=""
-    list=result.split('],["')
+    finalRes = ""
+    list = result.split('],["')
     for i in range(numOfLines):
-        rawLine=list[i]
+        rawLine = list[i]
         str_end = rawLine.find("\",\"")
-        finalRes+=rawLine[:str_end]
+        finalRes += rawLine[:str_end]
     return finalRes
+
 
 def zn_to_en_translate(content):
     '''
@@ -97,19 +103,18 @@ def zn_to_en_translate(content):
     '''
     js = Return_tk()
     tk = js.getTk(content)
-    numOfLines=content.count('\n')+1
+    numOfLines = content.count('\n') + 1
     content = urllib.parse.quote(content)
-    #汉译英
-    url = "http://translate.google.cn/translate_a/single?client=t"\
-          "&sl=zh-CN&tl=en&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca"\
-          "&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8"\
-          "&source=btn&ssel=3&tsel=3&kc=0&tk=%s&q=%s"%(tk,content)
+    # 汉译英
+    url = "http://translate.google.cn/translate_a/single?client=t" \
+          "&sl=zh-CN&tl=en&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca" \
+          "&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8" \
+          "&source=btn&ssel=3&tsel=3&kc=0&tk=%s&q=%s" % (tk, content)
     result = open_url(url)[4:]
-    finalRes=""
-    list=result.split('],["')
+    finalRes = ""
+    list = result.split('],["')
     for i in range(numOfLines):
-        rawLine=list[i]
+        rawLine = list[i]
         str_end = rawLine.find("\",\"")
-        finalRes+=rawLine[:str_end]
+        finalRes += rawLine[:str_end]
     return finalRes
-
