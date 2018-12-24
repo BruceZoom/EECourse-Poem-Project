@@ -1,10 +1,106 @@
+$def with (data=None)
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- PAGE settings -->
+  <link rel="icon" href="https://templates.pingendo.com/assets/Pingendo_favicon.ico">
+  <title>Album</title>
+  <meta name="description" content="Wireframe design of an album page by Pingendo">
+  <meta name="keywords" content="Pingendo bootstrap example template wireframe album ">
+  <meta name="author" content="Pingendo">
+  <!-- CSS dependencies -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="/static/css/wireframe.css">
+    <!-- Auxiliary resources -->
+  <link rel="stylesheet" href="/static/css/auxiliary.css">
 </head>
+
 <body>
-$END$
+  $:data['header']
+  <div class="text-center py-5">
+    <div class="container">
+      <div class="row my-3 justify-content-center">
+        <div class="col-8">
+            <br><br>
+          <h1>我们刚刚为您分析了这张图片</h1>
+          <p class="lead text-muted">您可以查看以下分析结果，或者利用这张图进一步搜索诗歌</p>
+          <a href="#" class="btn btn-primary m-2">以图搜诗</a>
+          <a href="#" class="btn btn-secondary m-2">以图作诗</a>
+        </div>
+        <div class="col-4">
+          <img width="100%" src=$(data['upload_prefix']+data['form']['image'])>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="py-4 bg-light">
+    <div class="container">
+      <div class="row my-4 justify-content-center">
+        <!--<div class="col-1"></div>-->
+        <div class="col-4">
+          <img id="heatmap" width="100%" src="https://pingendo.com/assets/photos/wireframe/photo-1.jpg">
+        </div>
+        <div class="col-1"></div>
+        <div class="col-4 justify-content-center">
+            <table>
+                <tr>
+                    <th><strong>环境: </strong></th>
+                    <td id="ioscene"></td>
+                </tr>
+                <tr>
+                    <th><strong>物体: </strong></th>
+                    <td id="object"></td>
+                </tr>
+                <tr>
+                    <th><strong>场景: </strong></th>
+                    <td id="scene"></td>
+                </tr>
+                <tr>
+                    <th><strong>感觉: </strong></th>
+                    <td id="emotion"></td>
+                </tr>
+            </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="text-muted py-5">
+    <div class="container">
+      <p class="float-right">
+        <a href="#">Back to top</a>
+      </p>
+      <p>Album template is based on Bootstrap © examples.&nbsp; <br>New to Bootstrap? <a href="#">Visit the homepage</a> or read our <a href="#">getting started guide</a>.</p>
+    </div>
+  </footer>
+  <script type="text/javascript" src="/static/js/jquery/jquery.js"></script>
+  <!--<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script type="text/javascript">
+    jQuery(document).ready(function() {
+        jQuery.post("/analyzer",
+            {
+                filename: "$data['form']['image']"
+            },
+            function(data, status){
+            data = eval('('+data+')');
+            console.log(data);
+            jQuery("#heatmap").attr({
+                "src": data['heatmap']
+            });
+            jQuery("#ioscene").html(data['ioscene']);
+            jQuery("#object").html(data['object']);
+            jQuery("#scene").html(data['scene']);
+            jQuery("#emotion").html(data['emotion']);
+        });
+    });
+  </script>
+
+  <script type="text/javascript" src="/static/js/auxiliary.js"></script>
 </body>
+
 </html>
