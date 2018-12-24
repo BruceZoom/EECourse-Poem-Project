@@ -1,0 +1,10 @@
+选用结巴分词器
+6个Field
+所有被保存下来的都是没被分词的，
+分词的搜索索引时可以找到
+strains：平仄
+paragraghs_untokened:未分词诗歌内容
+paragraghs_tokened:分词后诗歌内容
+author:作者
+title_untokened:未分词标题
+title_tokened:分词标题

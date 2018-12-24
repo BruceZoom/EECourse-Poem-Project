@@ -5,6 +5,8 @@ shiying/rawpage/
 shiying/test.py
 .idea/
 tmp/
+image_crawler/pages/
+image_crawler/veer/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

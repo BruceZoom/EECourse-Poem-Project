@@ -1,0 +1,53 @@
+$def with (data=None)
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- PAGE settings -->
+  <link rel="icon" href="https://templates.pingendo.com/assets/Pingendo_favicon.ico">
+  <title>Album</title>
+  <meta name="description" content="Wireframe design of an album page by Pingendo">
+  <meta name="keywords" content="Pingendo bootstrap example template wireframe album ">
+  <meta name="author" content="Pingendo">
+  <!-- CSS dependencies -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="/static/css/wireframe.css">
+    <!-- Auxiliary resources -->
+  <link rel="stylesheet" href="/static/css/auxiliary.css">
+  <script type="text/javascript" src="/static/js/auxiliary.js"></script>
+</head>
+
+<body>
+  $:data['header']
+  <div class="text-center py-5">
+    <div class="container">
+      <div class="row my-5 justify-content-center">
+        <div class="col-md-9 col-sm-6" id="centerDiv" style="text-align: center; font-size: 1.5em;">
+        
+        
+          
+          <div id="imageDiv" style="margin-top: 3px;">
+            <div id="box" style="background: url(&quot;undefined&quot;) 0% 0% / 100% 100% no-repeat; display: inline-block;">
+              <table><tr>
+				<td><img src=$data['image'] width="100%" border=0></td>
+				</tr></table>
+            </div>
+            
+            <div style="float:left;">$:data['enStr']</div>
+            <div style="float:right;">$:data['zhStr']</div>
+          </div>
+        
+        
+        
+          <a href="#" class="btn btn-primary m-2"..</a>
+          <a href="#" class="btn btn-secondary m-2">..</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  </body>
+
+</html>
