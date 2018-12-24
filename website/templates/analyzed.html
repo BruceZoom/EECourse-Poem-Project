@@ -28,14 +28,20 @@ $def with (data=None)
             <br><br>
           <h1>我们刚刚为您分析了这张图片</h1>
           <p class="lead text-muted">您可以查看以下分析结果，或者利用这张图进一步搜索诗歌</p>
-          <a href="#" class="btn btn-primary m-2">以图搜诗</a>
-          <a href="#" class="btn btn-secondary m-2">以图作诗</a>
+          <a id="search" href="#search-result" class="btn btn-primary m-2">以图搜诗</a>
+          <a id="generate" href="#generate-result" class="btn btn-secondary m-2">以图作诗</a>
         </div>
         <div class="col-4">
           <img width="100%" src=$(data['upload_prefix']+data['form']['image'])>
         </div>
       </div>
     </div>
+  </div>
+  <button hidden id="search-result-trigger" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#search-result"></button>
+  <div class="py-4 bg-dark collapse" id="search-result">
+      <p>
+          adafdafdasfa
+      </p>
   </div>
   <div class="py-4 bg-light">
     <div class="container">
@@ -68,6 +74,12 @@ $def with (data=None)
       </div>
     </div>
   </div>
+  <button hidden id="generate-result-trigger" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#generate-result"></button>
+  <div class="py-4 bg-dark collapse" id="generate-result">
+      <p>
+          adafdafdasfa
+      </p>
+  </div>
   <footer class="text-muted py-5">
     <div class="container">
       <p class="float-right">
@@ -96,6 +108,14 @@ $def with (data=None)
             jQuery("#object").html(data['object']);
             jQuery("#scene").html(data['scene']);
             jQuery("#emotion").html(data['emotion']);
+        });
+        jQuery("#search").click(function () {
+            // jQuery("html,body").animate({scrollTop:jQuery("#search-result").offset().top},1000);
+            jQuery("#search-result-trigger").click();
+        });
+        jQuery("#generate").click(function () {
+            // jQuery("html,body").animate({scrollTop:jQuery("#generate-result").offset().top},1000);
+            jQuery("#generate-result-trigger").click();
         });
     });
   </script>
