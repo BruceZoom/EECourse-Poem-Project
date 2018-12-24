@@ -190,3 +190,5 @@ ENTRY_SAMPLES = [
 
 with codecs.open('templates/header.html', 'r', encoding='utf-8') as f:
     HEADER = ''.join(f.readlines())
+
+UPLOAD_PREFIX = './static/upload/'
