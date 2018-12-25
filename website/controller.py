@@ -1,15 +1,17 @@
 # coding:utf-8
 import web
 import sys
-import cv2
 import codecs
-from skimage import io
-# from model.getImageFeature import *
-# from model.modernPoemGenerate import *
-# from translate import *
 import utils
 import time
 import json
+
+import PoemModel as PM
+
+# from model.getImageFeature import *
+# from model.modernPoemGenerate import *
+# from translate import *
+
 
 render = web.template.render('templates')
 
@@ -27,6 +29,7 @@ urls = (
 EMPTY_QUERY = 0
 VALID_QUERY = 1
 VALID_IMAGE = 2
+INVALID_QUERY = 3
 
 
 class index:
@@ -171,7 +174,11 @@ class analyzer:
 class Validator:
     @staticmethod
     def form_validate(form_dict):
-        print (len(form_dict['image']))
+        flag = True
+        for key in utils.FORM_INIT.keys():
+            flag = (flag and key in form_dict.keys())
+        if not flag:
+            return INVALID_QUERY
         if len(form_dict['query']) <= 0 and len(form_dict['image']) <= 0:
             return EMPTY_QUERY
         if len(form_dict['image']) > 0:

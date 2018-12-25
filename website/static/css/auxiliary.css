@@ -17,3 +17,8 @@
     -ms-filter: 'alpha(opacity=0)';
     font-size: 200px;
 }
+
+.bg-wooden {
+    background: url(/static/image/wooden_bg.jpg) no-repeat;
+    background-size: 100% 100%;
+}

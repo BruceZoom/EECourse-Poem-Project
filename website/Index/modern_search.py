@@ -2,7 +2,13 @@
 # -*- coding:utf-8 -*-
 INDEX_DIR = "IndexFiles.index"
 
-import sys, os, lucene, jieba, json
+# import sys
+# import os
+# import json
+import lucene
+import jieba
+import utils
+
 import nltk
 import nltk.stem.porter as pt
 
@@ -37,10 +43,35 @@ def get_stem(doc):
 
 
 class ModernPoemSearch:
-    def __init__(self):
-        self.chSearcher = IndexSearcher(DirectoryReader.open(SimpleFSDirectory(File('index/modern'))))
-        self.enSearcher = IndexSearcher(DirectoryReader.open(SimpleFSDirectory(File('index/english'))))
+    def __init__(self, folder='modern_index'):
+        self.chSearcher = IndexSearcher(DirectoryReader.open(SimpleFSDirectory(File(folder+'/modern'))))
+        self.enSearcher = IndexSearcher(DirectoryReader.open(SimpleFSDirectory(File(folder+'/english'))))
         self.Analyzer = WhitespaceAnalyzer(Version.LUCENE_CURRENT)
+
+    def ch_seach(self, command_dict, target_range=None, targets=('title', 'author', 'text', 'likes', 'img', 'label')):
+        res = []
+
+        querys = BooleanQuery()
+        for key, value in command_dict.items():
+            query = QueryParser(Version.LUCENE_CURRENT, key, self.Analyzer).parse(value[0])
+            if value[1]:
+                querys.add(query, BooleanClause.Occur.MUST)
+            else:
+                querys.add(query, BooleanClause.Occur.SHOULD)
+        totalDocs = self.chSearcher.search(querys, utils.MAX_RESULTS).scoreDocs
+
+        total_match = len(totalDocs)
+        if target_range is None:
+            scoreDocs = totalDocs[:]
+        else:
+            scoreDocs = totalDocs[max(0, target_range[0]), min(total_match, target_range[1])]
+        del totalDocs
+
+        for i, scoreDoc in enumerate(scoreDocs):
+            doc = self.chSearcher.doc(scoreDoc.doc)
+            res.append({key: doc.get(key) for key in targets})
+
+        return total_match, res
 
     def search(self, command, type):
         # type all title author content
@@ -53,7 +84,6 @@ class ModernPoemSearch:
             try:
                 seg_list = jieba.cut(content)
                 content = ' '.join(seg_list)
-
             except:
                 # print 'segmentation failed'
                 pass
