@@ -1,0 +1,22 @@
+选用结巴分词器
+Field type:
+t1：只保存内容
+t2：只建立索引
+t3：既保存内容又建立索引
+
+Field:
+t1:：
+paragraghs_untokened:未分词诗歌内容
+title_untokened:未分词标题
+
+t2：
+paragraghs_tokened:分词后诗歌内容
+title_tokened:分词标题
+
+t3：
+dynasty:朝代
+author:作者
+label:种类、朝代，空格连接
+yiwen:译文
+shangxi:赏析
+imgurl:空
