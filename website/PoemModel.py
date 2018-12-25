@@ -14,6 +14,7 @@ command_dict:
     value: (content, is accurate match)
 """
 
+
 def common_query(input_dict, cur_page):
     if input_dict['searchType'] == "gushiwen":
         return shi_search(input_dict, cur_page)

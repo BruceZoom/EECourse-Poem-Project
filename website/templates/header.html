@@ -24,14 +24,14 @@
           </div>
         </td>
         </tr>
-        <tr><!--<th></th>-->
+        <tr>
         <td>
           <select name="searchType" class="form-control" style="width: 85px;padding: 5px">
               <option value="all" selected>全部</option>
               <option value="gushiwen">古诗文</option>
               <option value="xiandaishi">现代诗</option>
           </select>&nbsp
-          <input class="form-control" type="text" name="query" style="width: 150px;" id="queryTextInput">
+          <input class="form-control" type="text" name="query" style="width: 200px;" id="queryTextInput">
           <button class="btn btn-link my-2 my-sm-0" type="submit"><i class="fa d-inline fa-lg fa-search text-primary"></i></button>
           <span class="fileinput-span">
             <span><i class="navbar-brand fa d-inline fa-camera mr-2"></i></span>
@@ -41,11 +41,6 @@
           </span>
         </td></tr>
       </table>
-      <!--<a type="file" name=“file” capture="camera" accept="image/"><i class="navbar-brand fa d-inline fa-camera mr-2"></i></a>-->
-      <!--<div class="custom-file">-->
-        <!--<input type="file" class="custom-file-input" id="customFile">-->
-        <!--<label class="custom-file-label" for="customFile"><i class="navbar-brand fa d-inline fa-camera mr-2"></i></label>-->
-      <!--</div>-->
     </div>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader">
         <span class="navbar-toggler-icon"></span>
@@ -55,23 +50,96 @@
 <div class="collapse bg-dark" id="navbarHeader" style="opacity: 0.8">
   <div class="container">
     <div class="row">
-      <div class="col-md-7 py-4">
-        <h4>About</h4>
-        <p class="text-info">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      <div class="col-md-4 py-4">
+        <h4>高级</h4>
+        在以下选项中搜索：
+        <table>
+          <tr>
+            <td>内容</td>
+            <td><input type="checkbox" name="content" id="shared-content" checked></td>
+          </tr>
+          <tr>
+            <td>标题</td>
+            <td><input type="checkbox" name="title" id="shared-title" checked></td>
+          </tr>
+          <tr>
+            <td>作者</td>
+            <td><input type="checkbox" name="author" id="shared-author" checked></td>
+          </tr>
+          <tr>
+            <td>标签</td>
+            <td><input type="checkbox" name="label" id="shared-label" checked></td>
+          </tr>
+        </table>
+        <!--<div class="form-check form-check">
+          <label class="form-check-label">
+            内容&nbsp<input class="form-check-input" type="checkbox" name="content" id="shared-content" checked>
+          </label>
+        </div>
+        <div class="form-check form-check">
+          <label class="form-check-label">
+            标题&nbsp<input class="form-check-input" type="checkbox" name="title" id="shared-title" checked>
+          </label>
+        </div>
+        <div class="form-check form-check">
+          <label class="form-check-label">
+            作者&nbsp<input class="form-check-input" type="checkbox" name="author" id="shared-author" checked>
+          </label>
+        </div>
+        <div class="form-check form-check">
+          <label class="form-check-label">
+            标签&nbsp<input class="form-check-input" type="checkbox" name="label" id="shared-label" checked>
+          </label>
+        </div>-->
+        <br>
+        <div class="form-check-inline">
+          <label class="form-check-label">
+            精确搜索：<input class="form-check-input" type="checkbox" name="accurate">
+          </label>
+        </div>
+      </div>
+      <div class="col-md-4 py-4">
+        <div id="ancient-search">
+          <div class="form-group">
+          标题：<input class="form-control-sm" type="text" name="ancientTitle" style="width: 150px;">
+          </div>
+          <div class="form-group">
+          作者：<input class="form-control-sm" type="text" name="ancientAuthor" style="width: 150px;">
+          </div>
+          <div class="form-group">
+          朝代：<input class="form-control-sm" type="text" name="ancientTime" style="width: 150px;">
+          </div>
+          <div class="form-group">
+          标签：<input class="form-control-sm" type="text" name="ancientLabel" style="width: 150px;">
+          </div>
+          <div class="form-group">
+            类型：
+            <select name="ancientType" class="form-control-sm" style="width: 85px;padding: 5px">
+                <option value="all" selected>全部</option>
+                <option value="shi">诗</option>
+                <option value="ci">词</option>
+                <option value="wen">古文</option>
+                <option value="other">其他</option>
+            </select>
+          </div>
+        </div>
+        <div id="modern-search">
+          <div class="form-group">
+            标题：<input class="form-control-sm" type="text" name="modernTitle" style="width: 150px;">
+          </div>
+          <div class="form-group">
+            作者：<input class="form-control-sm" type="text" name="modernAuthor" style="width: 150px;">
+          </div>
+          <div class="form-group">
+            标签：<input class="form-control-sm" type="text" name="modernLabel" style="width: 150px;">
+          </div>
+        </div>
       </div>
       <div class="col-md-3 offset-md-1 py-4">
-        <h4>Contact</h4>
-        <ul class="list-unstyled">
-          <li>
-            <a href="#" class="text-secondary">Follow on Twitter</a>
-          </li>
-          <li>
-            <a href="#" class="text-secondary">Like on Facebook</a>
-          </li>
-          <li>
-            <a href="#" class="text-secondary">Email me</a>
-          </li>
-        </ul>
+        <h4>帮助</h4>
+        <p class="text-info">
+          Some help about advanced mode
+        </p>
       </div>
     </div>
   </div>

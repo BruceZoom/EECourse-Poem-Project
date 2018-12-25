@@ -44,11 +44,11 @@ def get_stem(doc):
 
 class ModernPoemSearch:
     def __init__(self, folder='modern_index'):
-        self.chSearcher = IndexSearcher(DirectoryReader.open(SimpleFSDirectory(File(folder+'/modern'))))
+        self.chSearcher = IndexSearcher(DirectoryReader.open(SimpleFSDirectory(File(folder+'/chinese'))))
         self.enSearcher = IndexSearcher(DirectoryReader.open(SimpleFSDirectory(File(folder+'/english'))))
         self.Analyzer = WhitespaceAnalyzer(Version.LUCENE_CURRENT)
 
-    def ch_seach(self, command_dict, target_range=None, targets=('title', 'author', 'text', 'likes', 'img', 'label')):
+    def ch_seach(self, command_dict, target_range=None, targets=('title', 'author', 'text', 'likes', 'imgurl', 'label')):
         res = []
 
         querys = BooleanQuery()

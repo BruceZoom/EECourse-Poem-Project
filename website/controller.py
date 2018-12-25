@@ -6,7 +6,7 @@ import utils
 import time
 import json
 
-import PoemModel as PM
+# import PoemModel as PM
 
 # from model.getImageFeature import *
 # from model.modernPoemGenerate import *
@@ -45,7 +45,7 @@ class index:
 class query:
     def POST(self):
         inputs = web.input()
-
+        print inputs
         data = {
             'form': utils.FORM_INIT,
             'header': utils.HEADER,
