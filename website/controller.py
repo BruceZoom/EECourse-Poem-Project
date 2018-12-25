@@ -69,8 +69,8 @@ class query:
 			data['form']['image']=filename
 			data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
 
-			objects,scene,data['ioscene']=getHybridFeature(filename)
-			attributes,data['heatmap']=getHeatmap(filename)
+			objects,data['relu']=getObjectFeature(filename)
+			scene,attributes,data['heatmap'],data['ioscene']=getSceneFeature(filename)
 
 			print(data['url_prefix_form'])
 			objectStr=', '.join([x[0] for x in objects])
@@ -90,9 +90,10 @@ class gallery_poem:
 		print (inputs)
 		data = {
 			'header': utils.HEADER,
-			'image':inputs['image']
+			'image':inputs['image'],
+			'relu':inputs['relu'],
 		}
-		enList=get_poem(inputs['image'])[0].split('\n')
+		enList=get_poem(inputs['image'],inputs['relu'])[0].split('\n')
 		zhList=[]
 		for sentence in enList:
 			zhSentence=en_to_zn_translate(sentence)
