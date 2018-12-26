@@ -15,18 +15,12 @@ from imageFeatureModel.catagories_hybrid1365 import *
 import pretrainedmodels
 import pretrainedmodels.utils as utils
 
-<<<<<<< HEAD
 
-def hook_feature(module, input, output):
-    features_blobs.append(np.squeeze(output.data.cpu().numpy()))
-=======
 def hook_resnet(module, input, output):
     features_resnet.append(np.squeeze(output.data.cpu().numpy()))
 
 def hook_vgg(module, input, output):
     features_vgg.append(np.squeeze(output.data.cpu().numpy()))
->>>>>>> df448122b1e5e4d73420b30d15fe0da54d18031f
-
 
 def returnCAM(feature_conv, weight_softmax, class_idx):
     size_upsample = (256, 256)
@@ -50,28 +44,16 @@ def returnTF():
     ])
     return tf
 
-<<<<<<< HEAD
-
-def load_hybrid_model():
-    model_file = './model/imageFeatureModel/vgg16_hybrid1365.pth'
-    model = imageFeatureModel.vgg16_torch.vgg16_torch
-    model.load_state_dict(torch.load(model_file))
-=======
 def load_object_model():
     model = pretrainedmodels.__dict__['vgg16'](num_classes=1000, pretrained='imagenet')
->>>>>>> df448122b1e5e4d73420b30d15fe0da54d18031f
     model.eval()
     features_names = ['relu1']  # relu7 that acmm used, 4096 dim
     for name in features_names:
         model._modules.get(name).register_forward_hook(hook_vgg)
     return model
 
-<<<<<<< HEAD
 
-def load_heatmap_model():
-=======
 def load_scene_model():
->>>>>>> df448122b1e5e4d73420b30d15fe0da54d18031f
     model_file = './model/imageFeatureModel/wideresnet18_places365.pth.tar'
     import imageFeatureModel.wideresnet
     model = imageFeatureModel.wideresnet.resnet18(num_classes=365)
@@ -89,37 +71,6 @@ W_attribute = np.load('./model/imageFeatureModel/W_sceneattribute_wideresnet18.n
 features_vgg = []
 features_resnet = []
 
-<<<<<<< HEAD
-
-def getHybridFeature(img_url):
-    img = Image.open(img_url)
-    input_img = V(tf(img).unsqueeze(0)) * 255
-    logit = hybridModel.forward(input_img)
-    h_x = F.softmax(logit, 1).data.squeeze()
-    probs, idx = h_x.sort(0, True)
-    probs = probs.numpy()
-    idx = idx.numpy()
-    scene = []
-    object = []
-    io_image = 0
-
-    for i in range(1365):
-        if (len(object) > 5): break
-        if (idx[i] <= 999): object.append([classes[idx[i]], probs[i]])
-
-    for i in range(1365):
-        if (len(scene) > 5): break
-        if (idx[i] > 999):
-            scene.append([classes[idx[i]], probs[i]])
-            io_image += labels_IO[idx[i] - 1000]
-
-    io_image = io_image / 5  # vote for the indoor or outdoor
-    if io_image < 0.5:
-        return object, scene, '室内'
-    else:
-        return object, scene, '室外'
-
-=======
 objectModel = load_object_model()
 sceneModel = load_scene_model()
 
@@ -149,7 +100,6 @@ def getObjectFeature(img_url):
     np.save(reludir,relu)
 
     return objectRes,reludir
->>>>>>> df448122b1e5e4d73420b30d15fe0da54d18031f
 
 def getSceneFeature(img_url):
     img = Image.open(img_url)
@@ -158,9 +108,6 @@ def getSceneFeature(img_url):
     logit = sceneModel.forward(input_img)
     h_x = F.softmax(logit, 1).data.squeeze()
     probs, idx = h_x.sort(0, True)
-<<<<<<< HEAD
-    idx = idx.numpy()
-=======
     probs = probs.numpy()
     idx = idx.numpy()
     print(idx)
@@ -170,7 +117,6 @@ def getSceneFeature(img_url):
     sceneRes = []
     for itr in range(5):
         sceneRes.append((sceneClasses[idx[itr]], probs[itr]))
->>>>>>> df448122b1e5e4d73420b30d15fe0da54d18031f
 
     params = list(sceneModel.parameters())
     weight_softmax = params[-2].data.numpy()
@@ -185,21 +131,10 @@ def getSceneFeature(img_url):
     height, width, _ = img.shape
     heatmap = cv2.applyColorMap(cv2.resize(CAMs[0], (width, height)), cv2.COLORMAP_JET)
     result = heatmap * 0.4 + img * 0.5
-<<<<<<< HEAD
-    heatmap_url = './static/heatmap/' + os.path.basename(img_url)
-    cv2.imwrite(heatmap_url, result)
-    return attributeList, heatmap_url
-=======
     heatmap_url='./static/heatmap/'+os.path.basename(img_url)
     cv2.imwrite(heatmap_url,result)
-
     if io_image<0.5:
         return sceneRes,attributeList,heatmap_url,"室内"
     else:
         return sceneRes,attributeList,heatmap_url,"室外"
 
-
-
-
-
->>>>>>> df448122b1e5e4d73420b30d15fe0da54d18031f

@@ -5,13 +5,14 @@ import codecs
 import utils
 import time
 import json
+import os
+from PIL import Image
 
 # import PoemModel as PM
 
 # from model.getImageFeature import *
 # from model.modernPoemGenerate import *
 # from translate import *
-
 
 render = web.template.render('templates')
 
@@ -80,10 +81,20 @@ class query:
             image_inputs = web.input(image={})
             # filename = image_inputs.image.filename.replace('\\', '/').split('/')[-1]
             utils.timestamp += 1
-            filename = str(utils.timestamp) + '.jpg'
+
+            _basename = os.path.basename(image_inputs.image.filename)
+            _exten_name = os.path.splitext(_basename)[1].lower()
+            filename = str(utils.timestamp) + _exten_name
             data['upload_prefix'] = utils.UPLOAD_PREFIX
             with codecs.open(utils.UPLOAD_PREFIX + filename, 'wb') as fout:
                 fout.write(image_inputs.image.file.read())
+            if(_exten_name=='png'):#四通道图像会在vgg步骤报错
+                im = Image.open(utils.UPLOAD_PREFIX + filename)
+                newim = im.convert(mode='RGB')
+                filename = str(utils.timestamp) + '.jpg'
+                newim.save(utils.UPLOAD_PREFIX +filename)
+                os.remove(utils.UPLOAD_PREFIX + str(utils.timestamp) + _exten_name)
+
             data['results'] = utils.ENTRY_SAMPLES
             data['form']['image'] = filename
             data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
