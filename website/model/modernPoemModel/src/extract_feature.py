@@ -102,6 +102,3 @@ def extract_feature(image_file,reludir):
     img_feature = np.hstack(image_features)
     return img_feature
 
-if __name__ == '__main__':
-    img_feature = get_feature('../images/test.jpg')
-    #np.save('../images/mx_test.npy', img_feature)

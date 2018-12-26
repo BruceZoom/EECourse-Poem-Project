@@ -1,13 +1,17 @@
 # /usr/bin/env python
 # -*- coding: utf-8 -*-
-# /usr/bin/env python
-# -*- coding: utf-8 -*-
 import urllib.parse
-import execjs, requests
-import random
+import execjs,requests
+ua='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
 
-ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
+from sogou_translate import SogouTranslate, SogouLanguages
+trans = SogouTranslate('999d9c1684fc8647cc25735e6b06c2e8', 'cdfb1d5759390db53254a2486f11da07')
+#以上是我注册的账号，仅限内部使用
+def sg_en_to_zn_translate(content):
+    return trans.translate(content,from_language=SogouLanguages.EN,to_language=SogouLanguages.ZH_CHS)
 
+def sg_zn_to_en_translate(content):
+    return trans.translate(content,from_language=SogouLanguages.ZH_CHS,to_language=SogouLanguages.EN)
 
 class Return_tk():
     def __init__(self):
@@ -51,17 +55,14 @@ class Return_tk():
         return a
     }
     """)
-
     def getTk(self, text):
         return self.ctx.call("TL", text)
-
 
 def open_url(url):
     headers = {'User-Agent': ua}
     req = requests.get(url=url, headers=headers)
     return req.content.decode('utf-8')
 
-
 def en_to_zn_translate(content):
     '''
     Parameters
@@ -75,22 +76,24 @@ def en_to_zn_translate(content):
     '''
     js = Return_tk()
     tk = js.getTk(content)
-    numOfLines = content.count('\n') + 1
+    numOfLines=content.count('\n')+1
     content = urllib.parse.quote(content)
-    # 英译汉
+    #英译汉
     url = "http://translate.google.cn/translate_a/single?client=t" \
           "&sl=en&tl=zh-CN&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca" \
           "&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&clearbtn=1&otf=1&pc=1" \
           "&srcrom=0&ssel=0&tsel=0&kc=2&tk=%s&q=%s" % (tk, content)
-    result = open_url(url)[4:]
-    finalRes = ""
-    list = result.split('],["')
-    for i in range(numOfLines):
-        rawLine = list[i]
-        str_end = rawLine.find("\",\"")
-        finalRes += rawLine[:str_end]
-    return finalRes
-
+    try:
+        result = open_url(url)[4:]
+        finalRes=""
+        list=result.split('],["')
+        for i in range(numOfLines):
+            rawLine=list[i]
+            str_end = rawLine.find("\",\"")
+            finalRes+=rawLine[:str_end]
+        return finalRes
+    except:
+        return sg_en_to_zn_translate(content)
 
 def zn_to_en_translate(content):
     '''
@@ -105,36 +108,27 @@ def zn_to_en_translate(content):
     '''
     js = Return_tk()
     tk = js.getTk(content)
-    numOfLines = content.count('\n') + 1
+    numOfLines=content.count('\n')+1
     content = urllib.parse.quote(content)
-    # 汉译英
-    url = "http://translate.google.cn/translate_a/single?client=t" \
-          "&sl=zh-CN&tl=en&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca" \
-          "&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8" \
-          "&source=btn&ssel=3&tsel=3&kc=0&tk=%s&q=%s" % (tk, content)
-    result = open_url(url)[4:]
-    finalRes = ""
-    list = result.split('],["')
-    for i in range(numOfLines):
-        rawLine = list[i]
-        str_end = rawLine.find("\",\"")
-        finalRes += rawLine[:str_end]
-    return finalRes
+    #汉译英
+    url = "http://translate.google.cn/translate_a/single?client=t"\
+          "&sl=zh-CN&tl=en&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca"\
+          "&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8"\
+          "&source=btn&ssel=3&tsel=3&kc=0&tk=%s&q=%s"%(tk,content)
+    try:
+        result = open_url(url)[4:]
+        finalRes=""
+        list=result.split('],["')
+        for i in range(numOfLines):
+            rawLine=list[i]
+            str_end = rawLine.find("\",\"")
+            finalRes+=rawLine[:str_end]
+        return finalRes
+    except:
+        return sg_zn_to_en_translate(content)
 
 
-'''
-#以前的方法会被反爬，弃用（但似乎谷歌效果更好一点）
-#因此，爬大量数据用这个，一般用外面的谷歌
-from sogou_translate import SogouTranslate, SogouLanguages
-
-trans = SogouTranslate('999d9c1684fc8647cc25735e6b06c2e8', 'cdfb1d5759390db53254a2486f11da07')
-
-
-# 以上是我注册的账号，仅限内部使用
-def en_to_zn_translate(content):
-    return trans.translate(content, from_language=SogouLanguages.EN, to_language=SogouLanguages.ZH_CHS)
-
-
-def zn_to_en_translate(content):
-    return trans.translate(content,from_language=SogouLanguages.ZH_CHS,to_language=SogouLanguages.EN)
-'''
+if __name__ == "__main__":
+    content="Beautiful is better than ugly.\nExplicit is better than implicit."
+    print(en_to_zn_translate(content))
+    print(sg_en_to_zn_translate(content))
