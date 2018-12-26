@@ -70,7 +70,7 @@ class ModernPoemSearch:
         #booleanQuery
         querys = BooleanQuery()
         if type=='title':
-            query = QueryParser(Version.LUCENE_CURRENT, 'title', self.Analyzer).parse(chs)
+            query = QueryParser(Version.LUCENE_CURRENT, 'title_tokened', self.Analyzer).parse(chs)
             querys.add(query, BooleanClause.Occur.MUST)
         elif type=='author':
             query = QueryParser(Version.LUCENE_CURRENT, 'author', self.Analyzer).parse(chs)
@@ -79,7 +79,7 @@ class ModernPoemSearch:
             query = QueryParser(Version.LUCENE_CURRENT, 'content', self.Analyzer).parse(chs)
             querys.add(query, BooleanClause.Occur.MUST)
         else:
-            query = QueryParser(Version.LUCENE_CURRENT, 'title', self.Analyzer).parse(chs)
+            query = QueryParser(Version.LUCENE_CURRENT, 'title_tokened', self.Analyzer).parse(chs)
             querys.add(query, BooleanClause.Occur.SHOULD)
             query = QueryParser(Version.LUCENE_CURRENT, 'content', self.Analyzer).parse(chs)
             querys.add(query, BooleanClause.Occur.SHOULD)
@@ -91,12 +91,13 @@ class ModernPoemSearch:
         for i, scoreDoc in enumerate(scoreDocs):
             doc = self.chSearcher.doc(scoreDoc.doc)
             item={}
-            item['title']=doc.get('title')
-            item['author']=doc.get('author')
-            item['text']=doc.get('text')
-            item['imgurl']=doc.get('imgurl')
-            item['likes']=doc.get('likes')
+            item['title'] = doc.get('title')
+            item['author'] = doc.get('author')
+            item['text'] = doc.get('text')
+            item['imgurl'] = doc.get('imgurl')
+            item['likes'] = doc.get('likes')
             item['label'] = ''
+            item['id']=doc.get('id')
             data1.append(item)
         num += len(scoreDocs)
 
@@ -117,6 +118,7 @@ class ModernPoemSearch:
             item['imgurl'] = doc.get('imgurl')
             item['likes'] = doc.get('likes')
             item['label'] = ''
+            item['id'] = doc.get('id')
             data2.append(item)
         num += len(scoreDocs)
         return num, data1, data2

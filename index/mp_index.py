@@ -66,39 +66,41 @@ class IndexFiles(object):
         print 'done'
 
     def indexDocs(self, root, writer):
-        # author
+        # author id
         t1 = FieldType()
         t1.setIndexed(True)
         t1.setStored(True)
         t1.setTokenized(False)
-        # title content (segmented text) label
+        # content (segmented text) label
         t2 = FieldType()
         t2.setIndexed(True)
         t2.setStored(True)
         t2.setTokenized(True)
         t2.setIndexOptions(FieldInfo.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
-        # likes imgurl text (original text)
+        # likes imgurl text (original text) title
         t3 = FieldType()
         t3.setIndexed(False)
         t3.setStored(True)
         t3.setTokenized(False)
-        # content (segmented text)
+        # content (segmented text) title_tokened
         t4 = FieldType()
         t4.setIndexed(True)
         t4.setStored(False)
         t4.setTokenized(True)
         t4.setIndexOptions(FieldInfo.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
 
-        def addDoc(title,author,text,img,likes,content):
+        def addDoc(title,author,text,img,likes,content,title_tokened):
             try:
                 doc = Document()
                 doc.add(Field("author", author, t1))
                 doc.add(Field("imgurl", img, t3))
                 doc.add(Field("likes", likes, t3))
                 doc.add(Field("text", text, t3))
-                doc.add(Field("title", title, t2))
+                doc.add(Field("title", title, t3))
+                doc.add(Field("title_tokened", title_tokened, t4))
                 doc.add(Field("content", content, t4))
                 doc.add(Field("label", '', t2))
+                doc.add(Field("id", 'ch'+str(self.success), t1))
                 writer.addDocument(doc)
                 self.success += 1
             except Exception, e:
@@ -111,6 +113,12 @@ class IndexFiles(object):
         load_f.close()
         for poem in data:
             title = poem['title']
+            title_tokened = title
+            try:
+                seg_list = jieba.cut(title)
+                title_tokened = ' '.join(seg_list)
+            except:
+                pass
             text = poem['text']
             author = poem['author']
             likes = poem['likes']
@@ -123,7 +131,7 @@ class IndexFiles(object):
                 content = text
                 print 'segmentation failed'
             # create index
-            addDoc(title,author,text,img,likes,content)
+            addDoc(title,author,text,img,likes,content,title_tokened)
 
         # cn_with_img_trans
         load_f = open(DATA_DIR + '/cn_with_img_trans.json', 'r')
@@ -131,6 +139,7 @@ class IndexFiles(object):
         load_f.close()
         for poem in data:
             title = ''
+            title_tokened = ''
             text = poem['poem']
             author = ''
             likes = ''
@@ -143,7 +152,7 @@ class IndexFiles(object):
                 content = text
                 print 'segmentation failed'
             # create index
-            addDoc(title, author, text, img, likes, content)
+            addDoc(title, author, text, img, likes, content, title_tokened)
 
         # cn_without_img
         load_f = open(DATA_DIR + '/cn_without_img.json', 'r')
@@ -151,6 +160,12 @@ class IndexFiles(object):
         load_f.close()
         for poem in data:
             title = poem['title']
+            title_tokened = title
+            try:
+                seg_list = jieba.cut(title)
+                title_tokened = ' '.join(seg_list)
+            except:
+                pass
             text = poem['poem']
             author = poem['author']
             likes = ''
@@ -163,7 +178,7 @@ class IndexFiles(object):
                 content = text
                 print 'segmentation failed'
             # create index
-            addDoc(title, author, text, img, likes, content)
+            addDoc(title, author, text, img, likes, content, title_tokened)
 
         print "%s documents indexed"%self.success
 
