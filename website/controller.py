@@ -56,14 +56,22 @@ class query:
         if validation == EMPTY_QUERY:
             data['landing'] = utils.LANDING_DATA_DEFAULT
             return render.index(data=data)
+
         elif validation == VALID_QUERY:
+            # parse form inputs and make query
+            command_dict = Validator.to_command_dict(inputs)
+            print command_dict
+            # PM.common_query(command_dict)
             data['results'] = utils.ENTRY_SAMPLES
+
+            # set up other data
             data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
             data['form']['image'] = data['form']['image'].decode()  # 否则会出现byte和str报错
             print(data['form'])
             data['url_prefix_form'] = '&'.join([key + '=' + value for key, value in data['form'].items()]) + '&'
             print(data['url_prefix_form'])
             return render.gallery(data=data)
+
         elif validation == VALID_IMAGE:
             image_inputs = web.input(image={})
             filename = image_inputs.image.filename.replace('\\', '/').split('/')[-1]
@@ -165,17 +173,32 @@ class analyzer:
         # 考虑将以上str换为带超链接或者div鼠标悬浮显示的，显示出近义诗、词语（近义列表后面会做）
         # 另外，最好这个页面是动态加载出来的，防止模型计算过长时间
         data['object'], data['scene'], data['emotion'] = objectStr, sceneStr, attributesStr
-        print json.dumps(data)
+        # print json.dumps(data)
         # return data
         time.sleep(3)
         return json.dumps(data)
 
 
 class Validator:
+    ancient_key_map = {
+        'ancientAuthor': 'author',
+        'ancientTime': 'dynasty',
+        'ancientType': 'label',
+        'ancientLabel': 'label',
+        'ancientTitle': 'title',
+    }
+    modern_key_map = {
+        'modernTitle': 'title',
+        'modernAuthor': 'author',
+        'modernLabel': 'label',
+    }
+
     @staticmethod
     def form_validate(form_dict):
         flag = True
-        for key in utils.FORM_INIT.keys():
+        for key in ['query', 'searchType', 'image'] + \
+                   ['ancientAuthor', 'ancientTime', 'ancientType', 'ancientLabel', 'ancientTitle'] + \
+                   ['modernTitle', 'modernAuthor', 'modernLabel']:
             flag = (flag and key in form_dict.keys())
         if not flag:
             return INVALID_QUERY
@@ -184,7 +207,29 @@ class Validator:
         if len(form_dict['image']) > 0:
             return VALID_IMAGE
         if len(form_dict['query']) > 0:
+            flag = False
+            for key in ['author', 'title', 'label', 'content']:
+                flag = (flag or key in form_dict.keys())
+            if not flag:
+                return INVALID_QUERY
             return VALID_QUERY
+
+    @staticmethod
+    def to_command_dict(input_dict):
+        command_dict = dict()
+        for key in ['author', 'title', 'label', 'content']:
+            if key in input_dict.keys():
+                command_dict[key] = (input_dict['query'], False)
+        command_dict['searchType'] = input_dict['searchType']
+        if input_dict['searchType'] == 'ancient':
+            for key in ['ancientAuthor', 'ancientTime', 'ancientType', 'ancientLabel', 'ancientTitle']:
+                if input_dict[key] != '':
+                    command_dict[Validator.ancient_key_map[key]] = (input_dict[key], True)
+        elif input_dict['searchType'] in ['modern', 'all']:
+            for key in ['modernTitle', 'modernAuthor', 'modernLabel']:
+                if input_dict[key] != '':
+                    command_dict[Validator.modern_key_map[key]] = (input_dict[key], True)
+        return command_dict
 
 
 if __name__ == "__main__":

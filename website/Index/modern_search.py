@@ -42,13 +42,14 @@ def get_stem(doc):
     return res
 
 
-class ModernPoemSearch:
+class ModernPoemSearcher(object):
     def __init__(self, folder='modern_index'):
         self.chSearcher = IndexSearcher(DirectoryReader.open(SimpleFSDirectory(File(folder+'/chinese'))))
         self.enSearcher = IndexSearcher(DirectoryReader.open(SimpleFSDirectory(File(folder+'/english'))))
         self.Analyzer = WhitespaceAnalyzer(Version.LUCENE_CURRENT)
 
-    def ch_seach(self, command_dict, target_range=None, targets=('title', 'author', 'text', 'likes', 'imgurl', 'label')):
+    def ch_seach(self, command_dict, target_range=None,
+                 targets=('title', 'author', 'text', 'likes', 'imgurl', 'label')):
         res = []
 
         querys = BooleanQuery()
@@ -143,5 +144,5 @@ if __name__ == '__main__':
     lucene.initVM(vmargs=['-Djava.awt.headless=true'])
     print 'lucene', lucene.VERSION
     # base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-    mps = ModernPoemSearch()
+    mps = ModernPoemSearcher()
     print mps.search("flower光线", 'title')

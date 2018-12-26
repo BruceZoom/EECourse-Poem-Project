@@ -28,8 +28,8 @@
         <td>
           <select name="searchType" class="form-control" style="width: 85px;padding: 5px">
               <option value="all" selected>全部</option>
-              <option value="gushiwen">古诗文</option>
-              <option value="xiandaishi">现代诗</option>
+              <option value="ancient">古诗文</option>
+              <option value="modern">现代诗</option>
           </select>&nbsp
           <input class="form-control" type="text" name="query" style="width: 200px;" id="queryTextInput">
           <button class="btn btn-link my-2 my-sm-0" type="submit"><i class="fa d-inline fa-lg fa-search text-primary"></i></button>
@@ -99,7 +99,7 @@
         </div>
       </div>
       <div class="col-md-4 py-4">
-        <div id="ancient-search">
+        <div id="ancient-search" class="collapse">
           <div class="form-group">
           标题：<input class="form-control-sm" type="text" name="ancientTitle" style="width: 150px;">
           </div>
@@ -123,7 +123,7 @@
             </select>
           </div>
         </div>
-        <div id="modern-search">
+        <div id="modern-search" class="collapse">
           <div class="form-group">
             标题：<input class="form-control-sm" type="text" name="modernTitle" style="width: 150px;">
           </div>
