@@ -5,13 +5,13 @@ INDEX_DIR = "IndexFiles.index"
 # import sys
 # import os
 # import json
-import lucene
 import jieba
 import utils
 
 import nltk
 import nltk.stem.porter as pt
 
+import lucene
 from java.io import File
 from org.apache.lucene.analysis.standard import StandardAnalyzer
 from org.apache.lucene.analysis.core import WhitespaceAnalyzer
@@ -54,7 +54,9 @@ class ModernPoemSearcher(object):
 
         querys = BooleanQuery()
         for key, value in command_dict.items():
-            query = QueryParser(Version.LUCENE_CURRENT, key, self.Analyzer).parse(value[0])
+            if key not in ['author', 'title', 'label', 'content']:
+                continue
+            query = QueryParser(Version.LUCENE_CURRENT, key, self.Analyzer).parse(utils.jieba_seg(value[0]))
             if value[1]:
                 querys.add(query, BooleanClause.Occur.MUST)
             else:
@@ -65,7 +67,7 @@ class ModernPoemSearcher(object):
         if target_range is None:
             scoreDocs = totalDocs[:]
         else:
-            scoreDocs = totalDocs[max(0, target_range[0]), min(total_match, target_range[1])]
+            scoreDocs = totalDocs[max(0, int(target_range[0])):min(total_match, int(target_range[1]))]
         del totalDocs
 
         for i, scoreDoc in enumerate(scoreDocs):
@@ -74,75 +76,75 @@ class ModernPoemSearcher(object):
 
         return total_match, res
 
-    def search(self, command, type):
-        # type all title author content
-        if command == '':
-            return
-        data = []
-        if not command.isalpha():
-            # segmentation
-            content = command
-            try:
-                seg_list = jieba.cut(content)
-                content = ' '.join(seg_list)
-            except:
-                # print 'segmentation failed'
-                pass
-            # booleanQuery
-            querys = BooleanQuery()
-            if type == 'title':
-                query = QueryParser(Version.LUCENE_CURRENT, 'title', self.Analyzer).parse(content)
-                querys.add(query, BooleanClause.Occur.MUST)
-            elif type == 'author':
-                query = QueryParser(Version.LUCENE_CURRENT, 'author', self.Analyzer).parse(content)
-                querys.add(query, BooleanClause.Occur.MUST)
-            elif type == 'content':
-                query = QueryParser(Version.LUCENE_CURRENT, 'content', self.Analyzer).parse(content)
-                querys.add(query, BooleanClause.Occur.MUST)
-            else:
-                query = QueryParser(Version.LUCENE_CURRENT, 'title', self.Analyzer).parse(content)
-                querys.add(query, BooleanClause.Occur.SHOULD)
-                query = QueryParser(Version.LUCENE_CURRENT, 'content', self.Analyzer).parse(content)
-                querys.add(query, BooleanClause.Occur.SHOULD)
-                query = QueryParser(Version.LUCENE_CURRENT, 'author', self.Analyzer).parse(content)
-                querys.add(query, BooleanClause.Occur.SHOULD)
-            scoreDocs = self.chSearcher.search(querys, 200).scoreDocs
-            # print "%s total matching documents." % len(scoreDocs)
+    # def search(self, command, type):
+    #     # type all title author content
+    #     if command == '':
+    #         return
+    #     data = []
+    #     if not command.isalpha():
+    #         # segmentation
+    #         content = command
+    #         try:
+    #             seg_list = jieba.cut(content)
+    #             content = ' '.join(seg_list)
+    #         except:
+    #             # print 'segmentation failed'
+    #             pass
+    #         # booleanQuery
+    #         querys = BooleanQuery()
+    #         if type == 'title':
+    #             query = QueryParser(Version.LUCENE_CURRENT, 'title', self.Analyzer).parse(content)
+    #             querys.add(query, BooleanClause.Occur.MUST)
+    #         elif type == 'author':
+    #             query = QueryParser(Version.LUCENE_CURRENT, 'author', self.Analyzer).parse(content)
+    #             querys.add(query, BooleanClause.Occur.MUST)
+    #         elif type == 'content':
+    #             query = QueryParser(Version.LUCENE_CURRENT, 'content', self.Analyzer).parse(content)
+    #             querys.add(query, BooleanClause.Occur.MUST)
+    #         else:
+    #             query = QueryParser(Version.LUCENE_CURRENT, 'title', self.Analyzer).parse(content)
+    #             querys.add(query, BooleanClause.Occur.SHOULD)
+    #             query = QueryParser(Version.LUCENE_CURRENT, 'content', self.Analyzer).parse(content)
+    #             querys.add(query, BooleanClause.Occur.SHOULD)
+    #             query = QueryParser(Version.LUCENE_CURRENT, 'author', self.Analyzer).parse(content)
+    #             querys.add(query, BooleanClause.Occur.SHOULD)
+    #         scoreDocs = self.chSearcher.search(querys, 200).scoreDocs
+    #         # print "%s total matching documents." % len(scoreDocs)
+    #
+    #         for i, scoreDoc in enumerate(scoreDocs):
+    #             doc = self.chSearcher.doc(scoreDoc.doc)
+    #             item = {}
+    #             item['title'] = doc.get('title')
+    #             item['author'] = doc.get('author')
+    #             item['text'] = doc.get('text')
+    #             item['img'] = doc.get('img')
+    #             item['likes'] = doc.get('likes')
+    #             data.append(item)
+    #         return len(scoreDocs), data
+    #     else:
+    #         content = get_stem(command)
+    #         # booleanQuery
+    #         querys = BooleanQuery()
+    #         query = QueryParser(Version.LUCENE_CURRENT, 'content', self.Analyzer).parse(content)
+    #         querys.add(query, BooleanClause.Occur.MUST)
+    #         scoreDocs = self.enSearcher.search(querys, 200).scoreDocs
+    #         print "%s total matching documents." % len(scoreDocs)
+    #
+    #         for i, scoreDoc in enumerate(scoreDocs):
+    #             doc = self.enSearcher.doc(scoreDoc.doc)
+    #             item = {}
+    #             item['title'] = doc.get('title')
+    #             item['author'] = doc.get('author')
+    #             item['text'] = doc.get('text')
+    #             item['img'] = doc.get('img')
+    #             item['likes'] = doc.get('likes')
+    #             data.append(item)
+    #         return len(scoreDocs), data
 
-            for i, scoreDoc in enumerate(scoreDocs):
-                doc = self.chSearcher.doc(scoreDoc.doc)
-                item = {}
-                item['title'] = doc.get('title')
-                item['author'] = doc.get('author')
-                item['text'] = doc.get('text')
-                item['img'] = doc.get('img')
-                item['likes'] = doc.get('likes')
-                data.append(item)
-            return len(scoreDocs), data
-        else:
-            content = get_stem(command)
-            # booleanQuery
-            querys = BooleanQuery()
-            query = QueryParser(Version.LUCENE_CURRENT, 'content', self.Analyzer).parse(content)
-            querys.add(query, BooleanClause.Occur.MUST)
-            scoreDocs = self.enSearcher.search(querys, 200).scoreDocs
-            print "%s total matching documents." % len(scoreDocs)
 
-            for i, scoreDoc in enumerate(scoreDocs):
-                doc = self.enSearcher.doc(scoreDoc.doc)
-                item = {}
-                item['title'] = doc.get('title')
-                item['author'] = doc.get('author')
-                item['text'] = doc.get('text')
-                item['img'] = doc.get('img')
-                item['likes'] = doc.get('likes')
-                data.append(item)
-            return len(scoreDocs), data
-
-
-if __name__ == '__main__':
-    lucene.initVM(vmargs=['-Djava.awt.headless=true'])
-    print 'lucene', lucene.VERSION
-    # base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-    mps = ModernPoemSearcher()
-    print mps.search("flower光线", 'title')
+# if __name__ == '__main__':
+#     lucene.initVM(vmargs=['-Djava.awt.headless=true'])
+#     print 'lucene', lucene.VERSION
+#     # base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+#     mps = ModernPoemSearcher()
+#     print mps.search("flower光线", 'title')

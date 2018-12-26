@@ -3,7 +3,7 @@ import codecs
 import os
 
 DISPLAY_UTILS = {
-
+    'card_max_text': 50,
 }
 
 FORM_INIT = {
@@ -12,7 +12,7 @@ FORM_INIT = {
     'image': '',
 }
 
-PAGI_INIT = {
+PAGI_SETTING = {
     'offset': 3,
     'prev': '前一页',
     'next': '后一页',
@@ -115,6 +115,22 @@ LANDING_DATA_DEFAULT = {
             'labelurl': '#',
         },
     ],
+}
+
+ENTRY_TEMPLATE = {
+        'imgurl': '/static/image/1.jpg',
+        'title': 'Title',
+        'content': '我是一首诗 我是一首诗 我是一首诗 我是一首诗',
+        'poet': '诗人',
+        'poemurl': '#',
+        'poeturl': '#',
+        'labels': [
+            # {
+            #     'label': '标签',
+            #     'labelurl': '#',
+            # },
+        ],
+        'likes': 0,
 }
 
 ENTRY_SAMPLES = [
