@@ -9,6 +9,7 @@ image_crawler/pages/
 image_crawler/veer/
 website/model/
 website/model_/
+website/static/upload/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
