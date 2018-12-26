@@ -6,7 +6,7 @@ import utils
 import time
 import json
 
-import PoemModel as PM
+# import PoemModel as PM
 
 # from model.getImageFeature import *
 # from model.modernPoemGenerate import *
@@ -61,11 +61,11 @@ class query:
             # parse form inputs and make query
             command_dict = Validator.to_command_dict(inputs)
             print command_dict
-            data['total_match'], data['results'] = PM.common_query(command_dict)
-            print data['total_match'], data['results']
-            data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
-                'result_per_page']
-            # data['results'] = utils.ENTRY_SAMPLES
+            # data['total_match'], data['results'] = PM.common_query(command_dict)
+            # print data['total_match'], data['results']
+            # data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+            #     'result_per_page']
+            data['results'] = utils.ENTRY_SAMPLES
 
             # set up other data
             # data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
@@ -106,28 +106,6 @@ class query:
             pass
 
 
-class gallery_poem:
-    def GET(self):
-        inputs = web.input()
-        print (inputs)
-        data = {
-            'header': utils.HEADER,
-            'image': inputs['image'],
-            'relu': inputs['relu'],
-        }
-        enList = get_poem(inputs['image'], inputs['relu'])[0].split('\n')
-        zhList = []
-        for sentence in enList:
-            zhSentence = en_to_zn_translate(sentence)
-            zhList.append(zhSentence)
-        enStr = '<br>'.join(enList)
-        zhStr = '<br>'.join(zhList)
-        data['enStr'] = enStr
-        data['zhStr'] = zhStr
-
-        return render.gallery_poem(data=data)
-
-
 class gallery:
     def GET(self):
         inputs = web.input()
@@ -151,10 +129,11 @@ class gallery:
 
                 command_dict = Validator.to_command_dict(inputs)
                 print command_dict
-                data['total_match'], data['results'] = PM.common_query(command_dict, cur_page=inputs['page'])
-                print data['total_match'], data['results']
-                data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
-                    'result_per_page']
+                # data['total_match'], data['results'] = PM.common_query(command_dict, cur_page=inputs['page'])
+                # print data['total_match'], data['results']
+                # data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+                #     'result_per_page']
+                data['results'] = utils.ENTRY_SAMPLES
 
                 data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
                 data['pagi']['cur_page'] = inputs['page']
@@ -166,6 +145,28 @@ class gallery:
                 'landing': utils.LANDING_DATA_DEFAULT,
             }
             return render.index(data=data)
+
+
+class gallery_poem:
+    def GET(self):
+        inputs = web.input()
+        print (inputs)
+        data = {
+            'header': utils.HEADER,
+            'image': inputs['image'],
+            'relu': inputs['relu'],
+        }
+        enList = get_poem(inputs['image'], inputs['relu'])[0].split('\n')
+        zhList = []
+        for sentence in enList:
+            zhSentence = en_to_zn_translate(sentence)
+            zhList.append(zhSentence)
+        enStr = '<br>'.join(enList)
+        zhStr = '<br>'.join(zhList)
+        data['enStr'] = enStr
+        data['zhStr'] = zhStr
+
+        return render.gallery_poem(data=data)
 
 
 class analyzed:
@@ -200,6 +201,7 @@ class analyzer:
         # 考虑将以上str换为带超链接或者div鼠标悬浮显示的，显示出近义诗、词语（近义列表后面会做）
         # 另外，最好这个页面是动态加载出来的，防止模型计算过长时间
         data['object'], data['scene'], data['emotion'] = objectStr, sceneStr, attributesStr
+        data['label_complete'] = objects[0][0]
         # print json.dumps(data)
         # return data
         time.sleep(3)
@@ -229,22 +231,29 @@ class Validator:
     @staticmethod
     def form_validate(form_dict):
         flag = True
-        for key in ['query', 'searchType', 'image'] + \
-                   ['ancientAuthor', 'ancientTime', 'ancientType', 'ancientLabel', 'ancientTitle'] + \
-                   ['modernTitle', 'modernAuthor', 'modernLabel']:
+        for key in ['query', 'searchType', 'image']:
             flag = (flag and key in form_dict.keys())
         if not flag:
+            print 'Failed! Invalid query 1!'
             return INVALID_QUERY
-        if len(form_dict['query']) <= 0 and len(form_dict['image']) <= 0:
-            return EMPTY_QUERY
         if len(form_dict['image']) > 0:
             return VALID_IMAGE
+        flag = False
+        for key in ['query', 'ancientAuthor', 'ancientTime', 'ancientType', 'ancientLabel', 'ancientTitle',
+                    'modernTitle', 'modernAuthor', 'modernLabel']:
+            flag = (flag or (key in form_dict.keys() and len(form_dict[key]) > 0))
+        if not flag:
+            print 'Failed! Empty query 1!'
+            return EMPTY_QUERY
         if len(form_dict['query']) > 0:
             flag = False
             for key in ['author', 'title', 'label', 'content']:
                 flag = (flag or key in form_dict.keys())
             if not flag:
+                print 'Failed! Invalid query 2!'
                 return INVALID_QUERY
+            return VALID_QUERY
+        else:
             return VALID_QUERY
 
     @staticmethod
