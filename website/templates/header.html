@@ -1,32 +1,83 @@
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- PAGE settings -->
+  <link rel="icon" href="https://templates.pingendo.com/assets/Pingendo_favicon.ico">
+  <title>Landing</title>
+  <meta name="description" content="Wireframe design of a landing page by Pingendo">
+  <meta name="keywords" content="Pingendo bootstrap example template wireframe landing">
+  <meta name="author" content="Pingendo">
+
+  <!-- CSS dependencies -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="/static/css/wireframe.css">
+
+  <!-- Auxiliary resources -->
+  <link rel="stylesheet" href="/static/css/auxiliary.css">
+  <script type="text/javascript" src="/static/js/auxiliary.js"></script>
+
+  <!-- jQuery dependencies -->
+  <script type="text/javascript" src="/static/js/jquery/jquery.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/static/js/dynamicform.js"></script>
+
+  <!-- switch css -->
+  <link rel="stylesheet" href="/static/css/switch.css">
+
+  <!-- dynamic form js -->
+  <script type="text/javascript">
+    function formchange () {
+        var searchType = document.getElementById("search-type");
+        console.log(searchType.options[searchType.selectedIndex].text);
+        if (jQuery("#accurate").prop("checked")) {
+            if (jQuery("#search-type").val() === "ancient") {
+                jQuery("#ancient-search-advanced").collapse("show");
+                jQuery("#modern-search-advanced").collapse("hide");
+            }
+            else {
+                jQuery("#ancient-search-advanced").collapse("hide");
+                jQuery("#modern-search-advanced").collapse("show");
+            }
+        }
+        else {
+            jQuery("#ancient-search-advanced").collapse("hide");
+            jQuery("#modern-search-advanced").collapse("hide");
+        }
+    }
+  </script>
+</head>
+<body class="">
 <form action="/query" method="post" enctype="multipart/form-data">
 <div class="navbar navbar-dark bg-dark">
   <div class="container d-flex justify-content-between">
     <div class="form-inline my-2 my-lg-0">
       <table>
-        <tr><!--<th></th>-->
+        <tr>
         <td>
           <div class="navbar-expand-sm">
-          <div class="navbar-collapse text-center justify-content-between" id="navbar2SupportedContent">
-          <a class="navbar-brand" href="/index"><i class="fa d-inline fa-lg fa-bullseye">&nbspPoems</i></a>
-
-            <ul class="navbar-nav" style="flex-direction: row;">
-              <li class="nav-item">
-                <a class="nav-link mx-2" href="#">Link</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link mx-2" href="#">Link</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link mx-2" href="#">Link</a>
-              </li>
-            </ul>
-              </div>
+            <div class="navbar-collapse text-center justify-content-between" id="navbar2SupportedContent">
+              <ul class="navbar-nav" style="flex-direction: row;">
+                <li class="nav-item">
+                  <a class="navbar-brand" href="/index"><i class="fa d-inline fa-lg fa-bullseye">&nbspPoems</i></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link mx-2" href="#">Link</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link mx-2" href="#">Link</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link mx-2" href="#">Link</a>
+                </li>
+              </ul>
+            </div>
           </div>
         </td>
         </tr>
         <tr>
         <td>
-          <select name="searchType" class="form-control" style="width: 85px;padding: 5px">
+          <select id="search-type" name="searchType" class="form-control" style="width: 85px;padding: 5px" onchange="formchange()">
               <option value="all" selected>全部</option>
               <option value="ancient">古诗文</option>
               <option value="modern">现代诗</option>
@@ -35,9 +86,7 @@
           <button class="btn btn-link my-2 my-sm-0" type="submit"><i class="fa d-inline fa-lg fa-search text-primary"></i></button>
           <span class="fileinput-span">
             <span><i class="navbar-brand fa d-inline fa-camera mr-2"></i></span>
-          <!--<form id="imageSubmission">-->
             <input type="file" name="image" capture="camera" accept="image/" onchange="imageUploadChanged('queryTextInput')">
-          <!--</form>-->
           </span>
         </td></tr>
       </table>
@@ -55,51 +104,55 @@
         在以下选项中搜索：
         <table>
           <tr>
-            <td>内容</td>
-            <td><input type="checkbox" name="content" id="shared-content" checked></td>
+            <td>内容&nbsp</td>
+            <td>
+              <section class="model-15">
+                <div class="checkbox">
+                  <input type="checkbox" name="content" id="shared-content" checked>
+                  <label></label>
+                </div>
+              </section>
+            </td>
+            <td>&nbsp&nbsp标题&nbsp</td>
+            <td>
+              <section class="model-15">
+                <div class="checkbox">
+                  <input type="checkbox" name="title" id="shared-title" checked>
+                  <label></label>
+                </div>
+              </section>
           </tr>
           <tr>
-            <td>标题</td>
-            <td><input type="checkbox" name="title" id="shared-title" checked></td>
-          </tr>
-          <tr>
-            <td>作者</td>
-            <td><input type="checkbox" name="author" id="shared-author" checked></td>
-          </tr>
-          <tr>
-            <td>标签</td>
-            <td><input type="checkbox" name="label" id="shared-label" checked></td>
+            <td>作者&nbsp</td>
+            <td>
+              <section class="model-15">
+                <div class="checkbox">
+                  <input type="checkbox" name="author" id="shared-author" checked>
+                  <label></label>
+                </div>
+              </section>
+            <td>&nbsp&nbsp标签&nbsp</td>
+            <td>
+              <section class="model-15">
+                <div class="checkbox">
+                  <input type="checkbox" name="label" id="shared-label" checked>
+                  <label></label>
+                </div>
+              </section>
           </tr>
         </table>
-        <!--<div class="form-check form-check">
-          <label class="form-check-label">
-            内容&nbsp<input class="form-check-input" type="checkbox" name="content" id="shared-content" checked>
-          </label>
-        </div>
-        <div class="form-check form-check">
-          <label class="form-check-label">
-            标题&nbsp<input class="form-check-input" type="checkbox" name="title" id="shared-title" checked>
-          </label>
-        </div>
-        <div class="form-check form-check">
-          <label class="form-check-label">
-            作者&nbsp<input class="form-check-input" type="checkbox" name="author" id="shared-author" checked>
-          </label>
-        </div>
-        <div class="form-check form-check">
-          <label class="form-check-label">
-            标签&nbsp<input class="form-check-input" type="checkbox" name="label" id="shared-label" checked>
-          </label>
-        </div>-->
         <br>
         <div class="form-check-inline">
-          <label class="form-check-label">
-            精确搜索：<input class="form-check-input" type="checkbox" name="accurate">
-          </label>
+            精确搜索：
+            <section class="model-15">
+			  <div class="checkbox">
+			    <input type="checkbox" id="accurate" name="accurate" onchange="formchange()"/>
+			    <label></label>
+			  </div></section>
         </div>
       </div>
       <div class="col-md-4 py-4">
-        <div id="ancient-search" class="collapse">
+        <div id="ancient-search-advanced" class="collapse">
           <div class="form-group">
           标题：<input class="form-control-sm" type="text" name="ancientTitle" style="width: 150px;">
           </div>
@@ -123,7 +176,7 @@
             </select>
           </div>
         </div>
-        <div id="modern-search" class="collapse">
+        <div id="modern-search-advanced" class="collapse">
           <div class="form-group">
             标题：<input class="form-control-sm" type="text" name="modernTitle" style="width: 150px;">
           </div>

@@ -1,0 +1,111 @@
+
+
+.checkbox {
+  position: relative;
+  display: inline-block;
+}
+.checkbox:after, .checkbox:before {
+  font-family: FontAwesome;
+  -webkit-font-feature-settings: normal;
+     -moz-font-feature-settings: normal;
+          font-feature-settings: normal;
+  -webkit-font-kerning: auto;
+     -moz-font-kerning: auto;
+          font-kerning: auto;
+  -webkit-font-language-override: normal;
+     -moz-font-language-override: normal;
+          font-language-override: normal;
+  font-stretch: normal;
+  font-style: normal;
+  font-synthesis: weight style;
+  font-variant: normal;
+  font-weight: normal;
+  text-rendering: auto;
+}
+.checkbox label {
+  width: 90px;
+  height: 42px;
+  background: #ccc;
+  position: relative;
+  display: inline-block;
+  border-radius: 46px;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+.checkbox label:after {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  left: 0;
+  top: -5px;
+  z-index: 2;
+  background: #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+.checkbox input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  opacity: 0;
+  cursor: pointer;
+}
+.checkbox input:hover + label:after {
+  box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.2), 0 3px 8px 0 rgba(0, 0, 0, 0.15);
+}
+.checkbox input:checked + label:after {
+  left: 40px;
+}
+
+.model-15 .checkbox {
+  width: 65px;
+  height: 25px;
+  border: 2px solid #ddd;
+  background: #256c32;
+  border-radius: 6px;
+  overflow: hidden;
+  top: 3px;
+}
+.model-15 .checkbox:after, .model-15 .checkbox label:before {
+  content: 'ON';
+  position: absolute;
+  left: 8px;
+  top: 3px;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 10px;
+  color: #fff;
+}
+.model-15 .checkbox label:before {
+  content: 'OFF';
+  left: 35px;
+  top: 3px;
+  right: 10px;
+  z-index: 1;
+}
+.model-15 .checkbox label {
+  background: #909090;
+  width: 90px;
+  height: 32px;
+  border-radius: 4px;
+}
+.model-15 .checkbox label:after {
+  border-radius: 4px;
+  box-shadow: none !important;
+  top: 0;
+  width: 30px;
+  height: 20px;
+}
+.model-15 .checkbox input:checked + label {
+  -ms-transform: translateX(32px);
+  -webkit-transform: translateX(32px);
+  transform: translateX(32px);
+}
+.model-15 .checkbox input:checked + label:after {
+  left: 0;
+}

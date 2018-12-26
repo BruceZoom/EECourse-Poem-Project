@@ -3,23 +3,7 @@ $def with (data=None)
 <!DOCTYPE html>
 <html>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- PAGE settings -->
-  <link rel="icon" href="https://templates.pingendo.com/assets/Pingendo_favicon.ico">
-  <title>Album</title>
-  <meta name="description" content="Wireframe design of an album page by Pingendo">
-  <meta name="keywords" content="Pingendo bootstrap example template wireframe album ">
-  <meta name="author" content="Pingendo">
-  <!-- CSS dependencies -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
-  <link rel="stylesheet" href="/static/css/wireframe.css">
-    <!-- Auxiliary resources -->
-  <link rel="stylesheet" href="/static/css/auxiliary.css">
-</head>
 
-<body>
   $:data['header']
   <div class="text-center py-5">
     <div class="container">
@@ -28,7 +12,7 @@ $def with (data=None)
             <br><br>
           <h1>我们刚刚为您分析了这张图片</h1>
           <p class="lead text-muted">您可以查看以下分析结果，或者利用这张图进一步搜索诗歌</p>
-          <a id="search" href="#search-result" class="btn btn-primary m-2">以图搜诗</a>
+          <a id="search" href="#" class="btn btn-primary m-2">以图搜诗</a>
           <a id="generate" href="#generate-result" class="btn btn-secondary m-2">以图作诗</a>
         </div>
         <div class="col-4">
@@ -37,18 +21,18 @@ $def with (data=None)
       </div>
     </div>
   </div>
-  <button hidden id="search-result-trigger" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#search-result"></button>
-  <div class="py-4 bg-dark collapse" id="search-result">
-      <p>
-          adafdafdasfa
-      </p>
-  </div>
+  <!--<button hidden id="search-result-trigger" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#search-result"></button>-->
+  <!--<div class="py-4 bg-dark collapse" id="search-result">-->
+      <!--<p>-->
+          <!--adafdafdasfa-->
+      <!--</p>-->
+  <!--</div>-->
   <div class="py-4 bg-light">
     <div class="container">
       <div class="row my-4 justify-content-center">
         <!--<div class="col-1"></div>-->
         <div class="col-4">
-          <img id="heatmap" width="100%" src="https://pingendo.com/assets/photos/wireframe/photo-1.jpg">
+          <img id="heatmap" width="100%" src="/static/image/1.jpg">
         </div>
         <div class="col-1"></div>
         <div class="col-4 justify-content-center">
@@ -108,11 +92,14 @@ $def with (data=None)
             jQuery("#object").html(data['object']);
             jQuery("#scene").html(data['scene']);
             jQuery("#emotion").html(data['emotion']);
+            jQuery("#search").attr({
+                "href": "/gallery?query=" + data['label_complete'] + '&label=on&searchType=all&image='
+            });
         });
-        jQuery("#search").click(function () {
-            // jQuery("html,body").animate({scrollTop:jQuery("#search-result").offset().top},1000);
-            jQuery("#search-result-trigger").click();
-        });
+        // jQuery("#search").click(function () {
+        //     // jQuery("html,body").animate({scrollTop:jQuery("#search-result").offset().top},1000);
+        //     jQuery("#search-result-trigger").click();
+        // });
         jQuery("#generate").click(function () {
             // jQuery("html,body").animate({scrollTop:jQuery("#generate-result").offset().top},1000);
             jQuery("#generate-result-trigger").click();
