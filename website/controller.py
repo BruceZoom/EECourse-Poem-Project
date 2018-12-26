@@ -8,6 +8,8 @@ from model.getImageFeature import *
 from model.modernPoemGenerate import *
 from translate import *
 import utils
+import numOfimg
+
 
 render = web.template.render('templates')
 
@@ -58,7 +60,9 @@ class query:
 			return render.gallery(data=data)
 		elif validation == VALID_IMAGE:
 			image_inputs = web.input(image={})
-			filename = './static/upload/' + image_inputs.image.filename.replace('\\', '/').split('/')[-1]
+			numOfimg.num+=1
+			filename = './static/upload/' + str(numOfimg.num) +'.jpg'
+
 			with codecs.open(filename, 'wb') as fout:
 				fout.write(image_inputs.image.file.read())
 			#load_image(filename)
