@@ -8,7 +8,7 @@ import json
 import os
 from PIL import Image
 
-# import PoemModel as PM
+import PoemModel as PM
 
 # from model.getImageFeature import *
 # from model.modernPoemGenerate import *
@@ -50,7 +50,7 @@ class query:
         data = {
             'form': utils.FORM_INIT,
             'header': utils.HEADER,
-            'pagi': utils.PAGI_INIT,
+            'pagi': utils.PAGI_SETTING,
         }
         validation = Validator.form_validate(inputs)
 
@@ -62,15 +62,19 @@ class query:
             # parse form inputs and make query
             command_dict = Validator.to_command_dict(inputs)
             print command_dict
-            # PM.common_query(command_dict)
-            data['results'] = utils.ENTRY_SAMPLES
+            data['total_match'], data['results'] = PM.common_query(command_dict)
+            print data['total_match'], data['results']
+            data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+                'result_per_page']
+            # data['results'] = utils.ENTRY_SAMPLES
 
             # set up other data
-            data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
-            data['form']['image'] = data['form']['image'].decode()  # 否则会出现byte和str报错
-            print(data['form'])
+            # data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
+            data['form'] = inputs.copy()
+            # data['form']['image'] = data['form']['image'].decode()  # 否则会出现byte和str报错
+            # print(data['form'])
             data['url_prefix_form'] = '&'.join([key + '=' + value for key, value in data['form'].items()]) + '&'
-            print(data['url_prefix_form'])
+            # print(data['url_prefix_form'])
             return render.gallery(data=data)
 
         elif validation == VALID_IMAGE:
@@ -142,22 +146,37 @@ class gallery:
         data = {
             'form': utils.FORM_INIT,
             'header': utils.HEADER,
-            'pagi': utils.PAGI_INIT,
+            'pagi': utils.PAGI_SETTING,
             'results': utils.ENTRY_SAMPLES,
         }
-        data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
-        if 'query' in inputs.keys():
-            data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
-            data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
-            try:
-                inputs['page'] = int(inputs['page'])
-            except Exception as e:
-                print (e.message)
-                inputs['page'] = 1
-            data['pagi']['cur_page'] = inputs['page']
-            return render.gallery(data=data)
+        validation = Validator.form_validate(inputs)
+        if validation == VALID_QUERY:
+            if 'query' in inputs.keys():
+                # data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
+                data['form'] = inputs.copy()
+                try:
+                    inputs['page'] = int(inputs['page'])
+                except Exception as e:
+                    print (e.message)
+                    inputs['page'] = 1
+
+                command_dict = Validator.to_command_dict(inputs)
+                print command_dict
+                data['total_match'], data['results'] = PM.common_query(command_dict, cur_page=inputs['page'])
+                print data['total_match'], data['results']
+                data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+                    'result_per_page']
+
+                data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
+                data['pagi']['cur_page'] = inputs['page']
+                return render.gallery(data=data)
         else:
-            return render.gallery(data=data)
+            data = {
+                'form': utils.FORM_INIT,
+                'header': utils.HEADER,
+                'landing': utils.LANDING_DATA_DEFAULT,
+            }
+            return render.index(data=data)
 
 
 class analyzed:
@@ -204,12 +223,18 @@ class Validator:
         'ancientTime': 'dynasty',
         'ancientType': 'label',
         'ancientLabel': 'label',
-        'ancientTitle': 'title',
+        'ancientTitle': 'title_tokened',
     }
     modern_key_map = {
-        'modernTitle': 'title',
+        'modernTitle': 'title_tokened',
         'modernAuthor': 'author',
         'modernLabel': 'label',
+    }
+    common_key_map = {
+        'author': 'author',
+        'title': 'title_tokened',
+        'label': 'label',
+        'content': 'content',
     }
 
     @staticmethod
@@ -238,16 +263,19 @@ class Validator:
         command_dict = dict()
         for key in ['author', 'title', 'label', 'content']:
             if key in input_dict.keys():
-                command_dict[key] = (input_dict['query'], False)
+                command_dict[Validator.common_key_map[key]] = (input_dict['query'], False)
         command_dict['searchType'] = input_dict['searchType']
         if input_dict['searchType'] == 'ancient':
-            for key in ['ancientAuthor', 'ancientTime', 'ancientType', 'ancientLabel', 'ancientTitle']:
-                if input_dict[key] != '':
-                    command_dict[Validator.ancient_key_map[key]] = (input_dict[key], True)
+            if 'accurate' in input_dict.keys():
+                for key in ['ancientAuthor', 'ancientTime', 'ancientType', 'ancientLabel', 'ancientTitle']:
+                    if input_dict[key] != '':
+                        command_dict[Validator.ancient_key_map[key]] = (input_dict[key], True)
         elif input_dict['searchType'] in ['modern', 'all']:
-            for key in ['modernTitle', 'modernAuthor', 'modernLabel']:
-                if input_dict[key] != '':
-                    command_dict[Validator.modern_key_map[key]] = (input_dict[key], True)
+            if 'accurate' in input_dict.keys():
+                for key in ['modernTitle', 'modernAuthor', 'modernLabel']:
+                    if input_dict[key] != '':
+                        command_dict[Validator.modern_key_map[key]] = (input_dict[key], True)
+
         return command_dict
 
 
