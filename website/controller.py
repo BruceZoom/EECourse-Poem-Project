@@ -74,7 +74,9 @@ class query:
 
         elif validation == VALID_IMAGE:
             image_inputs = web.input(image={})
-            filename = image_inputs.image.filename.replace('\\', '/').split('/')[-1]
+            # filename = image_inputs.image.filename.replace('\\', '/').split('/')[-1]
+            utils.timestamp += 1
+            filename = str(utils.timestamp) + '.jpg'
             data['upload_prefix'] = utils.UPLOAD_PREFIX
             with codecs.open(utils.UPLOAD_PREFIX + filename, 'wb') as fout:
                 fout.write(image_inputs.image.file.read())
@@ -106,9 +108,10 @@ class gallery_poem:
         print (inputs)
         data = {
             'header': utils.HEADER,
-            'image': inputs['image']
+            'image': inputs['image'],
+            'relu': inputs['relu'],
         }
-        enList = get_poem(inputs['image'])[0].split('\n')
+        enList = get_poem(inputs['image'], inputs['relu'])[0].split('\n')
         zhList = []
         for sentence in enList:
             zhSentence = en_to_zn_translate(sentence)
@@ -160,6 +163,8 @@ class analyzer:
 
         # objects, scene, data['ioscene'] = getHybridFeature(filename)
         # attributes, data['heatmap'] = getHeatmap(filename)
+        # objects, data['relu'] = getObjectFeature(filename)
+        # scene, attributes, data['heatmap'], data['ioscene'] = getSceneFeature(filename)
 
         data['ioscene'] = 'ioscene'
         data['heatmap'] = utils.UPLOAD_PREFIX + filename
@@ -167,9 +172,12 @@ class analyzer:
         scene = ['a', 'b', 'c']
         attributes = ['a', 'b', 'c']
 
-        objectStr = ' '+', '.join([x[0] for x in objects])
-        sceneStr = ' '+', '.join([x[0] for x in scene])
-        attributesStr = ' '+', '.join(attributes)
+        objectStr = ' ' + ', '.join([x[0] for x in objects])
+        sceneStr = ' ' + ', '.join([x[0] for x in scene])
+        attributesStr = ' ' + ', '.join(attributes)
+        # objectStr = ', '.join([x[0] for x in objects])
+        # sceneStr = ', '.join([x[0] for x in scene])
+        # attributesStr = ', '.join(attributes)
         # 考虑将以上str换为带超链接或者div鼠标悬浮显示的，显示出近义诗、词语（近义列表后面会做）
         # 另外，最好这个页面是动态加载出来的，防止模型计算过长时间
         data['object'], data['scene'], data['emotion'] = objectStr, sceneStr, attributesStr

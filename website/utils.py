@@ -1,5 +1,6 @@
 # coding:utf-8
 import codecs
+import os
 
 DISPLAY_UTILS = {
 
@@ -190,5 +191,7 @@ ENTRY_SAMPLES = [
 
 with codecs.open('templates/header.html', 'r', encoding='utf-8') as f:
     HEADER = ''.join(f.readlines())
+
+timestamp = len([lists for lists in os.listdir('./static/upload/')])
 
 UPLOAD_PREFIX = './static/upload/'
