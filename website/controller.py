@@ -14,6 +14,8 @@ from PIL import Image
 # from model.modernPoemGenerate import *
 # from translate import *
 
+import PoemSearchES as PSES
+
 render = web.template.render('templates')
 
 urls = (
@@ -24,7 +26,8 @@ urls = (
     '/gallery_image', 'gallery_image',
     '/gallery_poem', 'gallery_poem',
     '/analyzed', 'analyzed',
-    '/analyzer', 'analyzer'
+    '/analyzer', 'analyzer',
+    '/matchimage', 'matchimage',
 )
 
 EMPTY_QUERY = 0
@@ -62,18 +65,22 @@ class query:
             # parse form inputs and make query
             command_dict = Validator.to_command_dict(inputs)
             print (command_dict)
-            # data['total_match'], data['results'] = PM.common_query(command_dict)
-            # print data['total_match'], data['results']
-            # data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
-            #     'result_per_page']
-            data['results'] = utils.ENTRY_SAMPLES
+            data['total_match'], data['results'] = PSES.common_query(command_dict)
+            print (data['total_match'])
+            data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+                'result_per_page']
+            # data['results'] = utils.ENTRY_SAMPLES
 
             # set up other data
             # data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
             data['form'] = inputs.copy()
-            # data['form']['image'] = data['form']['image'].decode()  # 否则会出现byte和str报错
-            # print(data['form'])
+            print (data['form'])
+            try:
+                data['form']['image'] = data['form']['image'].decode()  # 否则会出现byte和str报错
+            except:
+                pass
             data['url_prefix_form'] = '&'.join([key + '=' + value for key, value in data['form'].items()]) + '&'
+            # print(data['form'])
             # print(data['url_prefix_form'])
             return render.gallery(data=data)
 
@@ -139,14 +146,23 @@ class gallery:
                     inputs['page'] = 1
 
                 command_dict = Validator.to_command_dict(inputs)
-                print command_dict
-                # data['total_match'], data['results'] = PM.common_query(command_dict, cur_page=inputs['page'])
-                # print data['total_match'], data['results']
-                # data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
-                #     'result_per_page']
-                data['results'] = utils.ENTRY_SAMPLES
+                print (command_dict)
+                data['total_match'], data['results'] = PSES.common_query(command_dict, cur_page=inputs['page'])
+                # print (data['total_match'], data['results'])
+                data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+                    'result_per_page']
+                # data['results'] = utils.ENTRY_SAMPLES
 
+                data['form'] = inputs.copy()
+                print (data['form'])
+                try:
+                    data['form']['image'] = data['form']['image'].decode()  # 否则会出现byte和str报错
+                except:
+                    pass
+                if 'page' in data['form'].keys():
+                    del data['form']['page']
                 data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
+
                 data['pagi']['cur_page'] = inputs['page']
                 return render.gallery(data=data)
         else:
@@ -219,24 +235,41 @@ class analyzer:
         return json.dumps(data)
 
 
+class matchimage:
+    def GET(self):
+        data = {
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+        }
+        return render.matchimage(data=data)
+
+    def POST(self):
+        inputs = web.input()
+        print(inputs)
+        data = {
+            'imgurl': '/static/image/1.jpg'
+        }
+        return json.dumps(data)
+
+
 class Validator:
     ancient_key_map = {
         'ancientAuthor': 'author',
         'ancientTime': 'dynasty',
-        'ancientType': 'label',
-        'ancientLabel': 'label',
-        'ancientTitle': 'title_tokened',
+        'ancientType': 'label_tokenized',
+        'ancientLabel': 'label_tokenized',
+        'ancientTitle': 'title_tokenized',
     }
     modern_key_map = {
-        'modernTitle': 'title_tokened',
+        'modernTitle': 'title_tokenized',
         'modernAuthor': 'author',
-        'modernLabel': 'label',
+        'modernLabel': 'label_tokenized',
     }
     common_key_map = {
         'author': 'author',
-        'title': 'title_tokened',
-        'label': 'label',
-        'content': 'content',
+        'title': 'title_tokenized',
+        'label': 'label_tokenized',
+        'content': 'text_tokenized',
     }
 
     @staticmethod
@@ -276,7 +309,8 @@ class Validator:
         command_dict['searchType'] = input_dict['searchType']
         if input_dict['searchType'] == 'ancient':
             if 'accurate' in input_dict.keys():
-                for key in ['ancientAuthor', 'ancientTime', 'ancientType', 'ancientLabel', 'ancientTitle']:
+                # for key in ['ancientAuthor', 'ancientTime', 'ancientType', 'ancientLabel', 'ancientTitle']:
+                for key in ['ancientAuthor', 'ancientTime', 'ancientLabel', 'ancientTitle']:
                     if input_dict[key] != '':
                         command_dict[Validator.ancient_key_map[key]] = (input_dict[key], True)
         elif input_dict['searchType'] in ['modern', 'all']:
