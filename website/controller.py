@@ -323,6 +323,6 @@ class Validator:
 
 
 if __name__ == "__main__":
-    sys.argv.append('8000')
+    #sys.argv.append('8000')
     app = web.application(urls, globals())
     app.run()
