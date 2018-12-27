@@ -1,4 +1,4 @@
-
+author/
 datasets/
 models/
 shiying/rawpage/
@@ -10,6 +10,7 @@ image_crawler/veer/
 website/model/
 website/model_/
 website/static/upload/
+shigedaquan/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
