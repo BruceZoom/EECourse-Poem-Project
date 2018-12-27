@@ -4,12 +4,21 @@ import json
 import codecs
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
+import jieba
 
-def _getkey(dict, key):
+
+def _getkey(dict, key, seg=None):
     try:
-        return dict[key]
+        try:
+            if seg is not None:
+                return ' '.join(seg(dict[key]))
+            else:
+                return dict[key]
+        except:
+            return dict[key]
     except:
-        return None
+        return ''
+
 
 def _genAllPoems():
     allPoems = []
@@ -122,31 +131,33 @@ def _genAllPoems():
 
     print("-----already generated-----")
 
+
 def _genAllChineseModerns():
     AllChineseModerns = []
     with codecs.open('./modernPoems/cn_with_img.json', 'r', encoding='utf-8') as fin:
-        oneList=json.load(fin)
+        oneList = json.load(fin)
     AllChineseModerns.extend(oneList)
 
     with codecs.open('./modernPoems/cn_with_img_trans.json', 'r', encoding='utf-8') as fin:
         oneList = json.load(fin)
     for dict in oneList:
-        newdict={}
-        newdict['text']=dict['poem']
-        newdict['img']=dict['image_url']
+        newdict = {}
+        newdict['text'] = dict['poem']
+        newdict['img'] = dict['image_url']
         AllChineseModerns.append(newdict)
 
     with codecs.open('./modernPoems/cn_without_img.json', 'r', encoding='utf-8') as fin:
         oneList = json.load(fin)
     for dict in oneList:
-        newdict={}
-        newdict['text']=dict['poem']
-        newdict['author']=dict['author']
+        newdict = {}
+        newdict['text'] = dict['poem']
+        newdict['author'] = dict['author']
         newdict['title'] = dict['title']
         AllChineseModerns.append(newdict)
 
     with codecs.open('allchinesemoderns.json', 'w', encoding='utf-8') as f:
         json.dump(AllChineseModerns, f, ensure_ascii=False, indent=4)
+
 
 def _genAllEnglishModerns():
     AllEnglishModerns = []
@@ -168,13 +179,14 @@ def _genAllEnglishModerns():
     with codecs.open('allenglishmoderns.json', 'w', encoding='utf-8') as f:
         json.dump(AllEnglishModerns, f, ensure_ascii=False, indent=4)
 
+
 class GushiwenObj:
-    def __init__(self,index_name='gushiwen',index_type='gushiwen_type'):
-        self.index_name =index_name
+    def __init__(self, index_name='gushiwen', index_type='gushiwen_type'):
+        self.index_name = index_name
         self.index_type = index_type
         self.es = Elasticsearch()
 
-    def create_index(self,index_name,index_type):
+    def create_index(self, index_name, index_type):
         _index_mappings = {
             "mappings": {
                 self.index_type: {
@@ -184,32 +196,32 @@ class GushiwenObj:
                             "index": "not_analyzed",
                             "store": True,
                         },
-                        "text_tokenized":{#分词、索引，但不独立储存，从_source中解析
-                            "type":"text",
-                            "index":True,
-                            "store":False,
-                            "analyzer":"ik_max_word"
-                        },
-                        "text": {#储存完整的，以下按照同样逻辑
-                            "type": "keyword",
-                            "index": "not_analyzed",
-                            "store": True,
-                        },
-                        "dynasty":{
-                            "type": "keyword",
-                            "index": "not_analyzed",
-                            "store": True,
-                        },
-                        "Imageurl":{
-                            "type": "keyword",
-                            "index": "not_analyzed",
-                            "store": True,
-                        },
-                        "label_tokenized":{
+                        "text_tokenized": {  # 分词、索引，但不独立储存，从_source中解析
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer":"ik_max_word"
+                            "analyzer": "whitespace"
+                        },
+                        "text": {  # 储存完整的，以下按照同样逻辑
+                            "type": "keyword",
+                            "index": "not_analyzed",
+                            "store": True,
+                        },
+                        "dynasty": {
+                            "type": "keyword",
+                            "index": "not_analyzed",
+                            "store": True,
+                        },
+                        "imgurl": {
+                            "type": "keyword",
+                            "index": "not_analyzed",
+                            "store": True,
+                        },
+                        "label_tokenized": {
+                            "type": "text",
+                            "index": True,
+                            "store": False,
+                            "analyzer": "whitespace"
                         },
                         "label": {
                             "type": "keyword",
@@ -220,9 +232,9 @@ class GushiwenObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer":"ik_max_word"
+                            "analyzer": "whitespace"
                         },
-                        "shangxi":{
+                        "shangxi": {
                             "type": "keyword",
                             "index": "not_analyzed",
                             "store": True,
@@ -231,19 +243,19 @@ class GushiwenObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer":"ik_max_word"
+                            "analyzer": "whitespace"
                         },
-                        "title":{
+                        "title": {
                             "type": "keyword",
                             "index": "not_analyzed",
                             "store": True,
                         },
 
-                        "yiwen_tokenized":{
+                        "yiwen_tokenized": {
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer":"ik_max_word"
+                            "analyzer": "whitespace"
                         },
                         "yiwen": {
                             "type": "keyword",
@@ -254,9 +266,9 @@ class GushiwenObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer":"ik_max_word"
+                            "analyzer": "whitespace"
                         },
-                        "zhushi":{
+                        "zhushi": {
                             "type": "keyword",
                             "index": "not_analyzed",
                             "store": True,
@@ -266,12 +278,11 @@ class GushiwenObj:
             }
         }
 
-
         if self.es.indices.exists(index=self.index_name) is not True:
             res = self.es.indices.create(index=self.index_name, body=_index_mappings)
-            print (res)
+            print(res)
 
-    def bulk_Gushiwen_Data(self,list):
+    def bulk_Gushiwen_Data(self, list, seg=jieba.cut):
         '''
         用bulk将批量的古诗数据存储到es
         '''
@@ -283,21 +294,21 @@ class GushiwenObj:
                 "_type": self.index_type,
                 "_id": i,
                 "_source": {
-                    "author":_getkey(line,'author'),
-                    "text_tokenized":_getkey(line,'text'),
-                    "text": _getkey(line,'text'),
-                    "dynasty":_getkey(line,'dynasty'),
-                    "Imageurl":_getkey(line,'Imageurl'),
-                    "label_tokenized":_getkey(line,'label'),
-                    "label": _getkey(line,'label'),
-                    "shangxi_tokenized": _getkey(line,'shangxi'),
-                    "shangxi":_getkey(line,'shangxi'),
-                    "title_tokenized": _getkey(line,'title'),
-                    "title":_getkey(line,'title'),
-                    "yiwen_tokenized":_getkey(line,'yiwen'),
-                    "yiwen": _getkey(line,'yiwen'),
-                    "zhushi_tokenized": _getkey(line,'zhushi'),
-                    "zhushi":_getkey(line,'zhushi'),
+                    "author": _getkey(line, 'author'),
+                    "text_tokenized": _getkey(line, 'text', seg),
+                    "text": _getkey(line, 'text'),
+                    "dynasty": _getkey(line, 'dynasty'),
+                    "imgurl": _getkey(line, 'imgurl'),
+                    "label_tokenized": _getkey(line, 'label', seg),
+                    "label": _getkey(line, 'label'),
+                    "shangxi_tokenized": _getkey(line, 'shangxi', seg),
+                    "shangxi": _getkey(line, 'shangxi'),
+                    "title_tokenized": _getkey(line, 'title', seg),
+                    "title": _getkey(line, 'title'),
+                    "yiwen_tokenized": _getkey(line, 'yiwen', seg),
+                    "yiwen": _getkey(line, 'yiwen'),
+                    "zhushi_tokenized": _getkey(line, 'zhushi', seg),
+                    "zhushi": _getkey(line, 'zhushi'),
                 }
             }
             i += 1
@@ -306,13 +317,14 @@ class GushiwenObj:
         success, _ = bulk(self.es, ACTIONS, index=self.index_name, raise_on_error=True)
         print('Performed %d actions' % success)
 
+
 class AuthorObj:
-    def __init__(self,index_name='author',index_type='author_type'):
-        self.index_name =index_name
+    def __init__(self, index_name='author', index_type='author_type'):
+        self.index_name = index_name
         self.index_type = index_type
         self.es = Elasticsearch()
 
-    def create_index(self,index_name,index_type):
+    def create_index(self, index_name, index_type):
         _index_mappings = {
             "mappings": {
                 self.index_type: {
@@ -322,11 +334,11 @@ class AuthorObj:
                             "index": "not_analyzed",
                             "store": True,
                         },
-                        "desc_tokenized":{
-                            "type":"text",
-                            "index":True,
-                            "store":False,
-                            "analyzer":"ik_max_word"
+                        "desc_tokenized": {
+                            "type": "text",
+                            "index": True,
+                            "store": False,
+                            "analyzer": "whitespace"
                         },
                         "desc": {
                             "type": "keyword",
@@ -340,9 +352,9 @@ class AuthorObj:
 
         if self.es.indices.exists(index=self.index_name) is not True:
             res = self.es.indices.create(index=self.index_name, body=_index_mappings)
-            print (res)
+            print(res)
 
-    def bulk_Author_Data(self,list):
+    def bulk_Author_Data(self, list, seg=jieba.cut):
         ACTIONS = []
         i = 1
         for line in list:
@@ -351,9 +363,9 @@ class AuthorObj:
                 "_type": self.index_type,
                 "_id": i,
                 "_source": {
-                    "name":_getkey(line,'name'),
-                    "desc_tokenized":_getkey(line,'desc'),
-                    "desc": _getkey(line,'desc'),
+                    "name": _getkey(line, 'name'),
+                    "desc_tokenized": _getkey(line, 'desc', seg),
+                    "desc": _getkey(line, 'desc'),
                 }
             }
             i += 1
@@ -362,13 +374,14 @@ class AuthorObj:
         success, _ = bulk(self.es, ACTIONS, index=self.index_name, raise_on_error=True)
         print('Performed %d actions' % success)
 
+
 class ChineseModernsObj:
-    def __init__(self,index_name='cnmodern',index_type='cnmodern_type'):
-        self.index_name =index_name
+    def __init__(self, index_name='cnmodern', index_type='cnmodern_type'):
+        self.index_name = index_name
         self.index_type = index_type
         self.es = Elasticsearch()
 
-    def create_index(self,index_name,index_type):
+    def create_index(self, index_name, index_type):
         _index_mappings = {
             "mappings": {
                 self.index_type: {
@@ -378,13 +391,24 @@ class ChineseModernsObj:
                             "index": "not_analyzed",
                             "store": True,
                         },
-                        "text_tokenized":{
-                            "type":"text",
-                            "index":True,
-                            "store":False,
-                            "analyzer":"ik_max_word"
+                        "text_tokenized": {
+                            "type": "text",
+                            "index": True,
+                            "store": False,
+                            "analyzer": "whitespace"
                         },
                         "text": {
+                            "type": "keyword",
+                            "index": "not_analyzed",
+                            "store": True,
+                        },
+                        "label_tokenized": {
+                            "type": "text",
+                            "index": True,
+                            "store": False,
+                            "analyzer": "whitespace"
+                        },
+                        "label": {
                             "type": "keyword",
                             "index": "not_analyzed",
                             "store": True,
@@ -393,14 +417,14 @@ class ChineseModernsObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer":"ik_max_word"
+                            "analyzer": "whitespace"
                         },
                         "title": {
                             "type": "keyword",
                             "index": "not_analyzed",
                             "store": True,
                         },
-                        "Imageurl":{
+                        "imgurl": {
                             "type": "keyword",
                             "index": "not_analyzed",
                             "store": True,
@@ -412,9 +436,9 @@ class ChineseModernsObj:
 
         if self.es.indices.exists(index=self.index_name) is not True:
             res = self.es.indices.create(index=self.index_name, body=_index_mappings)
-            print (res)
+            print(res)
 
-    def bulk_ChineseModerns_Data(self,list):
+    def bulk_ChineseModerns_Data(self, list, seg=jieba.cut):
         ACTIONS = []
         i = 1
         for line in list:
@@ -423,12 +447,14 @@ class ChineseModernsObj:
                 "_type": self.index_type,
                 "_id": i,
                 "_source": {
-                    "author":_getkey(line,'author'),
-                    "text_tokenized":_getkey(line,'text'),
-                    "text": _getkey(line,'text'),
-                    "title_tokenized":_getkey(line,'title'),
+                    "author": _getkey(line, 'author'),
+                    "text_tokenized": _getkey(line, 'text', seg),
+                    "text": _getkey(line, 'text'),
+                    "title_tokenized": _getkey(line, 'title', seg),
                     "title": _getkey(line, 'title'),
-                    "Imageurl": _getkey(line, 'img'),
+                    "imgurl": _getkey(line, 'img'),
+                    "label_tokenized": _getkey(line, 'label', seg),
+                    "label": _getkey(line, 'label'),
                 }
             }
             i += 1
@@ -437,28 +463,29 @@ class ChineseModernsObj:
         success, _ = bulk(self.es, ACTIONS, index=self.index_name, raise_on_error=True)
         print('Performed %d actions' % success)
 
+
 class EnglishModernsObj:
-    def __init__(self,index_name='enmodern',index_type='enmodern_type'):
-        self.index_name =index_name
+    def __init__(self, index_name='enmodern', index_type='enmodern_type'):
+        self.index_name = index_name
         self.index_type = index_type
         self.es = Elasticsearch()
 
-    def create_index(self,index_name,index_type):
+    def create_index(self, index_name, index_type):
         _index_mappings = {
             "mappings": {
                 self.index_type: {
                     "properties": {
-                        "text_tokenized":{
-                            "type":"text",
-                            "index":True,
-                            "analyzer":"english"
+                        "text_tokenized": {
+                            "type": "text",
+                            "index": True,
+                            "analyzer": "english"
                         },
                         "text": {
                             "type": "keyword",
                             "index": "not_analyzed",
                             "store": True,
                         },
-                        "Imageurl":{
+                        "imgurl": {
                             "type": "keyword",
                             "index": "not_analyzed",
                             "store": True,
@@ -470,9 +497,9 @@ class EnglishModernsObj:
 
         if self.es.indices.exists(index=self.index_name) is not True:
             res = self.es.indices.create(index=self.index_name, body=_index_mappings)
-            print (res)
+            print(res)
 
-    def bulk_EnglishModerns_Data(self,list):
+    def bulk_EnglishModerns_Data(self, list):
         ACTIONS = []
         i = 1
         for line in list:
@@ -481,9 +508,9 @@ class EnglishModernsObj:
                 "_type": self.index_type,
                 "_id": i,
                 "_source": {
-                    "text_tokenized":_getkey(line,'text'),
-                    "text": _getkey(line,'text'),
-                    "Imageurl": _getkey(line, 'img'),
+                    "text_tokenized": _getkey(line, 'text'),
+                    "text": _getkey(line, 'text'),
+                    "imgurl": _getkey(line, 'img'),
                 }
             }
             i += 1
@@ -494,27 +521,26 @@ class EnglishModernsObj:
 
 
 if __name__ == '__main__':
-
-    #---先生成总的诗数据，用一次后请注释掉---
+    # ---先生成总的诗数据，用一次后请注释掉---
 
     # _genAllPoems()
     # _genAllChineseModerns()
     # _genAllEnglishModerns()
 
-    #---生成总数据---
+    # ---生成总数据---
 
-    #---建立索引，用一次后请注释掉---
-    obj =GushiwenObj()
-    print('indexing gushiwen...')
-    with codecs.open('allpoems.json', 'r', encoding='utf-8')as fin:
-        poemList=json.load(fin)
-    obj.bulk_Gushiwen_Data(poemList)
+    # ---建立索引，用一次后请注释掉---
+    # obj = GushiwenObj()
+    # print('indexing gushiwen...')
+    # with codecs.open('allpoems.json', 'r', encoding='utf-8')as fin:
+    #     poemList = json.load(fin)
+    # obj.bulk_Gushiwen_Data(poemList)
 
-    obj = AuthorObj()
-    print('indexing authors...')
-    with codecs.open('allauthors.json', 'r', encoding='utf-8') as fin:
-        poemList = json.load(fin)
-    obj.bulk_Author_Data(poemList)
+    # obj = AuthorObj()
+    # print('indexing authors...')
+    # with codecs.open('allauthors.json', 'r', encoding='utf-8') as fin:
+    #     poemList = json.load(fin)
+    # obj.bulk_Author_Data(poemList)
 
     obj = ChineseModernsObj()
     print('indexing chinese moderns...')
@@ -522,12 +548,11 @@ if __name__ == '__main__':
         poemList = json.load(fin)
     obj.bulk_ChineseModerns_Data(poemList)
 
-    obj = EnglishModernsObj()
-    print('indexing english moderns...')
-    with codecs.open('allenglishmoderns.json', 'r', encoding='utf-8') as fin:
-        poemList = json.load(fin)
-    obj.bulk_EnglishModerns_Data(poemList)
-    #---建立索引---
+    # obj = EnglishModernsObj()
+    # print('indexing english moderns...')
+    # with codecs.open('allenglishmoderns.json', 'r', encoding='utf-8') as fin:
+    #     poemList = json.load(fin)
+    # obj.bulk_EnglishModerns_Data(poemList)
+    # ---建立索引---
 
-    #TODO: 继续丰富上面几个类的内容，完善搜索、增删改查的功能
-
+    # TODO: 继续丰富上面几个类的内容，完善搜索、增删改查的功能
