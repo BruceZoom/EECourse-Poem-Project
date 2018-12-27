@@ -46,7 +46,7 @@ class index:
 class query:
     def POST(self):
         inputs = web.input()
-        print inputs
+        print (inputs)
         data = {
             'form': utils.FORM_INIT,
             'header': utils.HEADER,
@@ -61,7 +61,7 @@ class query:
         elif validation == VALID_QUERY:
             # parse form inputs and make query
             command_dict = Validator.to_command_dict(inputs)
-            print command_dict
+            print (command_dict)
             # data['total_match'], data['results'] = PM.common_query(command_dict)
             # print data['total_match'], data['results']
             # data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
@@ -245,7 +245,7 @@ class Validator:
         for key in ['query', 'searchType', 'image']:
             flag = (flag and key in form_dict.keys())
         if not flag:
-            print 'Failed! Invalid query 1!'
+            print ('Failed! Invalid query 1!')
             return INVALID_QUERY
         if len(form_dict['image']) > 0:
             return VALID_IMAGE
@@ -254,14 +254,14 @@ class Validator:
                     'modernTitle', 'modernAuthor', 'modernLabel']:
             flag = (flag or (key in form_dict.keys() and len(form_dict[key]) > 0))
         if not flag:
-            print 'Failed! Empty query 1!'
+            print ('Failed! Empty query 1!')
             return EMPTY_QUERY
         if len(form_dict['query']) > 0:
             flag = False
             for key in ['author', 'title', 'label', 'content']:
                 flag = (flag or key in form_dict.keys())
             if not flag:
-                print 'Failed! Invalid query 2!'
+                print ('Failed! Invalid query 2!')
                 return INVALID_QUERY
             return VALID_QUERY
         else:

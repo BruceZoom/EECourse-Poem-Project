@@ -211,3 +211,9 @@ with codecs.open('templates/header.html', 'r', encoding='utf-8') as f:
 timestamp = len([lists for lists in os.listdir('./static/upload/')])
 
 UPLOAD_PREFIX = './static/upload/'
+
+def alternating(a1, a2):
+    res = a2[:]
+    for i in range(len(a1)):
+        res.insert(2*i, a1[i])
+    return res
