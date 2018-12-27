@@ -76,7 +76,10 @@ class GushiwenGenerator(object):
                 else: thisword=word
 
                 poem += thisword
-                x = np.array([[self.trainData.wordToID[thisword]]])
+                try:thisid=self.trainData.wordToID[thisword]
+                except:thisid=self.trainData.wordToID['空']
+
+                x = np.array([[thisid]])
                 probs2, state = self.sess.run([self.probs, self.finalState], feed_dict={self.gtX: x, self.initState: state})
                 if wordlasting >= 2:wordlasting -= 1
                 else:
