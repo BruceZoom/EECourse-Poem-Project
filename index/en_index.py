@@ -82,18 +82,22 @@ class IndexFiles(object):
         t1.setStored(True)
         t1.setTokenized(True)
         t1.setIndexOptions(FieldInfo.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
-        # content
+        # content title_tokened
         t2 = FieldType()
         t2.setIndexed(True)
         t2.setStored(False)
         t2.setTokenized(True)
         t2.setIndexOptions(FieldInfo.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
-        # likes imgurl text
+        # likes imgurl text title
         t3 = FieldType()
         t3.setIndexed(False)
         t3.setStored(True)
         t3.setTokenized(False)
-
+        # id
+        t4 = FieldType()
+        t4.setIndexed(True)
+        t4.setStored(True)
+        t4.setTokenized(False)
         def addDoc(text,img,likes,content):
             try:
                 doc = Document()
@@ -102,6 +106,9 @@ class IndexFiles(object):
                 doc.add(Field("text", text, t3))
                 doc.add(Field("content", content, t2))
                 doc.add(Field("label", '', t1))
+                doc.add(Field("title", '', t3))
+                doc.add(Field("title_tokened", '', t2))
+                doc.add(Field("id", 'en'+str(self.success), t4))
                 writer.addDocument(doc)
                 self.success += 1
             except Exception, e:
