@@ -11,6 +11,7 @@ website/model/
 website/model_/
 website/static/upload/
 sourcePoems/all*
+modern2poem/myresult/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,3 +1,4 @@
+# coding:utf-8
 objectClasses=[
 '丁鲷',
 '金鱼',

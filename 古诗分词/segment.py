@@ -32,6 +32,6 @@ class Segmenter(object):
 
 if __name__ == '__main__':
     segmenter = Segmenter()
-    sentence='仰天大笑出门去'
+    sentence='我辈岂是蓬蒿人'
     print(' '.join(segmenter.segment(sentence)))
 
