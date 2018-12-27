@@ -10,6 +10,7 @@ image_crawler/veer/
 website/model/
 website/model_/
 website/static/upload/
+sourcePoems/all*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
