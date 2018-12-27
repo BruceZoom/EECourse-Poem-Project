@@ -22,7 +22,7 @@ def _genAllPoems():
         return True
 
     print("-----collecting complete poems-----")
-    with open('./gushiwen/gushiwen_complete.json') as fin:  # 收集完全数据
+    with codecs.open('./gushiwen/gushiwen_complete.json', 'r', encoding='utf-8') as fin:  # 收集完全数据
         oneList = json.load(fin)
 
     for oneDict in oneList:
@@ -58,7 +58,7 @@ def _genAllPoems():
     for root, _, files in os.walk("./shi"):  # 收集基础诗
         for filename in files:
             if (os.path.join(root, filename).startswith('./shi/poet.song')):
-                with open(os.path.join(root, filename)) as fin:
+                with codecs.open(os.path.join(root, filename), 'r', encoding='utf-8') as fin:
                     oneList = json.load(fin)
                 for dict in oneList:
                     newdict = {}
@@ -70,7 +70,7 @@ def _genAllPoems():
                     allPoems.append(newdict)
 
             elif (os.path.join(root, filename).startswith('./shi/poet.tang')):
-                with open(os.path.join(root, filename)) as fin:
+                with codecs.open(os.path.join(root, filename), 'r', encoding='utf-8') as fin:
                     oneList = json.load(fin)
                 for dict in oneList:
                     newdict = {}
@@ -82,13 +82,13 @@ def _genAllPoems():
                     allPoems.append(newdict)
 
             else:  # 作者
-                with open(os.path.join(root, filename)) as fin:
+                with codecs.open(os.path.join(root, filename), 'r', encoding='utf-8') as fin:
                     oneList = json.load(fin)
                 allAuthors.extend(oneList)
 
     print("-----collecting ci-----")
     for itr in range(0, 21001, 1000):
-        with open('./ci/ci.song.%d.json' % itr) as fin:
+        with codecs.open('./ci/ci.song.%d.json' % itr, 'r', encoding='utf-8') as fin:
             oneList = json.load(fin)
         for dict in oneList:
             if _alreadyIn(dict['author'], dict['rhythmic']): continue
@@ -98,13 +98,13 @@ def _genAllPoems():
             newdict['dynasty'] = '宋词'
             allPoems.append(newdict)
 
-    with open('./ci/author.song.json') as fin:
+    with codecs.open('./ci/author.song.json', 'r', encoding='utf-8') as fin:
         oneList = json.load(fin)
     for dict in oneList:
         allAuthors.append({'name': dict['name'], 'desc': dict["description"]})
 
     print("-----collecting shijing-----")
-    with open('./shijing/shijing.json') as fin:
+    with codecs.open('./shijing/shijing.json', 'r', encoding='utf-8') as fin:
         oneList = json.load(fin)
     for dict in oneList:
         newdict = {}
@@ -114,21 +114,21 @@ def _genAllPoems():
         allPoems.append(newdict)
 
     print("-----writing datas-----")
-    with codecs.open('allpoems.json', 'w') as f:
+    with codecs.open('allpoems.json', 'w', encoding='utf-8') as f:
         json.dump(allPoems, f, ensure_ascii=False, indent=4)
 
-    with codecs.open('allauthors.json', 'w') as f:
+    with codecs.open('allauthors.json', 'w', encoding='utf-8') as f:
         json.dump(allAuthors, f, ensure_ascii=False, indent=4)
 
     print("-----already generated-----")
 
 def _genAllChineseModerns():
     AllChineseModerns = []
-    with open('./modernPoems/cn_with_img.json') as fin:
+    with codecs.open('./modernPoems/cn_with_img.json', 'r', encoding='utf-8') as fin:
         oneList=json.load(fin)
     AllChineseModerns.extend(oneList)
 
-    with open('./modernPoems/cn_with_img_trans.json') as fin:
+    with codecs.open('./modernPoems/cn_with_img_trans.json', 'r', encoding='utf-8') as fin:
         oneList = json.load(fin)
     for dict in oneList:
         newdict={}
@@ -136,7 +136,7 @@ def _genAllChineseModerns():
         newdict['img']=dict['image_url']
         AllChineseModerns.append(newdict)
 
-    with open('./modernPoems/cn_without_img.json') as fin:
+    with codecs.open('./modernPoems/cn_without_img.json', 'r', encoding='utf-8') as fin:
         oneList = json.load(fin)
     for dict in oneList:
         newdict={}
@@ -145,12 +145,12 @@ def _genAllChineseModerns():
         newdict['title'] = dict['title']
         AllChineseModerns.append(newdict)
 
-    with codecs.open('allchinesemoderns.json', 'w') as f:
+    with codecs.open('allchinesemoderns.json', 'w', encoding='utf-8') as f:
         json.dump(AllChineseModerns, f, ensure_ascii=False, indent=4)
 
 def _genAllEnglishModerns():
     AllEnglishModerns = []
-    with open('./modernPoems/en_with_img.json') as fin:
+    with codecs.open('./modernPoems/en_with_img.json', 'r', encoding='utf-8') as fin:
         oneList = json.load(fin)
     for dict in oneList:
         newdict = {}
@@ -158,14 +158,14 @@ def _genAllEnglishModerns():
         newdict['img'] = dict['image_url']
         AllEnglishModerns.append(newdict)
 
-    with open('./modernPoems/en_without_img.json') as fin:
+    with codecs.open('./modernPoems/en_without_img.json', 'r', encoding='utf-8') as fin:
         oneList = json.load(fin)
     for dict in oneList:
         newdict = {}
         newdict['text'] = dict['poem']
         AllEnglishModerns.append(newdict)
 
-    with codecs.open('allenglishmoderns.json', 'w') as f:
+    with codecs.open('allenglishmoderns.json', 'w', encoding='utf-8') as f:
         json.dump(AllEnglishModerns, f, ensure_ascii=False, indent=4)
 
 class GushiwenObj:
@@ -497,34 +497,34 @@ if __name__ == '__main__':
 
     #---先生成总的诗数据，用一次后请注释掉---
 
-    #_genAllPoems()
-    #_genAllChineseModerns()
-    #_genAllEnglishModerns()
+    # _genAllPoems()
+    # _genAllChineseModerns()
+    # _genAllEnglishModerns()
 
     #---生成总数据---
 
     #---建立索引，用一次后请注释掉---
     obj =GushiwenObj()
     print('indexing gushiwen...')
-    with open('allpoems.json')as fin:
+    with codecs.open('allpoems.json', 'r', encoding='utf-8')as fin:
         poemList=json.load(fin)
     obj.bulk_Gushiwen_Data(poemList)
 
     obj = AuthorObj()
     print('indexing authors...')
-    with open('allauthors.json')as fin:
+    with codecs.open('allauthors.json', 'r', encoding='utf-8') as fin:
         poemList = json.load(fin)
     obj.bulk_Author_Data(poemList)
 
     obj = ChineseModernsObj()
     print('indexing chinese moderns...')
-    with open('allchinesemoderns.json')as fin:
+    with codecs.open('allchinesemoderns.json', 'r', encoding='utf-8') as fin:
         poemList = json.load(fin)
     obj.bulk_ChineseModerns_Data(poemList)
 
     obj = EnglishModernsObj()
     print('indexing english moderns...')
-    with open('allenglishmoderns.json')as fin:
+    with codecs.open('allenglishmoderns.json', 'r', encoding='utf-8') as fin:
         poemList = json.load(fin)
     obj.bulk_EnglishModerns_Data(poemList)
     #---建立索引---
