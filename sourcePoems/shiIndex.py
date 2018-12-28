@@ -200,7 +200,7 @@ class GushiwenObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer": "whitespace"
+                            "index_analyzer": "whitespace"
                         },
                         "text": {  # 储存完整的，以下按照同样逻辑
                             "type": "keyword",
@@ -221,7 +221,7 @@ class GushiwenObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer": "whitespace"
+                            "index_analyzer": "whitespace"
                         },
                         "label": {
                             "type": "keyword",
@@ -232,7 +232,7 @@ class GushiwenObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer": "whitespace"
+                            "index_analyzer": "whitespace"
                         },
                         "shangxi": {
                             "type": "keyword",
@@ -243,7 +243,7 @@ class GushiwenObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer": "whitespace"
+                            "index_analyzer": "whitespace"
                         },
                         "title": {
                             "type": "keyword",
@@ -255,7 +255,7 @@ class GushiwenObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer": "whitespace"
+                            "index_analyzer": "whitespace"
                         },
                         "yiwen": {
                             "type": "keyword",
@@ -266,7 +266,7 @@ class GushiwenObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer": "whitespace"
+                            "index_analyzer": "whitespace"
                         },
                         "zhushi": {
                             "type": "keyword",
@@ -338,7 +338,7 @@ class AuthorObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer": "whitespace"
+                            "index_analyzer": "whitespace"
                         },
                         "desc": {
                             "type": "keyword",
@@ -395,7 +395,7 @@ class ChineseModernsObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer": "whitespace"
+                            "index_analyzer": "whitespace"
                         },
                         "text": {
                             "type": "keyword",
@@ -406,7 +406,7 @@ class ChineseModernsObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer": "whitespace"
+                            "index_analyzer": "whitespace"
                         },
                         "label": {
                             "type": "keyword",
@@ -417,7 +417,7 @@ class ChineseModernsObj:
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer": "whitespace"
+                            "index_analyzer": "whitespace"
                         },
                         "title": {
                             "type": "keyword",
@@ -478,7 +478,7 @@ class EnglishModernsObj:
                         "text_tokenized": {
                             "type": "text",
                             "index": True,
-                            "analyzer": "english"
+                            "index_analyzer": "english"
                         },
                         "text": {
                             "type": "keyword",
@@ -530,17 +530,17 @@ if __name__ == '__main__':
     # ---生成总数据---
 
     # ---建立索引，用一次后请注释掉---
-    # obj = GushiwenObj()
-    # print('indexing gushiwen...')
-    # with codecs.open('allpoems.json', 'r', encoding='utf-8')as fin:
-    #     poemList = json.load(fin)
-    # obj.bulk_Gushiwen_Data(poemList)
+    obj = GushiwenObj()
+    print('indexing gushiwen...')
+    with codecs.open('allpoems.json', 'r', encoding='utf-8')as fin:
+        poemList = json.load(fin)
+    obj.bulk_Gushiwen_Data(poemList)
 
-    # obj = AuthorObj()
-    # print('indexing authors...')
-    # with codecs.open('allauthors.json', 'r', encoding='utf-8') as fin:
-    #     poemList = json.load(fin)
-    # obj.bulk_Author_Data(poemList)
+    obj = AuthorObj()
+    print('indexing authors...')
+    with codecs.open('allauthors.json', 'r', encoding='utf-8') as fin:
+        poemList = json.load(fin)
+    obj.bulk_Author_Data(poemList)
 
     obj = ChineseModernsObj()
     print('indexing chinese moderns...')
@@ -548,11 +548,11 @@ if __name__ == '__main__':
         poemList = json.load(fin)
     obj.bulk_ChineseModerns_Data(poemList)
 
-    # obj = EnglishModernsObj()
-    # print('indexing english moderns...')
-    # with codecs.open('allenglishmoderns.json', 'r', encoding='utf-8') as fin:
-    #     poemList = json.load(fin)
-    # obj.bulk_EnglishModerns_Data(poemList)
+    obj = EnglishModernsObj()
+    print('indexing english moderns...')
+    with codecs.open('allenglishmoderns.json', 'r', encoding='utf-8') as fin:
+        poemList = json.load(fin)
+    obj.bulk_EnglishModerns_Data(poemList)
     # ---建立索引---
 
     # TODO: 继续丰富上面几个类的内容，完善搜索、增删改查的功能

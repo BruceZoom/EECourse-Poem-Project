@@ -256,12 +256,58 @@ class matchimage:
 
 class authorlist:
     def GET(self):
-        pass
+        inputs = web.input()
+        data = {
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+            'pagi': utils.PAGI_SETTING,
+        }
 
+        validation = Validator.authorlist_validate(inputs)
+        if validation == VALID_QUERY:
+            try:
+                inputs['page'] = int(inputs['page'])
+            except:
+                inputs['page'] = 1
+
+            data['url_prefix_form'] = ''
+            data['total_match'], data['results'] = PSES.search_author(cur_page=inputs['page'])
+            data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+                'result_per_page']
+            data['pagi']['cur_page'] = inputs['page']
+
+            return render.authorlist(data=data)
+        else:
+            return render.index(data=data)
 
 class authorpage:
     def GET(self):
-        pass
+        inputs = web.input()
+        data = {
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+            'pagi': utils.PAGI_SETTING,
+        }
+        print (inputs)
+        validation = Validator.authorpage_validate(inputs)
+        if validation == VALID_QUERY:
+            try:
+                inputs['page'] = int(inputs['page'])
+            except:
+                inputs['page'] = 1
+            data['url_prefix_form'] = 'author=' + inputs['author'] + '&'
+            data['total_match'], data['results'] = PSES.get_author(inputs['author'], cur_page=inputs['page'])
+            print (data['total_match'], data['results'])
+            data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+                'result_per_page']
+            data['pagi']['cur_page'] = inputs['page']
+
+            return render.authorpage(data=data)
+        else:
+            data['landing'] = utils.LANDING_DATA_DEFAULT
+
+            return render.index(data=data)
+
 
 
 class Validator:
@@ -283,6 +329,17 @@ class Validator:
         'label': 'label_tokenized',
         'content': 'text_tokenized',
     }
+
+    @staticmethod
+    def authorlist_validate(input_dict):
+        return  VALID_QUERY
+
+    @staticmethod
+    def authorpage_validate(input_dict):
+        if 'author' in input_dict.keys() and input_dict['author']:
+            return VALID_QUERY
+        else:
+            return INVALID_QUERY
 
     @staticmethod
     def form_validate(form_dict):
@@ -335,6 +392,6 @@ class Validator:
 
 
 if __name__ == "__main__":
-    #sys.argv.append('8000')
+    sys.argv.append('8000')
     app = web.application(urls, globals())
     app.run()

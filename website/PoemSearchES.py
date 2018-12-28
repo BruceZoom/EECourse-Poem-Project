@@ -18,6 +18,52 @@ def common_query(input_dict, cur_page=1):
         raise ValueError("Undefined Search Type")
 
 
+def process_query_results(res_tmp, truncated=True):
+    res = []
+    # print (res_tmp[0])
+    for tmp in res_tmp:
+        tmp = tmp['_source']
+        if tmp['imgurl'] is None or tmp['imgurl'] == '':
+            tmp['imgurl'] = '/static/image/1.jpg'
+        if truncated and len(tmp['text']) > utils.DISPLAY_UTILS['card_max_text']:
+            tmp['text'] = tmp['text'][:utils.DISPLAY_UTILS['card_max_text']] + '...'
+        if tmp['label'] is None:
+            tmp['label'] = ''
+        entry = {
+            'imgurl': tmp['imgurl'],
+            'title': tmp['title'],
+            'content': tmp['text'],
+            'poet': tmp['author'],
+            'poemurl': '#',
+            'poeturl': '/authorpage?author='+tmp['author'],
+            # 'labels': [],
+            'labels': [
+                {
+                    'label': label,
+                    'labelurl': '#',
+                }
+                for label in tmp['label'].split()],
+            'likes': 0,
+        }
+        res.append(entry)
+    return res
+
+
+def process_author_results(res_tmp, truncated=True):
+    res = []
+    # print (res_tmp[0])
+    for tmp in res_tmp:
+        tmp = tmp['_source']
+        if truncated and len(tmp['desc']) > utils.DISPLAY_UTILS['card_max_text']:
+            tmp['desc'] = tmp['desc'][:utils.DISPLAY_UTILS['card_max_text']] + '...'
+        entry = {
+            'desc': tmp['desc'],
+            'name': tmp['name'],
+            'poeturl': '/authorpage?author='+tmp['name'],
+        }
+        res.append(entry)
+    return res
+
 # querys = BooleanQuery()
 #         for key, value in command_dict.items():
 #             if key not in ['author', 'title', 'label', 'content']:
@@ -40,20 +86,21 @@ def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pa
         if key not in ['author', 'title_tokenized', 'label_tokenized', 'text_tokenized']:
         # if key not in ['author', 'title_tokenized', 'text_tokenized']:
                 continue
-        # value = (utils.jieba_seg(value[0]), value[1])
-        # if 'tokenized' in key:
-        #     match = {
-        #         'match': {
-        #             key: value[0],
-        #             'analyzer': 'whitespace'
-        #         },
-        #     }
-        # else:
-        match = {
-            'match': {
-                key: value[0]
+        if 'tokenized' in key:
+            match = {
+                'match': {
+                    key: {
+                        'query': utils.jieba_seg(value[0]),
+                        'analyzer': 'whitespace'
+                    }
+                },
             }
-        }
+        else:
+            match = {
+                'match': {
+                    key: value[0]
+                }
+            }
         search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
     # matches, res_tmp = MPS.ch_seach(input_dict, target_range=((cur_page-1)*pp, cur_page*pp))
     try:
@@ -64,33 +111,7 @@ def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pa
     except Exception as e:
         print(e)
         return 0, []
-    res = []
-    # print (res_tmp[0])
-    for tmp in res_tmp:
-        tmp = tmp['_source']
-        if tmp['imgurl'] is None or tmp['imgurl'] == '':
-            tmp['imgurl'] = '/static/image/1.jpg'
-        if truncated and len(tmp['text']) > utils.DISPLAY_UTILS['card_max_text']:
-            tmp['text'] = tmp['text'][:utils.DISPLAY_UTILS['card_max_text']] + '...'
-        if tmp['label'] is None:
-            tmp['label'] = ''
-        entry = {
-            'imgurl': tmp['imgurl'],
-            'title': tmp['title'],
-            'content': tmp['text'],
-            'poet': tmp['author'],
-            'poemurl': '#',
-            'poeturl': '#',
-            # 'labels': [],
-            'labels': [
-                {
-                    'label': label,
-                    'labelurl': '#',
-                }
-                for label in tmp['label'].split()],
-            'likes': 0,
-        }
-        res.append(entry)
+    res = process_query_results(res_tmp, truncated)
     return matches, res
 
 
@@ -104,21 +125,23 @@ def ancient_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pag
     for key, value in input_dict.items():
         if key not in ['author', 'dynasty', 'label_tokenized', 'title_tokenized', 'text_tokenized']:
             continue
-        # value = (utils.jieba_seg(value[0]), value[1])
-        # if 'tokenized' in key:
-        #     match = {
-        #         'match': {
-        #             key: value[0],
-        #             'analyzer': 'whitespace'
-        #         },
-        #     }
-        # else:
-        match = {
-            'match': {
-                key: value[0]
+        if 'tokenized' in key:
+            match = {
+                'match': {
+                    key: {
+                        'query': utils.jieba_seg(value[0]),
+                        'analyzer': 'whitespace'
+                    }
+                },
             }
-        }
+        else:
+            match = {
+                'match': {
+                    key: value[0]
+                }
+            }
         search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
+        print(match)
     try:
         matches = es.count(index='gushiwen', doc_type='gushiwen_type', body=search_body)['count']
         search_body['from'] = (cur_page - 1) * pp
@@ -129,31 +152,7 @@ def ancient_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pag
         return 0, []
     # matches, res_tmp = APS.gushiwen_search(input_dict, target_range=((cur_page - 1) * pp, cur_page * pp))
     # print matches, res_tmp
-    res = []
-    for tmp in res_tmp:
-        tmp = tmp['_source']
-        if tmp['imgurl'] is None or tmp['imgurl'] == '':
-            tmp['imgurl'] = '/static/image/1.jpg'
-        if truncated and len(tmp['text']) > utils.DISPLAY_UTILS['card_max_text']:
-            tmp['text'] = tmp['text'][:utils.DISPLAY_UTILS['card_max_text']] + '...'
-        if tmp['label'] is None:
-            tmp['label'] = ''
-        entry = {
-            'imgurl': tmp['imgurl'],
-            'title': tmp['title'],
-            'content': tmp['text'],
-            'poet': tmp['author'],
-            'poemurl': '#',
-            'poeturl': '#',
-            'labels': [
-                {
-                    'label': label,
-                    'labelurl': '#',
-                }
-                for label in tmp['label'].split()],
-            'likes': 0,
-        }
-        res.append(entry)
+    res = process_query_results(res_tmp, truncated)
     return matches, res
 
 
@@ -162,4 +161,41 @@ def mixed_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'
     matches_ancient, res_ancient = ancient_search(input_dict, cur_page, pp//2, truncated)
     res = utils.alternating(res_modern, res_ancient)
     matches = matches_modern + matches_ancient
+    return matches, res
+
+
+def get_author(author_name, index='cnmodern', cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
+    search_body = {'query': {
+        'match_phrase': {
+            'author': author_name,
+        }
+    }}
+    try:
+        matches = es.count(index=index, doc_type=index+'_type', body=search_body)['count']
+        search_body['from'] = (cur_page - 1) * pp
+        search_body['size'] = pp
+        res_tmp = es.search(index=index, doc_type=index+'_type', body=search_body)['hits']['hits']
+    except Exception as e:
+        print(e)
+        return 0, []
+    res = process_query_results(res_tmp, truncated)
+    return matches, res
+
+
+def search_author(input_dict=None, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
+    if input_dict is None:
+        search_body = {'query': {
+            'match_all': {}
+        }}
+    else:
+        return 0, []
+    try:
+        matches = es.count(index='author', doc_type='author_type', body=search_body)['count']
+        search_body['from'] = (cur_page - 1) * pp
+        search_body['size'] = pp
+        res_tmp = es.search(index='author', doc_type='author_type', body=search_body)['hits']['hits']
+    except Exception as e:
+        print(e)
+        return 0, []
+    res = process_author_results(res_tmp, truncated)
     return matches, res
