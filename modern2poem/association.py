@@ -13,7 +13,7 @@ def _gen_asso_dict():
     assoDict={}
 
     for itr in range(2,328):
-        with open("transList%d.json"%itr,'r') as fin:
+        with open("transList%d.json"%itr, 'r', encoding='utf-8') as fin:
             print("-----parsing transList%d.json------"%itr)
             storeData=json.load(fin)
 
@@ -49,7 +49,7 @@ class Associator(object):
         if not os.path.exists("assoDict.json"):
             _gen_asso_dict()
 
-        with open("assoDict.json",'r') as fin:
+        with open("assoDict.json", 'r', encoding='utf-8') as fin:
             self.assoDict=json.load(fin)
 
     def assoAll(self,sentence):

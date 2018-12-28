@@ -4,7 +4,13 @@ import utils
 
 
 es = Elasticsearch(['localhost:9200'])
+# analyzer = "ik_smart"
 
+def __get_item(d, k):
+    if k not in d.keys() or d[k] is None:
+        return ''
+    else:
+        return d[k]
 
 def common_query(input_dict, cur_page=1):
     # vm_env.attachCurrentThread()
@@ -84,14 +90,12 @@ def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pa
     }}
     for key, value in input_dict.items():
         if key not in ['author', 'title_tokenized', 'label_tokenized', 'text_tokenized']:
-        # if key not in ['author', 'title_tokenized', 'text_tokenized']:
                 continue
         if 'tokenized' in key:
             match = {
                 'match': {
                     key: {
-                        'query': utils.jieba_seg(value[0]),
-                        'analyzer': 'whitespace'
+                        'query': value[0],
                     }
                 },
             }
@@ -129,8 +133,7 @@ def ancient_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pag
             match = {
                 'match': {
                     key: {
-                        'query': utils.jieba_seg(value[0]),
-                        'analyzer': 'whitespace'
+                        'query': value[0],
                     }
                 },
             }

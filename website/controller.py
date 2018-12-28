@@ -71,6 +71,7 @@ class query:
             print (data['total_match'])
             data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
                 'result_per_page']
+            data['pagi']['cur_page'] = 1
             # data['results'] = utils.ENTRY_SAMPLES
 
             # set up other data
