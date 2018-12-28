@@ -28,6 +28,8 @@ urls = (
     '/analyzed', 'analyzed',
     '/analyzer', 'analyzer',
     '/matchimage', 'matchimage',
+    '/authorpage', 'authorpage',
+    '/authorlist', 'authorlist',
 )
 
 EMPTY_QUERY = 0
@@ -250,6 +252,16 @@ class matchimage:
             'imgurl': '/static/image/1.jpg'
         }
         return json.dumps(data)
+
+
+class authorlist:
+    def GET(self):
+        pass
+
+
+class authorpage:
+    def GET(self):
+        pass
 
 
 class Validator:
