@@ -1,3 +1,4 @@
+modern2poem/myresult/
 author/
 datasets/
 models/
@@ -10,7 +11,11 @@ image_crawler/veer/
 website/model/
 website/model_/
 website/static/upload/
+<<<<<<< HEAD
 shigedaquan/
+=======
+sourcePoems/all*
+>>>>>>> 387586f72ccba5693d7c040aa3e5a5a1dc8e3beb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
