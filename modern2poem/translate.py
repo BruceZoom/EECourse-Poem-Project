@@ -5,7 +5,7 @@ import execjs,requests
 ua='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
 
 from sogou_translate import SogouTranslate, SogouLanguages
-trans = SogouTranslate('999d9c1684fc8647cc25735e6b06c2e8', 'cdfb1d5759390db53254a2486f11da07')
+trans = SogouTranslate('3036bf7cd9771cc48c4d2585281ef331', 'ff070762436d065b194f76298a7fe16a')
 #以上是我注册的账号，仅限内部使用
 def sg_en_to_zn_translate(content):
     return trans.translate(content,from_language=SogouLanguages.EN,to_language=SogouLanguages.ZH_CHS)

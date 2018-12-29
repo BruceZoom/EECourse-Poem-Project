@@ -90,15 +90,14 @@ def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pa
         },
     }}
     for key, value in input_dict.items():
-        if key not in ['author', 'title_tokenized', 'label_tokenized', 'text_tokenized']:
-                continue
-        match = {
-            'match': {
-                key: {
-                    'query': value[0],
-                }
-            },
-        }
+        if key in ['author', 'title_tokenized', 'label_tokenized', 'text_tokenized']:
+            match = {
+                'match': {
+                    key: {
+                        'query': value[0],
+                    }
+                },
+            }
         search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
     # matches, res_tmp = MPS.ch_seach(input_dict, target_range=((cur_page-1)*pp, cur_page*pp))
     try:
@@ -121,15 +120,14 @@ def ancient_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pag
         },
     }}
     for key, value in input_dict.items():
-        if key not in ['author', 'dynasty', 'label_tokenized', 'title_tokenized', 'text_tokenized']:
-            continue
-        match = {
-            'match': {
-                key: {
-                    'query': value[0],
-                }
-            },
-        }
+        if key in ['author', 'dynasty', 'label_tokenized', 'title_tokenized', 'text_tokenized']:
+            match = {
+                'match': {
+                    key: {
+                        'query': value[0],
+                    }
+                },
+            }
         search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
         print(match)
     try:
