@@ -354,8 +354,15 @@ class Validator:
         'modernTitle': 'title_tokenized',
         'modernAuthor': 'author',
         'modernLabel': 'label_tokenized',
+        'modernStyle': 'style',
+        'modernTime': 'time',
     }
-    common_key_map = {
+    general_key_map = {
+        'generalTitle': 'title_tokenized',
+        'generalAuthor': 'author',
+        'generalLabel': 'label_tokenized',
+    }
+    switch_key_map = {
         'author': 'author',
         'title': 'title_tokenized',
         'label': 'label_tokenized',
@@ -391,8 +398,9 @@ class Validator:
         if 'image' in form_dict.keys() and len(form_dict['image']) > 0:
             return VALID_IMAGE
         flag = False
-        for key in ['query', 'ancientAuthor', 'ancientTime', 'ancientType', 'ancientLabel', 'ancientTitle',
-                    'modernTitle', 'modernAuthor', 'modernLabel']:
+        for key in ['query', 'ancientAuthor', 'ancientTime', 'ancientLabel', 'ancientTitle',
+                    'modernTitle', 'modernAuthor', 'modernLabel', 'modernStyle',
+                    'generalTitle', 'generalAuthor', 'generalLabel']:
             flag = (flag or (key in form_dict.keys() and len(form_dict[key]) > 0))
         if not flag:
             print ('Failed! Empty query 1!')
@@ -413,7 +421,7 @@ class Validator:
         command_dict = dict()
         for key in ['author', 'title', 'label', 'content']:
             if key in input_dict.keys():
-                command_dict[Validator.common_key_map[key]] = (input_dict['query'], False)
+                command_dict[Validator.switch_key_map[key]] = (input_dict['query'], False)
         command_dict['searchType'] = input_dict['searchType']
         if input_dict['searchType'] == 'ancient':
             if 'accurate' in input_dict.keys():
@@ -421,12 +429,16 @@ class Validator:
                 for key in ['ancientAuthor', 'ancientTime', 'ancientLabel', 'ancientTitle']:
                     if input_dict[key] != '':
                         command_dict[Validator.ancient_key_map[key]] = (input_dict[key], True)
-        elif input_dict['searchType'] in ['modern', 'all']:
+        elif input_dict['searchType'] == 'modern':
             if 'accurate' in input_dict.keys():
-                for key in ['modernTitle', 'modernAuthor', 'modernLabel']:
+                for key in ['modernTitle', 'modernAuthor', 'modernLabel', 'modernStyle', 'modernTime']:
                     if input_dict[key] != '':
                         command_dict[Validator.modern_key_map[key]] = (input_dict[key], True)
-
+        elif input_dict['searchType'] == 'all':
+            if 'accurate' in input_dict.keys():
+                for key in ['generalTitle', 'generalAuthor', 'generalLabel']:
+                    if input_dict[key] != '':
+                        command_dict[Validator.general_key_map[key]] = (input_dict[key], True)
         return command_dict
 
 
