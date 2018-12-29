@@ -32,11 +32,12 @@ class ImgAsso:
                             "index": "not_analyzed",
                             "store": True,
                         },
-                        "asso":{
+                        "asso": {
                             "type": "text",
                             "index": True,
                             "store": False,
-                            "analyzer":"Whitespace"
+                            "analyzer": "whitespace",
+                            "search_analyzer": "whitespace",
                         }
                     }
                 }
@@ -62,7 +63,7 @@ class ImgAsso:
                 try:
                     asso = json.load(fin)
                 except:
-                    print '%s cannot load json'%filename
+                    print(filename,'cannot load json')
                     continue
             j = 0
             for j in range(len(imgfile)):
@@ -74,17 +75,16 @@ class ImgAsso:
                     "_type": self.index_type,
                     "_id": i,
                     "_source": {
-                        "Imageurl":item['img'],
-                        "Imagesrc":imgfile[j]['source'],
-                        "desc":item['desc'],
-                        "asso":' '.join(item['asso']),
+                        "Imageurl": item['img'],
+                        "Imagesrc": imgfile[j]['source'],
+                        "desc": item['desc'],
+                        "asso": ' '.join(item['asso']),
                     }
                 }
                 j += 1
                 i += 1
                 ACTIONS.append(action)
             # 批量处理
-        return
         success, _ = bulk(self.es, ACTIONS, index=self.index_name, raise_on_error=True)
         print('Performed %d actions' % success)
 
