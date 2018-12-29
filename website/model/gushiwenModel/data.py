@@ -1,9 +1,97 @@
 # coding: UTF-8
 from gushiwenModel.utils import *
+from paths import raw_dir
+import os
+
+_pinyin_path = pinyinPath
+
+
+def _get_vowel(pinyin):
+    i = 0
+    while i < len(pinyin) and \
+            pinyin[i] not in ['A', 'O', 'E', 'I', 'U', 'V']:
+        i += 1
+    return pinyin[i : ]
+
+def _get_rhyme(pinyin):
+    vowel = _get_vowel(pinyin)
+    if vowel in ['A', 'IA', 'UA']:
+        return 1
+    elif vowel in ['O', 'E', 'UO']:
+        return 2
+    elif vowel in ['IE', 'VE']:
+        return 3
+    elif vowel in ['AI', 'UAI']:
+        return 4
+    elif vowel in ['EI', 'UI']:
+        return 5
+    elif vowel in ['AO', 'IAO']:
+        return 6
+    elif vowel in ['OU', 'IU']:
+        return 7
+    elif vowel in ['AN', 'IAN', 'UAN', 'VAN']:
+        return 8
+    elif vowel in ['EN', 'IN', 'UN', 'VN']:
+        return 9
+    elif vowel in ['ANG', 'IANG', 'UANG']:
+        return 10
+    elif vowel in ['ENG', 'ING']:
+        return 11
+    elif vowel in ['ONG', 'IONG']:
+        return 12
+    elif (vowel == 'I' and not pinyin[0] in ['Z', 'C', 'S', 'R']) \
+            or vowel == 'V':
+        return 13
+    elif vowel == 'I':
+        return 14
+    elif vowel == 'U':
+        return 15
+    return 0
+
+class PronDict(object):
+
+    def __init__(self):
+        self._pron_dict = dict()
+        with open(_pinyin_path, 'r') as fin:
+            for line in fin.readlines():
+                toks = line.strip().split()
+                ch = chr(int(toks[0], 16))
+                self._pron_dict[ch] = []
+                for tok in toks[1 : ]:
+                    self._pron_dict[ch].append((tok[:-1], int(tok[-1])))
+
+    def co_rhyme(self, a, b):
+        """ Return True if two pinyins may have the same rhyme. """
+        if a in self._pron_dict and b in self._pron_dict:
+            a_rhymes = map(lambda x : _get_rhyme(x[0]), self._pron_dict[a])
+            b_rhymes = map(lambda x : _get_rhyme(x[0]), self._pron_dict[b])
+            for a_rhyme in a_rhymes:
+                if a_rhyme in b_rhymes:
+                    return True
+        return False
+
+    def counter_tone(self, a, b):
+        """ Return True if two pinyins may have opposite tones. """
+        if a in self._pron_dict and b in self._pron_dict:
+            level_tone = lambda x : x == 1 or x == 2
+            a_tones = map(lambda x : level_tone(x[1]), self._pron_dict[a])
+            b_tones = map(lambda x : level_tone(x[1]), self._pron_dict[b])
+            for a_tone in a_tones:
+                if (not a_tone) in b_tones:
+                    return True
+        return False
+
+    def __iter__(self):
+        return iter(self._pron_dict)
+
+    def __getitem__(self, ch):
+        return self._pron_dict[ch]
+
 
 class POEMS:
     def __init__(self, filename, isEvaluate=False):
         """pretreatment"""
+        self.pronDict=PronDict()
         poems = []
         file = open(filename, "r")
         for line in file:  #every line is a poem
@@ -34,28 +122,4 @@ class POEMS:
         else:
             self.trainVector = poemsVector
             self.testVector = []
-
-    def generateBatch(self, isTrain=True):
-        #padding length to batchMaxLength
-        if isTrain:
-            poemsVector = self.trainVector
-        else:
-            poemsVector = self.testVector
-
-        random.shuffle(poemsVector)
-        batchNum = (len(poemsVector) - 1) // batchSize
-        X = []
-        Y = []
-        #create batch
-        for i in range(batchNum):
-            batch = poemsVector[i * batchSize: (i + 1) * batchSize]
-            maxLength = max([len(vector) for vector in batch])
-            temp = np.full((batchSize, maxLength), self.wordToID[" "], np.int32) # padding space
-            for j in range(batchSize):
-                temp[j, :len(batch[j])] = batch[j]
-            X.append(temp)
-            temp2 = np.copy(temp)
-            temp2[:, :-1] = temp[:, 1:]
-            Y.append(temp2)
-        return X, Y
 
