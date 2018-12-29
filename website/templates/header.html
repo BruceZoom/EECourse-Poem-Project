@@ -12,15 +12,15 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
   <link rel="stylesheet" href="/static/css/wireframe.css">
 
-  <!-- Auxiliary resources -->
-  <link rel="stylesheet" href="/static/css/auxiliary.css">
-  <script type="text/javascript" src="/static/js/auxiliary.js"></script>
-
   <!-- jQuery dependencies -->
   <script type="text/javascript" src="/static/js/jquery/jquery.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   <script type="text/javascript" src="/static/js/dynamicform.js"></script>
+
+  <!-- Auxiliary resources -->
+  <link rel="stylesheet" href="/static/css/auxiliary.css">
+  <script type="text/javascript" src="/static/js/auxiliary.js"></script>
 
   <!-- switch css -->
   <link rel="stylesheet" href="/static/css/switch.css">
@@ -49,7 +49,7 @@
 </head>
 <body class="">
 <form action="/query" method="post" enctype="multipart/form-data">
-<div class="navbar navbar-dark bg-dark">
+<div class="navbar navbar-dark bg-dark" id="nav-header">
   <div class="container d-flex justify-content-between">
     <div class="form-inline my-2 my-lg-0">
       <table>
@@ -62,7 +62,7 @@
                   <a class="navbar-brand" href="/index"><i class="fa d-inline fa-lg fa-bullseye">&nbspPoems</i></a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link mx-2" href="#">Link</a>
+                  <a class="nav-link mx-2" href="/matchimage">配图</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link mx-2" href="#">Link</a>

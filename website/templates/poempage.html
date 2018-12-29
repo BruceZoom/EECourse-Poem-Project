@@ -1,0 +1,24 @@
+$def with (data=None)
+
+<!DOCTYPE html>
+<html>
+
+    $:data['header']
+    <div class="p-5 h-100 d-flex flex-column bg-light" >
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 mx-auto">
+            <br>
+            <br>
+          <h1 class="cover-heading"><b>$data['result']['title']</b></h1>
+          <h5><a href="$data['result']['poeturl']">$data['result']['poet']</a></h5>
+          <p class="lead">$:data['result']['content']</p>
+          $for label in data['result']['labels']:
+            <a href="$label['labelurl']"><span class="badge badge-success" href="">$label['label']</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+    $:data['footer']
+</body>
+</html>

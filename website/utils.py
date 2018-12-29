@@ -1,6 +1,7 @@
 # coding:utf-8
 import codecs
 import os
+import jieba
 
 DISPLAY_UTILS = {
     'card_max_text': 50,
@@ -118,19 +119,19 @@ LANDING_DATA_DEFAULT = {
 }
 
 ENTRY_TEMPLATE = {
-        'imgurl': '/static/image/1.jpg',
-        'title': 'Title',
-        'content': '我是一首诗 我是一首诗 我是一首诗 我是一首诗',
-        'poet': '诗人',
-        'poemurl': '#',
-        'poeturl': '#',
-        'labels': [
-            # {
-            #     'label': '标签',
-            #     'labelurl': '#',
-            # },
-        ],
-        'likes': 0,
+    'imgurl': '/static/image/1.jpg',
+    'title': 'Title',
+    'content': '我是一首诗 我是一首诗 我是一首诗 我是一首诗',
+    'poet': '诗人',
+    'poemurl': '#',
+    'poeturl': '#',
+    'labels': [
+        # {
+        #     'label': '标签',
+        #     'labelurl': '#',
+        # },
+    ],
+    'likes': 0,
 }
 
 ENTRY_SAMPLES = [
@@ -208,6 +209,23 @@ ENTRY_SAMPLES = [
 with codecs.open('templates/header.html', 'r', encoding='utf-8') as f:
     HEADER = ''.join(f.readlines())
 
+with codecs.open('templates/footer.html', 'r', encoding='utf-8') as f:
+    FOOTER = ''.join(f.readlines())
+
 timestamp = len([lists for lists in os.listdir('./static/upload/')])
 
 UPLOAD_PREFIX = './static/upload/'
+
+
+def alternating(a1, a2):
+    res = a2[:]
+    for i in range(len(a1)):
+        res.insert(2 * i, a1[i])
+    return res
+
+
+def jieba_seg(str):
+    try:
+        return ' '.join(jieba.cut(str))
+    except:
+        return str

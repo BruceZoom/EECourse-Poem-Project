@@ -8,14 +8,12 @@ shiying/test.py
 tmp/
 image_crawler/pages/
 image_crawler/veer/
-website/model/
-website/model_/
+#website/model/ (to upload new files)
+#website/model_/
 website/static/upload/
-<<<<<<< HEAD
 shigedaquan/
-=======
 sourcePoems/all*
->>>>>>> 387586f72ccba5693d7c040aa3e5a5a1dc8e3beb
+modern2poem/myresult/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

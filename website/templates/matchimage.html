@@ -1,0 +1,50 @@
+$def with (data=None)
+
+<!DOCTYPE html>
+<html>
+
+  $:data['header']
+  <div class="text-center py-5">
+    <div class="container">
+      <div class="row my-5 justify-content-center">
+        <div class="col-md-9">
+          <h4>请输入您的诗，我们将为您的诗匹配合适的插图！</h4>
+          <textarea class="form-control" rows="6" id="user-poem"></textarea>
+            <br>
+            <button class="btn btn-secondary" id="start-match" onclick="start_match()">开始分析</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="py-4 bg-dark collapse" id="generate-result">
+
+  </div>
+    $:data['footer']
+
+  <script type="text/javascript">
+      function start_match () {
+          console.log(jQuery("#user-poem").val());
+          jQuery.post("/matchimage",
+                {
+                    poem: jQuery("#user-poem").val()
+                },
+                function (data, status) {
+                    data = eval('(' + data + ')');
+                    console.log(data);
+                });
+      }
+    // jQuery(document).ready(function() {
+    //     jQuery("#start-match").click(function () {
+    //         jQuery.post("/matchimage",
+    //             {
+    //                 poem: jQuery("#user-poem").text
+    //             },
+    //             function (data, status) {
+    //                 data = eval('(' + data + ')');
+    //                 console.log(data);
+    //             });
+    //     });
+    // });
+    </script>
+</body>
+</html>

@@ -14,6 +14,8 @@ from PIL import Image
 # from model.modernPoemGenerate import *
 # from translate import *
 
+import PoemSearchES as PSES
+
 render = web.template.render('templates')
 
 urls = (
@@ -24,7 +26,11 @@ urls = (
     '/gallery_image', 'gallery_image',
     '/gallery_poem', 'gallery_poem',
     '/analyzed', 'analyzed',
-    '/analyzer', 'analyzer'
+    '/analyzer', 'analyzer',
+    '/matchimage', 'matchimage',
+    '/authorpage', 'authorpage',
+    '/authorlist', 'authorlist',
+    '/poempage', 'poempage',
 )
 
 EMPTY_QUERY = 0
@@ -39,18 +45,32 @@ class index:
             'form': utils.FORM_INIT,
             'header': utils.HEADER,
             'landing': utils.LANDING_DATA_DEFAULT,
+            'footer': utils.FOOTER,
         }
         return render.index(data=data)
+
+
+def notfound(form_dict):
+    data = {
+        'form': utils.FORM_INIT.copy(),
+        'header': utils.HEADER,
+        'footer': utils.FOOTER,
+    }
+    for key in data['form'].keys():
+        if key in form_dict.keys():
+            data['form'][key] = form_dict[key]
+    return render.notfound(data=data)
 
 
 class query:
     def POST(self):
         inputs = web.input()
-        print inputs
+        print (inputs)
         data = {
             'form': utils.FORM_INIT,
             'header': utils.HEADER,
             'pagi': utils.PAGI_SETTING,
+            'footer': utils.FOOTER,
         }
         validation = Validator.form_validate(inputs)
 
@@ -60,21 +80,18 @@ class query:
 
         elif validation == VALID_QUERY:
             # parse form inputs and make query
-            command_dict = Validator.to_command_dict(inputs)
-            print command_dict
-            # data['total_match'], data['results'] = PM.common_query(command_dict)
-            # print data['total_match'], data['results']
-            # data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
-            #     'result_per_page']
-            data['results'] = utils.ENTRY_SAMPLES
-
-            # set up other data
-            # data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
             data['form'] = inputs.copy()
-            # data['form']['image'] = data['form']['image'].decode()  # 否则会出现byte和str报错
-            # print(data['form'])
+            command_dict = Validator.to_command_dict(inputs)
+            print (command_dict)
+            data['total_match'], data['results'] = PSES.common_query(command_dict)
+            print (data['total_match'])
+            # set up pagination and form
+            data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+                'result_per_page']
+            data['pagi']['cur_page'] = 1
+            data['form']['image'] = ''
             data['url_prefix_form'] = '&'.join([key + '=' + value for key, value in data['form'].items()]) + '&'
-            # print(data['url_prefix_form'])
+
             return render.gallery(data=data)
 
         elif validation == VALID_IMAGE:
@@ -113,8 +130,8 @@ class query:
             # data['object'], data['scene'], data['attributes'] = objectStr, sceneStr, attributesStr
 
             return render.analyzed(data=data)
-        else:
-            pass
+        elif validation == INVALID_QUERY:
+            return notfound(inputs)
 
 
 class gallery:
@@ -126,36 +143,41 @@ class gallery:
             'header': utils.HEADER,
             'pagi': utils.PAGI_SETTING,
             'results': utils.ENTRY_SAMPLES,
+            'footer': utils.FOOTER,
         }
         validation = Validator.form_validate(inputs)
         if validation == VALID_QUERY:
             if 'query' in inputs.keys():
                 # data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
+                # print(inputs)
                 data['form'] = inputs.copy()
                 try:
                     inputs['page'] = int(inputs['page'])
                 except Exception as e:
-                    print (e.message)
+                    print(e)
                     inputs['page'] = 1
 
                 command_dict = Validator.to_command_dict(inputs)
-                print command_dict
-                # data['total_match'], data['results'] = PM.common_query(command_dict, cur_page=inputs['page'])
-                # print data['total_match'], data['results']
-                # data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
-                #     'result_per_page']
-                data['results'] = utils.ENTRY_SAMPLES
+                print (command_dict)
+                data['total_match'], data['results'] = PSES.common_query(command_dict, cur_page=inputs['page'])
+                # print (data['total_match'], data['results'])
+                data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+                    'result_per_page']
+                # data['results'] = utils.ENTRY_SAMPLES
 
+                data['form']['image'] = ''
                 data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
+
                 data['pagi']['cur_page'] = inputs['page']
                 return render.gallery(data=data)
         else:
-            data = {
-                'form': utils.FORM_INIT,
-                'header': utils.HEADER,
-                'landing': utils.LANDING_DATA_DEFAULT,
-            }
-            return render.index(data=data)
+            return notfound(inputs)
+            # data = {
+            #     'form': utils.FORM_INIT,
+            #     'header': utils.HEADER,
+            #     'landing': utils.LANDING_DATA_DEFAULT,
+            # }
+            # return render.index(data=data)
 
 
 class gallery_poem:
@@ -219,49 +241,168 @@ class analyzer:
         return json.dumps(data)
 
 
+class matchimage:
+    def GET(self):
+        data = {
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+            'footer': utils.FOOTER,
+        }
+        return render.matchimage(data=data)
+
+    def POST(self):
+        inputs = web.input()
+        print(inputs)
+        data = {
+            'imgurl': '/static/image/1.jpg'
+        }
+        return json.dumps(data)
+
+
+class authorlist:
+    def GET(self):
+        inputs = web.input()
+        data = {
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+            'pagi': utils.PAGI_SETTING,
+            'footer': utils.FOOTER,
+        }
+
+        validation = Validator.authorlist_validate(inputs)
+        if validation == VALID_QUERY:
+            try:
+                inputs['page'] = int(inputs['page'])
+            except:
+                inputs['page'] = 1
+
+            data['url_prefix_form'] = ''
+            data['total_match'], data['results'] = PSES.search_author(cur_page=inputs['page'])
+            data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+                'result_per_page']
+            data['pagi']['cur_page'] = inputs['page']
+
+            return render.authorlist(data=data)
+        else:
+            return notfound(inputs)
+
+class authorpage:
+    def GET(self):
+        inputs = web.input()
+        data = {
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+            'pagi': utils.PAGI_SETTING,
+            'footer': utils.FOOTER,
+        }
+        print (inputs)
+        validation = Validator.authorpage_validate(inputs)
+        if validation == VALID_QUERY:
+            try:
+                inputs['page'] = int(inputs['page'])
+            except:
+                inputs['page'] = 1
+            data['desc'] = PSES.get_author_desc(inputs['author'])
+            if data['desc'] == False:
+                return notfound(inputs)
+            data['url_prefix_form'] = 'author=' + inputs['author'] + '&'
+            res = PSES.get_author_poems(inputs['author'], cur_page=inputs['page'], index='cnmodern')
+            # print(res)
+            if not res:
+                res = PSES.get_author_poems(inputs['author'], cur_page=inputs['page'], index='gushiwen')
+                # print(res)
+            if not res:
+                return notfound(inputs)
+
+            data['total_match'], data['results'] = res
+            print (data['total_match'], data['results'])
+            data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+                'result_per_page']
+            data['pagi']['cur_page'] = inputs['page']
+
+            return render.authorpage(data=data)
+        else:
+            return notfound(inputs)
+
+
+class poempage:
+    def GET(self):
+        inputs = web.input()
+        data = {
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+            'footer': utils.FOOTER,
+        }
+        print(inputs)
+        validation = Validator.poempage_validate(inputs)
+        if validation == VALID_QUERY:
+            data['result'] = PSES.get_poem(inputs)
+            return render.poempage(data=data)
+        else:
+            return notfound(inputs)
+
+
 class Validator:
     ancient_key_map = {
         'ancientAuthor': 'author',
         'ancientTime': 'dynasty',
-        'ancientType': 'label',
-        'ancientLabel': 'label',
-        'ancientTitle': 'title_tokened',
+        'ancientType': 'label_tokenized',
+        'ancientLabel': 'label_tokenized',
+        'ancientTitle': 'title_tokenized',
     }
     modern_key_map = {
-        'modernTitle': 'title_tokened',
+        'modernTitle': 'title_tokenized',
         'modernAuthor': 'author',
-        'modernLabel': 'label',
+        'modernLabel': 'label_tokenized',
     }
     common_key_map = {
         'author': 'author',
-        'title': 'title_tokened',
-        'label': 'label',
-        'content': 'content',
+        'title': 'title_tokenized',
+        'label': 'label_tokenized',
+        'content': 'text_tokenized',
     }
+
+    @staticmethod
+    def authorlist_validate(input_dict):
+        return  VALID_QUERY
+
+    @staticmethod
+    def authorpage_validate(input_dict):
+        if 'author' in input_dict.keys() and input_dict['author']:
+            return VALID_QUERY
+        else:
+            return INVALID_QUERY
+
+    @staticmethod
+    def poempage_validate(input_dict):
+        if 'index' in input_dict.keys() and 'id' in input_dict.keys() and input_dict['index'] and input_dict['id']:
+            return VALID_QUERY
+        else:
+            return INVALID_QUERY
 
     @staticmethod
     def form_validate(form_dict):
         flag = True
-        for key in ['query', 'searchType', 'image']:
+        for key in ['query', 'searchType']:
             flag = (flag and key in form_dict.keys())
         if not flag:
-            print 'Failed! Invalid query 1!'
+            print ('Failed! Invalid query 1!')
             return INVALID_QUERY
-        if len(form_dict['image']) > 0:
+        if 'image' in form_dict.keys() and len(form_dict['image']) > 0:
             return VALID_IMAGE
         flag = False
         for key in ['query', 'ancientAuthor', 'ancientTime', 'ancientType', 'ancientLabel', 'ancientTitle',
                     'modernTitle', 'modernAuthor', 'modernLabel']:
             flag = (flag or (key in form_dict.keys() and len(form_dict[key]) > 0))
         if not flag:
-            print 'Failed! Empty query 1!'
+            print ('Failed! Empty query 1!')
             return EMPTY_QUERY
         if len(form_dict['query']) > 0:
             flag = False
             for key in ['author', 'title', 'label', 'content']:
                 flag = (flag or key in form_dict.keys())
             if not flag:
-                print 'Failed! Invalid query 2!'
+                print ('Failed! Invalid query 2!')
                 return INVALID_QUERY
             return VALID_QUERY
         else:
@@ -276,7 +417,8 @@ class Validator:
         command_dict['searchType'] = input_dict['searchType']
         if input_dict['searchType'] == 'ancient':
             if 'accurate' in input_dict.keys():
-                for key in ['ancientAuthor', 'ancientTime', 'ancientType', 'ancientLabel', 'ancientTitle']:
+                # for key in ['ancientAuthor', 'ancientTime', 'ancientType', 'ancientLabel', 'ancientTitle']:
+                for key in ['ancientAuthor', 'ancientTime', 'ancientLabel', 'ancientTitle']:
                     if input_dict[key] != '':
                         command_dict[Validator.ancient_key_map[key]] = (input_dict[key], True)
         elif input_dict['searchType'] in ['modern', 'all']:
