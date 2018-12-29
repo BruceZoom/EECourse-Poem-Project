@@ -28,6 +28,7 @@ def process_query_results(res_tmp, truncated=True):
     res = []
     # print (res_tmp[0])
     for tmp in res_tmp:
+        poemurl = '/poempage?index=' + tmp['_index'] + '&id=' + tmp['_id'] + '&'
         tmp = tmp['_source']
         if tmp['imgurl'] is None or tmp['imgurl'] == '':
             tmp['imgurl'] = '/static/image/1.jpg'
@@ -38,15 +39,15 @@ def process_query_results(res_tmp, truncated=True):
         entry = {
             'imgurl': tmp['imgurl'],
             'title': tmp['title'],
-            'content': tmp['text'],
+            'content': tmp['text'].replace('\n', '<br>'),
             'poet': tmp['author'],
-            'poemurl': '#',
+            'poemurl': poemurl,
             'poeturl': '/authorpage?author='+tmp['author'],
             # 'labels': [],
             'labels': [
                 {
                     'label': label,
-                    'labelurl': '#',
+                    'labelurl': '/gallery?searchType=all&image=&label=on&query=' + label,
                 }
                 for label in tmp['label'].split()],
             'likes': 0,
@@ -91,20 +92,13 @@ def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pa
     for key, value in input_dict.items():
         if key not in ['author', 'title_tokenized', 'label_tokenized', 'text_tokenized']:
                 continue
-        if 'tokenized' in key:
-            match = {
-                'match': {
-                    key: {
-                        'query': value[0],
-                    }
-                },
-            }
-        else:
-            match = {
-                'match': {
-                    key: value[0]
+        match = {
+            'match': {
+                key: {
+                    'query': value[0],
                 }
-            }
+            },
+        }
         search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
     # matches, res_tmp = MPS.ch_seach(input_dict, target_range=((cur_page-1)*pp, cur_page*pp))
     try:
@@ -129,20 +123,13 @@ def ancient_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pag
     for key, value in input_dict.items():
         if key not in ['author', 'dynasty', 'label_tokenized', 'title_tokenized', 'text_tokenized']:
             continue
-        if 'tokenized' in key:
-            match = {
-                'match': {
-                    key: {
-                        'query': value[0],
-                    }
-                },
-            }
-        else:
-            match = {
-                'match': {
-                    key: value[0]
+        match = {
+            'match': {
+                key: {
+                    'query': value[0],
                 }
-            }
+            },
+        }
         search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
         print(match)
     try:
@@ -155,6 +142,7 @@ def ancient_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pag
         return 0, []
     # matches, res_tmp = APS.gushiwen_search(input_dict, target_range=((cur_page - 1) * pp, cur_page * pp))
     # print matches, res_tmp
+    print(res_tmp[0])
     res = process_query_results(res_tmp, truncated)
     return matches, res
 
@@ -167,22 +155,61 @@ def mixed_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'
     return matches, res
 
 
-def get_author(author_name, index='cnmodern', cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
-    search_body = {'query': {
-        'match_phrase': {
-            'author': author_name,
+def get_author_poems(author_name, index='cnmodern', cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
+    search_body = {
+        'query': {
+            # 'constant_score': {
+            #     'filter': {
+                    'match_phrase': {
+                        'author': author_name
+                    }
+            #     }
+            # }
         }
-    }}
+    }
     try:
         matches = es.count(index=index, doc_type=index+'_type', body=search_body)['count']
+        if matches == 0:
+            return False
         search_body['from'] = (cur_page - 1) * pp
         search_body['size'] = pp
-        res_tmp = es.search(index=index, doc_type=index+'_type', body=search_body)['hits']['hits']
+        res_tmp = es.search(index=index, doc_type=index+'_type', body=search_body)
+        print(res_tmp)
+        res_tmp = res_tmp['hits']['hits']
+        for i in range(len(res_tmp)-1, -1, -1):
+            if res_tmp[i]['_source']['author'] != author_name:
+                res_tmp.pop(i)
+        if len(res_tmp) <= 0:
+            return False
     except Exception as e:
         print(e)
         return 0, []
     res = process_query_results(res_tmp, truncated)
     return matches, res
+
+
+def get_author_desc(author_name):
+    search_body = {
+        'query': {
+            # 'constant_score': {
+            #     'filter': {
+                    'match_phrase': {
+                        'name': author_name
+                    }
+            #     }
+            # }
+        }
+    }
+    try:
+        res_tmp = es.search(index='author', doc_type='author_type', body=search_body)['hits']['hits']
+        while len(res_tmp) > 0 and res_tmp[0]['_source']['name'] != author_name:
+            res_tmp.pop(0)
+        if len(res_tmp) <= 0:
+            return False
+        return res_tmp[0]['_source']['desc']
+    except Exception as e:
+        print(e)
+        return ''
 
 
 def search_author(input_dict=None, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
@@ -202,3 +229,9 @@ def search_author(input_dict=None, cur_page=1, pp=utils.PAGI_SETTING['result_per
         return 0, []
     res = process_author_results(res_tmp, truncated)
     return matches, res
+
+
+def get_poem(input_dict):
+    res = es.get(index=input_dict['index'], doc_type=input_dict['index']+'_type', id=int(input_dict['id']))
+    res = process_query_results([res], truncated=False)[0]
+    return res

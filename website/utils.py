@@ -209,6 +209,9 @@ ENTRY_SAMPLES = [
 with codecs.open('templates/header.html', 'r', encoding='utf-8') as f:
     HEADER = ''.join(f.readlines())
 
+with codecs.open('templates/footer.html', 'r', encoding='utf-8') as f:
+    FOOTER = ''.join(f.readlines())
+
 timestamp = len([lists for lists in os.listdir('./static/upload/')])
 
 UPLOAD_PREFIX = './static/upload/'
