@@ -5,7 +5,7 @@ from Index.ancient_search import AncientPoemSearcher
 import utils
 
 vm_env = lucene.initVM(vmargs=['-Djava.awt.headless=true'])
-print 'vm initialized'
+print ('vm initialized')
 
 MPS = ModernPoemSearcher('Index/modern_index')
 APS = AncientPoemSearcher('Index/gushiwen_index')
