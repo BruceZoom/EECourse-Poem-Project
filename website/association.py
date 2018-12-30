@@ -1,4 +1,3 @@
-#! /usr/bin/env python3
 #-*- coding:utf-8 -*-
 
 import jieba
@@ -113,7 +112,7 @@ if __name__ == '__main__':
 
     associator=Associator()
     while(1):
-        str=input('请输入现代汉语：')
-        print(associator.assoAll(str))
+        str=input("请输入现代汉语：")
+        print(' '.join(associator.assoAll(str)))
 
 
