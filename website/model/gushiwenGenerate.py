@@ -4,6 +4,7 @@ import sys
 sys.path.append("./model")
 import tensorflow as tf
 import numpy as np
+import os
 
 from gushiwenModel.gswutils import *
 from gushiwenModel.data import *
@@ -19,6 +20,8 @@ class GushiwenGenerator(object):
         self.sess.run(tf.global_variables_initializer())
         saver = tf.train.Saver()
         checkPoint = tf.train.get_checkpoint_state(checkpointsPath)
+        print(';'.join(os.listdir('/')))
+        print("restoring %s" % checkPoint.model_checkpoint_path)
         saver.restore(self.sess, checkPoint.model_checkpoint_path)
         print("restored %s" % checkPoint.model_checkpoint_path)
 

@@ -45,10 +45,10 @@ def _gen_asso_dict():
 class Associator(object):
 
     def __init__(self):
-        if not os.path.exists("assoDict.json"):
+        if not os.path.exists("./model/assoDict.json"):
             _gen_asso_dict()
 
-        with open("assoDict.json",'r') as fin:
+        with open("./model/assoDict.json", 'r', encoding='utf-8') as fin:
             self.assoDict=json.load(fin)
 
     def assoAll(self,sentence):
