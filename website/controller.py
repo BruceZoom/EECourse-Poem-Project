@@ -13,6 +13,7 @@ from PIL import Image
 from model.getImageFeature import *
 from model.modernPoemGenerate import *
 from model.gushiwenGenerate import *
+from model.association import *
 from translate import *
 
 import PoemSearchES as PSES
@@ -218,6 +219,27 @@ class analyzer:
 
         data['object'], data['scene'], data['emotion'] = objectStr, sceneStr, attributesStr
         data['label_complete'] = objects[0][0]
+
+        # 对于 object,scene,emotion 这三个list中任何一个词word:
+        word='悬崖'
+        wordAssoList=associator.labelDict[word]
+        wordAssoList=sorted(wordAssoList(key=lambda x:wordAssoList.index(x)*random()))
+        print(wordAssoList[:10])
+        #在用户点击某词时显示其关联古词，按权重随机取前10个
+
+
+        # 以图生成现代诗的操作和之前一样
+
+        # 以图搜索古代诗的方式就是通过226行的方法，用产生的联想词去搜，可以对每个词都联想，随机取
+
+        # 以图生成古代诗就是对于得到的keywordList(长度至少为4，最好取8)，该keywordList可以如中烨所说，让用户选择
+        print(gsw.genfromKeywords(wordAssoList))
+
+        # 用户直接输入一句话，比如“日光照在青草上，今天天气真好”，生成古代诗，就是
+        print(gsw.genfromSentence(self,"日光照在青草上，今天天气真好"))
+
+        # 以上部分可能出现路径错误，需请调试，可先在gushiwenGenerate.py中看使用方法
+        
         # print json.dumps(data)
         # return data
         # time.sleep(3)
