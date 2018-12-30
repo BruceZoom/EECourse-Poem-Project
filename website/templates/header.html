@@ -52,7 +52,31 @@
             jQuery("#ancient-search-advanced").collapse("hide");
             jQuery("#modern-search-advanced").collapse("hide");
         }
+        if (jQuery("#search-type").val() === "ancient") {
+            jQuery("#shared-shangxi").removeAttr("disabled");
+            jQuery("#shared-translate").removeAttr("disabled");
+            if (!jQuery("#shared-shangxi").attr('checked')) {
+                jQuery("#shared-shangxi").attr("checked", true);
+            }
+            if (!jQuery("#shared-translate").attr('checked')){
+              jQuery("#shared-translate").attr("checked", true);
+            }
+        }
+        else {
+            if (jQuery("#shared-shangxi").attr('checked')) {
+                jQuery("#shared-shangxi").removeAttr("checked");
+            }
+            if (jQuery("#shared-translate").attr('checked')) {
+                jQuery("#shared-translate").removeAttr("checked");
+            }
+            jQuery("#shared-shangxi").attr("disabled", true);
+            jQuery("#shared-translate").attr("disabled", true);
+        }
     }
+
+    jQuery(document).ready(function () {
+        formchange();
+    });
   </script>
 </head>
 <body class="">

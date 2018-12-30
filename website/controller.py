@@ -2,21 +2,24 @@
 import web
 import sys
 import codecs
-import myutils
+import utils
 import time
 import json
 import os
 from PIL import Image
+import random
 
 # import PoemModel as PM
 
-from model.getImageFeature import *
-from model.modernPoemGenerate import *
-from model.gushiwenGenerate import *
-from model.association import *
+# from model.getImageFeature import *
+# from model.modernPoemGenerate import *
+# from model.gushiwenGenerate import *
+# from model.association import *
+import netModel as nm
 from translate import *
 
 import PoemSearchES as PSES
+import ImgPoemSearch as IPS
 
 render = web.template.render('templates')
 
@@ -44,19 +47,19 @@ INVALID_QUERY = 3
 class index:
     def GET(self):
         data = {
-            'form': myutils.FORM_INIT,
-            'header': myutils.HEADER,
-            'landing': myutils.LANDING_DATA_DEFAULT,
-            'footer': myutils.FOOTER,
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+            'landing': utils.LANDING_DATA_DEFAULT,
+            'footer': utils.FOOTER,
         }
         return render.index(data=data)
 
 
 def notfound(form_dict):
     data = {
-        'form': myutils.FORM_INIT.copy(),
-        'header': myutils.HEADER,
-        'footer': myutils.FOOTER,
+        'form': utils.FORM_INIT.copy(),
+        'header': utils.HEADER,
+        'footer': utils.FOOTER,
     }
     for key in data['form'].keys():
         if key in form_dict.keys():
@@ -67,26 +70,26 @@ def notfound(form_dict):
 class query:
     def POST(self):
         inputs = web.input()
-        print (inputs)
+        print(inputs)
         data = {
-            'form': myutils.FORM_INIT,
-            'header': myutils.HEADER,
-            'pagi': myutils.PAGI_SETTING,
-            'footer': myutils.FOOTER,
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+            'pagi': utils.PAGI_SETTING,
+            'footer': utils.FOOTER,
         }
         validation = Validator.form_validate(inputs)
 
         if validation == EMPTY_QUERY:
-            data['landing'] = myutils.LANDING_DATA_DEFAULT
+            data['landing'] = utils.LANDING_DATA_DEFAULT
             return render.index(data=data)
 
         elif validation == VALID_QUERY:
             # parse form inputs and make query
             data['form'] = inputs.copy()
             command_dict = Validator.to_command_dict(inputs)
-            print (command_dict)
+            print(command_dict)
             data['total_match'], data['results'] = PSES.common_query(command_dict)
-            print (data['total_match'])
+            print(data['total_match'])
             # set up pagination and form
             data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
                 'result_per_page']
@@ -99,22 +102,23 @@ class query:
         elif validation == VALID_IMAGE:
             image_inputs = web.input(image={})
             # filename = image_inputs.image.filename.replace('\\', '/').split('/')[-1]
-            myutils.timestamp += 1
+            utils.timestamp += 1
 
             _basename = os.path.basename(image_inputs.image.filename)
             _exten_name = os.path.splitext(_basename)[1].lower()
-            filename = str(myutils.timestamp) + _exten_name
-            data['upload_prefix'] = myutils.UPLOAD_PREFIX
-            with codecs.open(myutils.UPLOAD_PREFIX + filename, 'wb') as fout:
+            filename = str(utils.timestamp) + _exten_name
+            data['upload_prefix'] = utils.UPLOAD_PREFIX
+            with codecs.open(utils.UPLOAD_PREFIX + filename, 'wb') as fout:
                 fout.write(image_inputs.image.file.read())
-            if(_exten_name=='png'):#四通道图像会在vgg步骤报错
-                im = Image.open(myutils.UPLOAD_PREFIX + filename)
+            print(_exten_name)
+            if (_exten_name == '.png'):  # 四通道图像会在vgg步骤报错
+                im = Image.open(utils.UPLOAD_PREFIX + filename)
                 newim = im.convert(mode='RGB')
-                filename = str(myutils.timestamp) + '.jpg'
-                newim.save(myutils.UPLOAD_PREFIX +filename)
-                os.remove(myutils.UPLOAD_PREFIX + str(myutils.timestamp) + _exten_name)
+                filename = str(utils.timestamp) + '.jpg'
+                newim.save(utils.UPLOAD_PREFIX + filename)
+                os.remove(utils.UPLOAD_PREFIX + str(utils.timestamp) + _exten_name)
 
-            data['results'] = myutils.ENTRY_SAMPLES
+            data['results'] = utils.ENTRY_SAMPLES
             data['form']['image'] = filename
             data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
 
@@ -126,18 +130,18 @@ class query:
 class gallery:
     def GET(self):
         inputs = web.input()
-        print (inputs)
+        print(inputs)
         data = {
-            'form': myutils.FORM_INIT,
-            'header': myutils.HEADER,
-            'pagi': myutils.PAGI_SETTING,
-            'results': myutils.ENTRY_SAMPLES,
-            'footer': myutils.FOOTER,
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+            'pagi': utils.PAGI_SETTING,
+            'results': utils.ENTRY_SAMPLES,
+            'footer': utils.FOOTER,
         }
         validation = Validator.form_validate(inputs)
         if validation == VALID_QUERY:
             if 'query' in inputs.keys():
-                # data['form'] = {key: inputs[key] for key in myutils.FORM_INIT.keys()}
+                # data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
                 # print(inputs)
                 data['form'] = inputs.copy()
                 try:
@@ -147,12 +151,12 @@ class gallery:
                     inputs['page'] = 1
 
                 command_dict = Validator.to_command_dict(inputs)
-                print (command_dict)
+                print(command_dict)
                 data['total_match'], data['results'] = PSES.common_query(command_dict, cur_page=inputs['page'])
                 # print (data['total_match'], data['results'])
                 data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
                     'result_per_page']
-                # data['results'] = myutils.ENTRY_SAMPLES
+                # data['results'] = utils.ENTRY_SAMPLES
 
                 data['form']['image'] = ''
                 data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
@@ -162,9 +166,9 @@ class gallery:
         else:
             return notfound(inputs)
             # data = {
-            #     'form': myutils.FORM_INIT,
-            #     'header': myutils.HEADER,
-            #     'landing': myutils.LANDING_DATA_DEFAULT,
+            #     'form': utils.FORM_INIT,
+            #     'header': utils.HEADER,
+            #     'landing': utils.LANDING_DATA_DEFAULT,
             # }
             # return render.index(data=data)
 
@@ -172,9 +176,9 @@ class gallery:
 class gallery_poem:
     def GET(self):
         inputs = web.input()
-        print (inputs)
+        print(inputs)
         data = {
-            'header': myutils.HEADER,
+            'header': utils.HEADER,
             'image': inputs['image'],
             'relu': inputs['relu'],
         }
@@ -201,42 +205,43 @@ class analyzer:
     def POST(self):
         inputs = web.input()
         print(inputs)
-        filename = myutils.UPLOAD_PREFIX+inputs['filename']
+        filename = utils.UPLOAD_PREFIX + inputs['filename']
         data = dict()
 
-        objects, data['relu'] = getObjectFeature(filename)
-        scene, attributes, data['heatmap'], data['ioscene'] = getSceneFeature(filename)
+        data['object'], data['relu'] = nm.getObjectFeature(filename)
+        data['scene'], data['emotion'], data['heatmap'], data['ioscene'] = nm.getSceneFeature(filename)
 
         # data['ioscene'] = 'ioscene'
-        # data['heatmap'] = myutils.UPLOAD_PREFIX + filename
+        # data['heatmap'] = utils.UPLOAD_PREFIX + filename
         # objects = ['a', 'b', 'c']
         # scene = ['a', 'b', 'c']
         # attributes = ['a', 'b', 'c']
 
-        objectStr = ' ' + ', '.join([x[0] for x in objects])
-        sceneStr = ' ' + ', '.join([x[0] for x in scene])
-        attributesStr = ' ' + ', '.join(attributes)
+        # objectStr = ' ' + ', '.join([x[0] for x in objects])
+        # sceneStr = ' ' + ', '.join([x[0] for x in scene])
+        # attributesStr = ' ' + ', '.join(attributes)
 
-        data['object'], data['scene'], data['emotion'] = objectStr, sceneStr, attributesStr
-        data['label_complete'] = objects[0][0]
+        # data['object'], data['scene'], data['emotion'] = objectStr, sceneStr, attributesStr
+        # data['label_complete'] = objects[0][0]
 
         # 对于 object,scene,emotion 这三个list中任何一个词word:
-        word='悬崖'
-        wordAssoList=associator.labelDict[word]
-        wordAssoList=sorted(wordAssoList(key=lambda x:wordAssoList.index(x)*random()))
-        print(wordAssoList[:10])
-        #在用户点击某词时显示其关联古词，按权重随机取前10个
-
+        for key in ['object', 'scene', 'emotion']:
+            data[key] = {word[0]: [] for word in data[key] if word[0] in nm.associator.labelDict.keys()}
+            for word in data[key].keys():
+                wordAssoList = nm.associator.labelDict[word]
+                wordAssoList = sorted(wordAssoList, key=lambda x: wordAssoList.index(x) * random.random())
+                data[key][word] = wordAssoList[:5]
+        # 在用户点击某词时显示其关联古词，按权重随机取前10个
 
         # 以图生成现代诗的操作和之前一样
 
         # 以图搜索古代诗的方式就是通过226行的方法，用产生的联想词去搜，可以对每个词都联想，随机取
 
         # 以图生成古代诗就是对于得到的keywordList(长度至少为4，最好取8)，该keywordList可以如中烨所说，让用户选择
-        print(gsw.genfromKeywords(wordAssoList))
+        # print(nm.gsw.genfromKeywords(wordAssoList))
 
         # 用户直接输入一句话，比如“日光照在青草上，今天天气真好”，生成古代诗，就是
-        print(gsw.genfromSentence(self,"日光照在青草上，今天天气真好"))
+        # print(nm.gsw.genfromSentence(self,"日光照在青草上，今天天气真好"))
 
         # 以上部分可能出现路径错误，需请调试，可先在gushiwenGenerate.py中看使用方法
 
@@ -249,18 +254,16 @@ class analyzer:
 class matchimage:
     def GET(self):
         data = {
-            'form': myutils.FORM_INIT,
-            'header': myutils.HEADER,
-            'footer': myutils.FOOTER,
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+            'footer': utils.FOOTER,
         }
         return render.matchimage(data=data)
 
     def POST(self):
         inputs = web.input()
         print(inputs)
-        data = {
-            'imgurl': '/static/image/1.jpg'
-        }
+        data = IPS.poem2img(inputs["poem"])
         return json.dumps(data)
 
 
@@ -268,10 +271,10 @@ class authorlist:
     def GET(self):
         inputs = web.input()
         data = {
-            'form': myutils.FORM_INIT,
-            'header': myutils.HEADER,
-            'pagi': myutils.PAGI_SETTING,
-            'footer': myutils.FOOTER,
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+            'pagi': utils.PAGI_SETTING,
+            'footer': utils.FOOTER,
         }
 
         validation = Validator.authorlist_validate(inputs)
@@ -291,16 +294,17 @@ class authorlist:
         else:
             return notfound(inputs)
 
+
 class authorpage:
     def GET(self):
         inputs = web.input()
         data = {
-            'form': myutils.FORM_INIT,
-            'header': myutils.HEADER,
-            'pagi': myutils.PAGI_SETTING,
-            'footer': myutils.FOOTER,
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+            'pagi': utils.PAGI_SETTING,
+            'footer': utils.FOOTER,
         }
-        print (inputs)
+        print(inputs)
         validation = Validator.authorpage_validate(inputs)
         if validation == VALID_QUERY:
             try:
@@ -320,7 +324,7 @@ class authorpage:
                 return notfound(inputs)
 
             data['total_match'], data['results'] = res
-            print (data['total_match'], data['results'])
+            print(data['total_match'], data['results'])
             data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
                 'result_per_page']
             data['pagi']['cur_page'] = inputs['page']
@@ -334,9 +338,9 @@ class poempage:
     def GET(self):
         inputs = web.input()
         data = {
-            'form': myutils.FORM_INIT,
-            'header': myutils.HEADER,
-            'footer': myutils.FOOTER,
+            'form': utils.FORM_INIT,
+            'header': utils.HEADER,
+            'footer': utils.FOOTER,
         }
         print(inputs)
         validation = Validator.poempage_validate(inputs)
@@ -372,11 +376,13 @@ class Validator:
         'title': 'title_tokenized',
         'label': 'label_tokenized',
         'content': 'text_tokenized',
+        'translate': 'yiwen_tokenized',
+        'shangxi': 'shangxi_tokenized',
     }
 
     @staticmethod
     def authorlist_validate(input_dict):
-        return  VALID_QUERY
+        return VALID_QUERY
 
     @staticmethod
     def authorpage_validate(input_dict):
@@ -398,7 +404,7 @@ class Validator:
         for key in ['query', 'searchType']:
             flag = (flag and key in form_dict.keys())
         if not flag:
-            print ('Failed! Invalid query 1!')
+            print('Failed! Invalid query 1!')
             return INVALID_QUERY
         if 'image' in form_dict.keys() and len(form_dict['image']) > 0:
             return VALID_IMAGE
@@ -408,14 +414,14 @@ class Validator:
                     'generalTitle', 'generalAuthor', 'generalLabel']:
             flag = (flag or (key in form_dict.keys() and len(form_dict[key]) > 0))
         if not flag:
-            print ('Failed! Empty query 1!')
+            print('Failed! Empty query 1!')
             return EMPTY_QUERY
         if len(form_dict['query']) > 0:
             flag = False
-            for key in ['author', 'title', 'label', 'content']:
+            for key in ['author', 'title', 'label', 'content', 'translate', 'shangxi']:
                 flag = (flag or key in form_dict.keys())
             if not flag:
-                print ('Failed! Invalid query 2!')
+                print('Failed! Invalid query 2!')
                 return INVALID_QUERY
             return VALID_QUERY
         else:
@@ -424,9 +430,14 @@ class Validator:
     @staticmethod
     def to_command_dict(input_dict):
         command_dict = dict()
-        for key in ['author', 'title', 'label', 'content']:
+        q = input_dict['query']
+        if 'synonyms' in input_dict.keys():
+            q = IPS.associator.assoSynAll(utils.jieba_seg(q))
+        for key in ['author', 'title', 'label', 'content', 'translate', 'shangxi']:
+            if key in ['translate', 'shangxi'] and input_dict['searchType'] != 'ancient':
+                continue
             if key in input_dict.keys():
-                command_dict[Validator.switch_key_map[key]] = (input_dict['query'], False)
+                command_dict[Validator.switch_key_map[key]] = (q, False)
         command_dict['searchType'] = input_dict['searchType']
         if input_dict['searchType'] == 'ancient':
             if 'accurate' in input_dict.keys():

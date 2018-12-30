@@ -1,6 +1,6 @@
 # coding:utf-8
 from elasticsearch import Elasticsearch
-import myutils
+import utils
 
 
 es = Elasticsearch(['localhost:9200'])
@@ -32,8 +32,8 @@ def process_query_results(res_tmp, truncated=True):
         tmp = tmp['_source']
         if tmp['imgurl'] is None or tmp['imgurl'] == '':
             tmp['imgurl'] = '/static/image/1.jpg'
-        if truncated and len(tmp['text']) > myutils.DISPLAY_myutils['card_max_text']:
-            tmp['text'] = tmp['text'][:myutils.DISPLAY_myutils['card_max_text']] + '...'
+        if truncated and len(tmp['text']) > utils.DISPLAY_UTILS['card_max_text']:
+            tmp['text'] = tmp['text'][:utils.DISPLAY_UTILS['card_max_text']] + '...'
         if tmp['label'] is None:
             tmp['label'] = ''
         entry = {
@@ -61,8 +61,8 @@ def process_author_results(res_tmp, truncated=True):
     # print (res_tmp[0])
     for tmp in res_tmp:
         tmp = tmp['_source']
-        if truncated and len(tmp['desc']) > myutils.DISPLAY_myutils['card_max_text']:
-            tmp['desc'] = tmp['desc'][:myutils.DISPLAY_myutils['card_max_text']] + '...'
+        if truncated and len(tmp['desc']) > utils.DISPLAY_UTILS['card_max_text']:
+            tmp['desc'] = tmp['desc'][:utils.DISPLAY_UTILS['card_max_text']] + '...'
         entry = {
             'desc': tmp['desc'],
             'name': tmp['name'],
@@ -75,14 +75,14 @@ def process_author_results(res_tmp, truncated=True):
 #         for key, value in command_dict.items():
 #             if key not in ['author', 'title', 'label', 'content']:
 #                 continue
-#             query = QueryParser(Version.LUCENE_CURRENT, key, self.Analyzer).parse(myutils.jieba_seg(value[0]))
+#             query = QueryParser(Version.LUCENE_CURRENT, key, self.Analyzer).parse(utils.jieba_seg(value[0]))
 #             if value[1]:
 #                 querys.add(query, BooleanClause.Occur.MUST)
 #             else:
 #                 querys.add(query, BooleanClause.Occur.SHOULD)
-#         totalDocs = self.chSearcher.search(querys, myutils.MAX_RESULTS).scoreDocs
+#         totalDocs = self.chSearcher.search(querys, utils.MAX_RESULTS).scoreDocs
 
-def cnmodern_search(input_dict, cur_page=1, pp=myutils.PAGI_SETTING['result_per_page'], truncated=True):
+def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
     search_body = {'query': {
         'bool': {
             'must': [],
@@ -98,7 +98,7 @@ def cnmodern_search(input_dict, cur_page=1, pp=myutils.PAGI_SETTING['result_per_
                     }
                 },
             }
-        search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
+            search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
     # matches, res_tmp = MPS.ch_seach(input_dict, target_range=((cur_page-1)*pp, cur_page*pp))
     try:
         matches = es.count(index='cnmodern', doc_type='cnmodern_type', body=search_body)['count']
@@ -112,7 +112,7 @@ def cnmodern_search(input_dict, cur_page=1, pp=myutils.PAGI_SETTING['result_per_
     return matches, res
 
 
-def ancient_search(input_dict, cur_page=1, pp=myutils.PAGI_SETTING['result_per_page'], truncated=True):
+def ancient_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
     search_body = {'query': {
         'bool': {
             'must': [],
@@ -120,7 +120,8 @@ def ancient_search(input_dict, cur_page=1, pp=myutils.PAGI_SETTING['result_per_p
         },
     }}
     for key, value in input_dict.items():
-        if key in ['author', 'dynasty', 'label_tokenized', 'title_tokenized', 'text_tokenized']:
+        if key in ['author', 'dynasty', 'label_tokenized', 'title_tokenized', 'text_tokenized',
+                   'shangxi_tokenized', 'yiwen_tokenized']:
             match = {
                 'match': {
                     key: {
@@ -128,8 +129,8 @@ def ancient_search(input_dict, cur_page=1, pp=myutils.PAGI_SETTING['result_per_p
                     }
                 },
             }
-        search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
-        print(match)
+            search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
+            print(match)
     try:
         matches = es.count(index='gushiwen', doc_type='gushiwen_type', body=search_body)['count']
         search_body['from'] = (cur_page - 1) * pp
@@ -140,20 +141,20 @@ def ancient_search(input_dict, cur_page=1, pp=myutils.PAGI_SETTING['result_per_p
         return 0, []
     # matches, res_tmp = APS.gushiwen_search(input_dict, target_range=((cur_page - 1) * pp, cur_page * pp))
     # print matches, res_tmp
-    print(res_tmp[0])
+    # print(res_tmp[0])
     res = process_query_results(res_tmp, truncated)
     return matches, res
 
 
-def mixed_search(input_dict, cur_page=1, pp=myutils.PAGI_SETTING['result_per_page'], truncated=True):
+def mixed_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
     matches_modern, res_modern = cnmodern_search(input_dict, cur_page, pp//2, truncated)
     matches_ancient, res_ancient = ancient_search(input_dict, cur_page, pp//2, truncated)
-    res = myutils.alternating(res_modern, res_ancient)
+    res = utils.alternating(res_modern, res_ancient)
     matches = matches_modern + matches_ancient
     return matches, res
 
 
-def get_author_poems(author_name, index='cnmodern', cur_page=1, pp=myutils.PAGI_SETTING['result_per_page'], truncated=True):
+def get_author_poems(author_name, index='cnmodern', cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
     search_body = {
         'query': {
             # 'constant_score': {
@@ -210,7 +211,7 @@ def get_author_desc(author_name):
         return ''
 
 
-def search_author(input_dict=None, cur_page=1, pp=myutils.PAGI_SETTING['result_per_page'], truncated=True):
+def search_author(input_dict=None, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
     if input_dict is None:
         search_body = {'query': {
             'match_all': {}

@@ -16,35 +16,40 @@ $def with (data=None)
       </div>
     </div>
   </div>
-  <div class="py-4 bg-dark collapse" id="generate-result">
+  <div class="py-4 bg-dark text-center collapse" id="generate-result">
+    <div class="container-fluid">
+      <div class="row px-2" id="generate-frame">
 
+      </div>
+    </div>
   </div>
     $:data['footer']
 
   <script type="text/javascript">
+    gbs = ['bg-light', 'bg-primary', 'bg-secondary', 'bg-info'];
       function start_match () {
-          console.log(jQuery("#user-poem").val());
-          jQuery.post("/matchimage",
-                {
-                    poem: jQuery("#user-poem").val()
-                },
-                function (data, status) {
-                    data = eval('(' + data + ')');
-                    console.log(data);
-                });
+          if (jQuery("#user-poem").val() !== "") {
+              console.log(jQuery("#user-poem").val());
+              jQuery.post("/matchimage",
+                  {
+                      poem: jQuery("#user-poem").val()
+                  },
+                  function (data, status) {
+                      data = eval('(' + data + ')');
+                      console.log(data[1]);
+                      res = jQuery("#generate-frame").html();
+                      for(var i in data[1]){
+                          item = data[1][i];
+                          res += "<div class=\"col-5 mx-2 " + gbs[Math.floor(Math.random()*gbs.length)] + " pt-5 px-5 mb-3 justify-content-center\" style='height: 600px;overflow: hidden;'>" +
+                              "<h2 class=\"mt-3\">" + item['desc'] + "</h2>" +
+                              "<img class=\"card-img-bottom\"  href=\""+ item['source'] +"\" src=\"" + item['imgurl'] + "\" style='width: 100%;'>" +
+                              "</div>"
+                      }
+                      jQuery("#generate-frame").html(res);
+                      jQuery("#generate-result").collapse('show');
+                  });
+          }
       }
-    // jQuery(document).ready(function() {
-    //     jQuery("#start-match").click(function () {
-    //         jQuery.post("/matchimage",
-    //             {
-    //                 poem: jQuery("#user-poem").text
-    //             },
-    //             function (data, status) {
-    //                 data = eval('(' + data + ')');
-    //                 console.log(data);
-    //             });
-    //     });
-    // });
     </script>
 </body>
 </html>
