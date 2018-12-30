@@ -8,8 +8,9 @@ import numpy as np
 
 from gushiwenModel.utils import *
 from gushiwenModel.data import *
-sys.path.append("../modern2poem/association")
-import association
+
+#sys.path.append("../modern2poem/association")
+#import association
 
 class GushiwenGenerator(object):
     def __init__(self, trainData):
@@ -24,7 +25,7 @@ class GushiwenGenerator(object):
         saver.restore(self.sess, checkPoint.model_checkpoint_path)
         print("restored %s" % checkPoint.model_checkpoint_path)
 
-        self.associator=association.Associator()
+        #self.associator=association.Associator()
 
     def buildModel(self, wordNum, gtX, hidden_units = 128, layers = 2):
         with tf.variable_scope("embedding"): #embedding
@@ -45,7 +46,28 @@ class GushiwenGenerator(object):
         probs = tf.nn.softmax(logits)
         return logits, probs, stackCell, initState, finalState
 
-    def probsToWord(self, weights, words):
+    def probsToWord(self,weights,poemnow,prondict,words):
+        num_per_sen=poemnow.find('，')
+        used_chars = set(ch for ch in poemnow)
+        idx=len(poemnow)
+        for i in range(len(weights[0])):
+            ch=words[i]
+            if ch in used_chars:
+                weights[0][i]*=0.6#防止过多叠词，目前还学不到凄凄惨惨戚戚的程度
+
+            if num_per_sen>1:#第一句已经做出来了
+                if ((idx-num_per_sen+1)/(num_per_sen+1))%2==1 and \
+                    not prondict.co_rhyme(ch,poemnow[num_per_sen-1]):
+                    weights[0][i]*=0.001#一三五不论，二四六分明
+
+                counterind=idx%(num_per_sen+1)
+                if 1==counterind and \
+                    not prondict.counter_tone(poemnow[1],ch):
+                    weights[0][i]*=0.4#平仄
+                if counterind>1 and counterind%2==1 and \
+                    not prondict.counter_tone(poemnow[idx-1],ch):
+                    weights[0][i]*=0.4
+
         prefixSum = np.cumsum(weights) #按概率随机抽取
         ratio = np.random.rand(1)
         index = np.searchsorted(prefixSum, ratio * prefixSum[-1]) # large margin has high possibility to be sampled
@@ -53,7 +75,7 @@ class GushiwenGenerator(object):
 
     def genfromKeywords(self,keywords):
         """
-        从sxhy古词生成古诗
+        从sxhy古词生成古诗，keywords长度至少为4（通过前面拓展）
         :param keywords:list，其中词应该全部来源于sxhy,通过在上一步设置用户选择框得到
         :return:
         """
@@ -77,13 +99,15 @@ class GushiwenGenerator(object):
 
                 poem += thisword
                 try:thisid=self.trainData.wordToID[thisword]
-                except:thisid=self.trainData.wordToID['空']
+                except:thisid=self.trainData.wordToID['不']
 
                 x = np.array([[thisid]])
                 probs2, state = self.sess.run([self.probs, self.finalState], feed_dict={self.gtX: x, self.initState: state})
-                if wordlasting >= 2:wordlasting -= 1
+                if wordlasting >= 2:
+                    wordlasting -= 1
+
                 else:
-                    word = self.probsToWord(probs2, self.trainData.words)
+                    word = self.probsToWord(probs2,poem,self.trainData.pronDict,self.trainData.words)
                     wordlasting=0
 
             poem += endSign[flag]
@@ -98,7 +122,8 @@ class GushiwenGenerator(object):
 
         return poem
 
-    def genfromSentence(self,sentence):
+    '''
+    def genfromSentence(self,sentence):这里在13行import association时会出现文件路径问题，需最后调整（绝对）路径
         """
 
         :param sentence: 一个汉语句子即可
@@ -106,11 +131,14 @@ class GushiwenGenerator(object):
         """
         keywords=self.associator.assoRandom(sentence,assoLen=8)
         return self.genfromKeywords(keywords)
+        
+    '''
 
 if __name__ == '__main__':
     trainData = POEMS(trainPoems)
     gsw=GushiwenGenerator(trainData)
-    list=['四时','炊烟','袅袅','升腾']
-    print(gsw.genfromKeywords(list))
+    list=['煤卡车','秃头','王八','菊花']
+    for i in range(20):
+        print(gsw.genfromKeywords(list))
 
 

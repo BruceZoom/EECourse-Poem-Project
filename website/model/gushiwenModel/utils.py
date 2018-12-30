@@ -20,6 +20,7 @@ generateNum = 5                   # number of generated poems per time
 type = "poetrySong"                   # dataset to use, shijing, songci, etc
 trainPoems = "./gushiwenModel/datasets/" + type + ".txt" # training file location
 checkpointsPath = "./gushiwenModel/checkpoints/" + type # checkpoints location
+pinyinPath="./gushiwenModel/datasets/pinyin.txt"#get pron dict
 
 saveStep = 1000                   # save model every savestep
 
