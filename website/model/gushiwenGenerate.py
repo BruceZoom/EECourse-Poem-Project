@@ -1,16 +1,13 @@
 # coding:utf-8
 
 import sys
-#sys.path.append("./model")
-
+sys.path.append("./model")
 import tensorflow as tf
 import numpy as np
 
-from gushiwenModel.utils import *
+from gushiwenModel.gswutils import *
 from gushiwenModel.data import *
-
-#sys.path.append("../modern2poem/association")
-#import association
+from association import *
 
 class GushiwenGenerator(object):
     def __init__(self, trainData):
@@ -25,7 +22,6 @@ class GushiwenGenerator(object):
         saver.restore(self.sess, checkPoint.model_checkpoint_path)
         print("restored %s" % checkPoint.model_checkpoint_path)
 
-        #self.associator=association.Associator()
 
     def buildModel(self, wordNum, gtX, hidden_units = 128, layers = 2):
         with tf.variable_scope("embedding"): #embedding
@@ -122,8 +118,8 @@ class GushiwenGenerator(object):
 
         return poem
 
-    '''
-    def genfromSentence(self,sentence):这里在13行import association时会出现文件路径问题，需最后调整（绝对）路径
+
+    def genfromSentence(self,sentence):
         """
 
         :param sentence: 一个汉语句子即可
@@ -132,7 +128,8 @@ class GushiwenGenerator(object):
         keywords=self.associator.assoRandom(sentence,assoLen=8)
         return self.genfromKeywords(keywords)
         
-    '''
+trainData = POEMS(trainPoems)
+gsw=GushiwenGenerator(trainData)
 
 if __name__ == '__main__':
     trainData = POEMS(trainPoems)
