@@ -239,7 +239,7 @@ class analyzer:
         print(gsw.genfromSentence(self,"日光照在青草上，今天天气真好"))
 
         # 以上部分可能出现路径错误，需请调试，可先在gushiwenGenerate.py中看使用方法
-        
+
         # print json.dumps(data)
         # return data
         # time.sleep(3)
