@@ -1,12 +1,13 @@
 # /usr/bin/env python
 # -*- coding: utf-8 -*-
 # 实现给每一首诗配图
-import json,codecs
+import json, codecs
 import os, re
 import json
 import codecs
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
+
 
 def _getkey(dict, key):
     try:
@@ -14,7 +15,8 @@ def _getkey(dict, key):
     except:
         return None
 
-_resdir='此处为有全部imgasso***.json数据的myresult文件夹'
+
+_resdir = '此处为有全部imgasso***.json数据的myresult文件夹'
 
 '''这是用诗搜描述，不知效果如何；有对图片建索引的操作；我倾向于用描述搜诗
 class ImagesObj:#给图片构造一个索引，方便后面的配图
@@ -107,31 +109,30 @@ if __name__=="__main__":
     obj.make_index_from_dir()
 
 '''
-if __name__=="__main__":
+if __name__ == "__main__":
     wholeImageSet = []
     for root, _, files in os.walk(_resdir):
         for filename in files:
             with open(os.path.join(root, filename)) as fin:
                 oneList = json.load(fin)
             wholeImageSet.extend(oneList)
-    wholeImageSet=[(x,0)for x in wholeImageSet]
+    wholeImageSet = [(x, 0) for x in wholeImageSet]
 
-    while(len('目前Imageurl为空的古诗')):
-        #使用ES索引语句
-        img,usedtime=wholeImageSet[0][0],wholeImageSet[0][1]
-        try:desc=img['desc'][5*usedtime:5*usedtime+5]#按照相关顺序，每次取5个；也可以直接随机从asso中找词
-        except:desc=img['desc']
-        desc=''.join(desc)
-        respoem='对所有Imageurl为空的gushiwen，使用desc为query得到的第一个结果；query以whitespace为分词（利用热词和ik，不用特别设置）'
+    while (len('目前Imageurl为空的古诗')):
+        # 使用ES索引语句
+        img, usedtime = wholeImageSet[0][0], wholeImageSet[0][1]
+        try:
+            desc = img['desc'][5 * usedtime:5 * usedtime + 5]  # 按照相关顺序，每次取5个；也可以直接随机从asso中找词
+        except:
+            desc = img['desc']
+        desc = ''.join(desc)
+        respoem = '对所有Imageurl为空的gushiwen，使用desc为query得到的第一个结果；query以whitespace为分词（利用热词和ik，不用特别设置）'
 
-        #更新respoem的Imageurl字段
+        # 更新respoem的Imageurl字段
 
-        wholeImageSet[0][1]+=1
-        wholeImageSet.sort(key=lambda x:x[1])#没被使用过的图片优先
+        wholeImageSet[0][1] += 1
+        wholeImageSet.sort(key=lambda x: x[1])  # 没被使用过的图片优先
 
-    #对cnmodern、enmodern使用类似的方法配对图片。cnmodern可用desc和asso配合搜；英文直接到veer文件夹内的原始文件匹配
+    # 对cnmodern、enmodern使用类似的方法配对图片。cnmodern可用desc和asso配合搜；英文直接到veer文件夹内的原始文件匹配
 
-
-    #这种方法考虑到最后或许会有一些poem始终没有图也不被搜到。随机赋值？在asso中随机找词搜索？
-
-
+    # 这种方法考虑到最后或许会有一些poem始终没有图也不被搜到。随机赋值？在asso中随机找词搜索？
