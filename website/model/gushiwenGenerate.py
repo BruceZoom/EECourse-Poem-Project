@@ -6,7 +6,7 @@ import sys
 import tensorflow as tf
 import numpy as np
 
-from gushiwenModel.utils import *
+from gushiwenModel.gswutils import *
 from gushiwenModel.data import *
 
 #sys.path.append("../modern2poem/association")
