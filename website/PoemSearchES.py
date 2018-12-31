@@ -92,7 +92,7 @@ def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pa
     for key, value in input_dict.items():
         if key in ['author', 'title_tokenized', 'label_tokenized', 'text_tokenized']:
             match = {
-                'match': {
+                'match_phrase': {
                     key: {
                         'query': value[0],
                     }
@@ -123,7 +123,7 @@ def ancient_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pag
         if key in ['author', 'dynasty', 'label_tokenized', 'title_tokenized', 'text_tokenized',
                    'shangxi_tokenized', 'yiwen_tokenized']:
             match = {
-                'match': {
+                'match_phrase': {
                     key: {
                         'query': value[0],
                     }

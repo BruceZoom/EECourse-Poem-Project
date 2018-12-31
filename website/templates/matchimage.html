@@ -48,6 +48,7 @@ $def with (data=None)
                       jQuery("#generate-frame").html(res);
                       jQuery("#generate-result").collapse('show');
                   });
+              jQuery("html,body").animate({scrollTop:jQuery("#generate-result").offset().top},1000);
           }
       }
     </script>

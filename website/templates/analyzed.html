@@ -53,10 +53,17 @@ $def with (data=None)
     </div>
   </div>
   <button hidden id="generate-result-trigger" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#generate-result"></button>
-  <div class="py-4 bg-dark collapse" id="generate-result">
-      <p>
-          adafdafdasfa
-      </p>
+  <div class="py-5 bg-dark collapse" id="generate-result">
+      <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-5 offset-md-1" id="generate-result-en" style="font-size: large">
+                Loading...
+            </div>
+            <div class="col-md-5 offset-md-1" id="generate-result-ch" style="font-size: large">
+                Loading...
+            </div>
+          </div>
+      </div>
   </div>
     $:data['footer']
   <script type="text/javascript">
@@ -95,7 +102,7 @@ $def with (data=None)
           jQuery("#image-tags").val(jQuery("#image-tags").val() + jQuery("#"+i+"-"+j+"-"+k).html() + " ");
           console.log()
           jQuery("#search").attr({
-              "href": "/gallery?label=on&searchType=all&image=&query=" + jQuery("#image-tags").val()
+              "href": "/gallery?content=on&searchType=all&image=&query=" + jQuery("#image-tags").val()
           });
       }
     jQuery(document).ready(function() {
@@ -135,7 +142,7 @@ $def with (data=None)
             // jQuery("#scene").html(data['scene']);
             // jQuery("#emotion").html(data['emotion']);
             jQuery("#search").attr({
-                "href": "/gallery?label=on&searchType=all&image=&query=" + data['label_complete']
+                "href": "/gallery?content=on&searchType=all&image=&query=" + data['label_complete']
             });
             jQuery('[data-toggle="popover"]').popover();
 
@@ -145,13 +152,21 @@ $def with (data=None)
         //     jQuery("#search-result-trigger").click();
         // });
         jQuery("#generate").click(function () {
-            // jQuery("html,body").animate({scrollTop:jQuery("#generate-result").offset().top},1000);
             jQuery("#generate-result-trigger").click();
+            jQuery("html,body").animate({scrollTop:jQuery("#generate-result").offset().top},1000);
+            jQuery.post("gallery_poem",
+                {
+                    image: "$data['form']['image']"
+                },
+                function (data, status) {
+                    data = eval('('+data+')');
+                    jQuery("#generate-result-en").html(data['enStr']);
+                    jQuery("#generate-result-ch").html(data['zhStr']);
+                }
+            );
         });
     });
   </script>
-
-  <script type="text/javascript" src="/static/js/auxiliary.js"></script>
 </body>
 
 </html>

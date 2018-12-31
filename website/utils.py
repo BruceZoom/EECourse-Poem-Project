@@ -215,7 +215,7 @@ with codecs.open('templates/footer.html', 'r', encoding='utf-8') as f:
 timestamp = len([lists for lists in os.listdir('./static/upload/')])
 
 UPLOAD_PREFIX = './static/upload/'
-
+RELU_PREFIX = './static/relu/'
 
 def alternating(a1, a2):
     res = a2[:]

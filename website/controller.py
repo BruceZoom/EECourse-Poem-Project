@@ -174,25 +174,19 @@ class gallery:
 
 
 class gallery_poem:
-    def GET(self):
+    def POST(self):
         inputs = web.input()
         print(inputs)
-        data = {
-            'header': utils.HEADER,
-            'image': inputs['image'],
-            'relu': inputs['relu'],
-        }
-        enList = get_poem(inputs['image'], inputs['relu'])[0].split('\n')
+        inputs['relu'] = utils.RELU_PREFIX + inputs['image'][:inputs['image'].find('.')] + '.npy'
+        inputs['image'] = utils.UPLOAD_PREFIX + inputs['image']
+        enList = [sent.capitalize() for sent in nm.get_poem(inputs['image'], inputs['relu'])[0].split('\n')]
         zhList = []
         for sentence in enList:
             zhSentence = en_to_zn_translate(sentence)
             zhList.append(zhSentence)
         enStr = '<br>'.join(enList)
         zhStr = '<br>'.join(zhList)
-        data['enStr'] = enStr
-        data['zhStr'] = zhStr
-
-        return render.gallery_poem(data=data)
+        return json.dumps({'enStr': enStr, 'zhStr': zhStr})
 
 
 class analyzed:
@@ -234,6 +228,7 @@ class analyzer:
         # 在用户点击某词时显示其关联古词，按权重随机取前10个
 
         # 以图生成现代诗的操作和之前一样
+
 
         # 以图搜索古代诗的方式就是通过226行的方法，用产生的联想词去搜，可以对每个词都联想，随机取
 
