@@ -188,6 +188,21 @@ class gallery_poem:
         zhStr = '<br>'.join(zhList)
         return json.dumps({'enStr': enStr, 'zhStr': zhStr})
 
+class gallery_gsw:
+    def POST(self):
+        inputs = web.input()
+        users_inputs = inputs['users_input']#即图片页面用户输入框内文本,"青天 明月 秋风 信号灯",或"今天天气真好"
+        keywords = users_inputs.split(' ')
+        if len(keywords)>=4:
+            gsw = nm.gsw.genfromKeywords(keywords)
+            return json.dumps({'gsw': gsw})
+        else:
+            newkeyword = nm.associator.assoSynAll(users_inputs)
+            keywords=newkeyword[:8]
+            gsw = nm.gsw.genfromKeywords(keywords)
+            return json.dumps({'gsw': gsw})
+
+
 
 class analyzed:
     def GET(self):
@@ -223,9 +238,12 @@ class analyzer:
             data[key] = {word[0]: [] for word in data[key] if word[0] in nm.associator.labelDict.keys()}
             for word in data[key].keys():
                 wordAssoList = nm.associator.labelDict[word]
-                wordAssoList = sorted(wordAssoList, key=lambda x: wordAssoList.index(x) * random.random())
-                data[key][word] = wordAssoList[:5]
-        # 在用户点击某词时显示其关联古词，按权重随机取前10个
+                tmpwordAssoList = []
+                for i in range(len(wordAssoList)):
+                    tmpwordAssoList.append((wordAssoList[i],i+1))
+                wordAssoList = sorted(tmpwordAssoList, key=lambda x: x[1] * random.random())
+                data[key][word] = [x[0] for x in wordAssoList[:5]]
+        # 在用户点击某词时显示其关联古词，按权重随机取前5个
 
         # 以图生成现代诗的操作和之前一样
 
