@@ -32,19 +32,51 @@
         console.log(searchType.options[searchType.selectedIndex].text);
         if (jQuery("#accurate").prop("checked")) {
             if (jQuery("#search-type").val() === "ancient") {
+                jQuery("#general-search-advanced").collapse("hide");
                 jQuery("#ancient-search-advanced").collapse("show");
                 jQuery("#modern-search-advanced").collapse("hide");
             }
-            else {
+            else if (jQuery("#search-type").val() === "modern") {
+                jQuery("#general-search-advanced").collapse("hide");
                 jQuery("#ancient-search-advanced").collapse("hide");
                 jQuery("#modern-search-advanced").collapse("show");
             }
+            else {
+                jQuery("#general-search-advanced").collapse("show");
+                jQuery("#ancient-search-advanced").collapse("hide");
+                jQuery("#modern-search-advanced").collapse("hide");
+            }
         }
         else {
+            jQuery("#general-search-advanced").collapse("hide");
             jQuery("#ancient-search-advanced").collapse("hide");
             jQuery("#modern-search-advanced").collapse("hide");
         }
+        if (jQuery("#search-type").val() === "ancient") {
+            jQuery("#shared-shangxi").removeAttr("disabled");
+            jQuery("#shared-translate").removeAttr("disabled");
+            if (!jQuery("#shared-shangxi").attr('checked')) {
+                jQuery("#shared-shangxi").attr("checked", true);
+            }
+            if (!jQuery("#shared-translate").attr('checked')){
+              jQuery("#shared-translate").attr("checked", true);
+            }
+        }
+        else {
+            if (jQuery("#shared-shangxi").attr('checked')) {
+                jQuery("#shared-shangxi").removeAttr("checked");
+            }
+            if (jQuery("#shared-translate").attr('checked')) {
+                jQuery("#shared-translate").removeAttr("checked");
+            }
+            jQuery("#shared-shangxi").attr("disabled", true);
+            jQuery("#shared-translate").attr("disabled", true);
+        }
     }
+
+    jQuery(document).ready(function () {
+        formchange();
+    });
   </script>
 </head>
 <body class="">
@@ -121,6 +153,7 @@
                   <label></label>
                 </div>
               </section>
+            </td>
           </tr>
           <tr>
             <td>作者&nbsp</td>
@@ -139,11 +172,41 @@
                   <label></label>
                 </div>
               </section>
+            </td>
+          </tr>
+          <tr>
+            <td>翻译&nbsp</td>
+            <td>
+              <section class="model-15">
+                <div class="checkbox">
+                  <input type="checkbox" name="translate" id="shared-translate" checked>
+                  <label></label>
+                </div>
+              </section>
+            <td>&nbsp&nbsp赏析&nbsp</td>
+            <td>
+              <section class="model-15">
+                <div class="checkbox">
+                  <input type="checkbox" name="shangxi" id="shared-shangxi" checked>
+                  <label></label>
+                </div>
+              </section>
+            </td>
           </tr>
         </table>
         <br>
         <div class="form-check-inline">
-            精确搜索：
+            启用同义词扩展：
+            <section class="model-15">
+			  <div class="checkbox">
+			    <input type="checkbox" id="synonyms" name="synonyms"/>
+			    <label></label>
+			  </div></section>
+        </div>
+        <br>
+        <br>
+        <div class="form-check-inline">
+            启用精确搜索：
             <section class="model-15">
 			  <div class="checkbox">
 			    <input type="checkbox" id="accurate" name="accurate" onchange="formchange()"/>
@@ -152,6 +215,18 @@
         </div>
       </div>
       <div class="col-md-4 py-4">
+        <br>
+        <div id="general-search-advanced" class="collapse">
+          <div class="form-group">
+          标题：<input class="form-control-sm" type="text" name="generalTitle" style="width: 150px;">
+          </div>
+          <div class="form-group">
+          作者：<input class="form-control-sm" type="text" name="generalAuthor" style="width: 150px;">
+          </div>
+          <div class="form-group">
+          标签：<input class="form-control-sm" type="text" name="generalLabel" style="width: 150px;">
+          </div>
+        </div>
         <div id="ancient-search-advanced" class="collapse">
           <div class="form-group">
           标题：<input class="form-control-sm" type="text" name="ancientTitle" style="width: 150px;">
@@ -160,14 +235,13 @@
           作者：<input class="form-control-sm" type="text" name="ancientAuthor" style="width: 150px;">
           </div>
           <div class="form-group">
-          朝代：<input class="form-control-sm" type="text" name="ancientTime" style="width: 150px;">
-          </div>
-          <div class="form-group">
           标签：<input class="form-control-sm" type="text" name="ancientLabel" style="width: 150px;">
           </div>
           <div class="form-group">
-            类型：
-            <select name="ancientType" class="form-control-sm" style="width: 85px;padding: 5px">
+          朝代：<input class="form-control-sm" type="text" name="ancientTime" style="width: 150px;">
+          </div>
+          <div class="form-group">
+            类型：<select name="ancientType" class="form-control-sm" style="width: 85px;">
                 <option value="all" selected>全部</option>
                 <option value="shi">诗</option>
                 <option value="ci">词</option>
@@ -185,6 +259,25 @@
           </div>
           <div class="form-group">
             标签：<input class="form-control-sm" type="text" name="modernLabel" style="width: 150px;">
+          </div>
+          <div class="form-group">
+            流派：<input class="form-control-sm" type="text" name="modernStyle" style="width: 150px;">
+          </div>
+          <div class="form-group">
+            时代：<select name="modernTime" class="form-control-sm" style="width: 150px;">
+                <option value="all" selected>全部</option>
+                <option value="20-20">20世纪20年代</option>
+                <option value="20-30">20世纪30年代</option>
+                <option value="20-40">20世纪40年代</option>
+                <option value="20-50">20世纪50年代</option>
+                <option value="20-60">20世纪60年代</option>
+                <option value="20-70">20世纪70年代</option>
+                <option value="20-80-0">20世纪80年代上</option>
+                <option value="20-80-1">20世纪80年代下</option>
+                <option value="20-90-0">20世纪90年代上</option>
+                <option value="20-90-1">20世纪90年代下</option>
+                <option value="21-00">21世纪初</option>
+            </select>
           </div>
         </div>
       </div>

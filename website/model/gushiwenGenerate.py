@@ -1,13 +1,12 @@
 # coding:utf-8
 
-import sys
-sys.path.append("./model")
 import tensorflow as tf
 import numpy as np
+import os
+import random
 
 from gushiwenModel.gswutils import *
 from gushiwenModel.data import *
-from association import *
 
 class GushiwenGenerator(object):
     def __init__(self, trainData):
@@ -19,9 +18,10 @@ class GushiwenGenerator(object):
         self.sess.run(tf.global_variables_initializer())
         saver = tf.train.Saver()
         checkPoint = tf.train.get_checkpoint_state(checkpointsPath)
+        print(';'.join(os.listdir('/')))
+        print("restoring %s" % checkPoint.model_checkpoint_path)
         saver.restore(self.sess, checkPoint.model_checkpoint_path)
         print("restored %s" % checkPoint.model_checkpoint_path)
-
 
     def buildModel(self, wordNum, gtX, hidden_units = 128, layers = 2):
         with tf.variable_scope("embedding"): #embedding
@@ -68,6 +68,7 @@ class GushiwenGenerator(object):
         ratio = np.random.rand(1)
         index = np.searchsorted(prefixSum, ratio * prefixSum[-1]) # large margin has high possibility to be sampled
         return words[index[0]]
+
 
     def genfromKeywords(self,keywords):
         """
@@ -119,21 +120,19 @@ class GushiwenGenerator(object):
         return poem
 
 
-    def genfromSentence(self,sentence):
-        """
-
-        :param sentence: 一个汉语句子即可
-        :return:
-        """
-        keywords=self.associator.assoRandom(sentence,assoLen=8)
-        return self.genfromKeywords(keywords)
+    # def genfromSentence(self,sentence):
+    #     """
+    #
+    #     :param sentence: 一个汉语句子即可
+    #     :return:
+    #     """
+    #     keywords=self.associator.assoRandom(sentence,assoLen=8)
+    #     return self.genfromKeywords(keywords)
         
 trainData = POEMS(trainPoems)
 gsw=GushiwenGenerator(trainData)
 
 if __name__ == '__main__':
-    trainData = POEMS(trainPoems)
-    gsw=GushiwenGenerator(trainData)
     list=['煤卡车','秃头','王八','菊花']
     for i in range(20):
         print(gsw.genfromKeywords(list))
