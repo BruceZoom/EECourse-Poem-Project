@@ -5,6 +5,7 @@ import association
 import codecs, json
 from elasticsearch import Elasticsearch
 from PoemSearchES import process_query_results
+import random
 
 es = Elasticsearch(['localhost:9200'])
 associator = association.Associator()
@@ -37,7 +38,7 @@ def img2gushiwen(imglabels='', cur_page=1, pp=utils.PAGI_SETTING['result_per_pag
     search_body = {
         'query': {
             'match': {
-                'text_tokenized': ' '.join(assolist)
+                'text_tokenized': ' '.join(assolist)[:1000]
             }
         }
     }
@@ -59,7 +60,7 @@ def img2cnmodern(imglabels='', cur_page=1, pp=utils.PAGI_SETTING['result_per_pag
     search_body = {
         'query': {
             'match': {
-                'text_tokenized': ' '.join(assolist)
+                'text_tokenized': ' '.join(assolist)[:1000]
             }
         }
     }
@@ -88,7 +89,7 @@ def poem2img(poem='', cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], trun
     search_body = {
         'query': {
             'match': {
-                'asso': ' '.join(assolist)
+                'asso': ' '.join(assolist)[:1000]
             }
         }
     }
@@ -104,15 +105,31 @@ def poem2img(poem='', cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], trun
     res = process_img_results(res_tmp)
     return matches, res
 
-
+# 诗搜图
 def giveimg2gishiwen():
-    print('Give image to gushiwen...')
-    with codecs.open('../sourcePoems/allpoems.json', 'r', encoding='utf-8') as fin:
-        gushiwen = json.load(fin)
+    print('Give image to unmatched gushiwen...')
+    # with codecs.open('../sourcePoems/allpoems.json', 'r', encoding='utf-8') as fin:
+    #     gushiwen = json.load(fin)
     i = 1
-    for poem in gushiwen:
+    for i in range(1,22797+1):
+        # 判断是否有图
+        search_body = {
+            "query": {
+                "ids": {
+                    "type": "gushiwen_type",
+                    "values": [i]
+                }
+            }
+        }
+        res = es.search(index='gushiwen', doc_type='gushiwen_type', body=search_body)['hits']['hits']
+        try:
+            poem = res[0]
+        except:
+            continue
+        if poem['_source']['imgurl']:
+            continue
         # 匹配图片
-        matches, res = poem2img(poem['title'] + poem['text'])
+        matches, res = poem2img(poem['_source']['text_tokenized'])
         if len(res) == 0:
             continue
         imgurl = res[0]['imgurl']
@@ -123,16 +140,32 @@ def giveimg2gishiwen():
             }
         }
         es.update(index='gushiwen', doc_type='gushiwen_type', id=i, body=update_body)
-        i += 1
 
+# 诗搜图
 def giveimg2cnmodern():
-    print('Give image to gushiwen...')
-    with codecs.open('../sourcePoems/allchinesemoderns.json', 'r', encoding='utf-8') as fin:
-        cnmodern = json.load(fin)
+    print('Give image to unmatched cnmodern...')
+    # with codecs.open('../sourcePoems/allchinesemoderns.json', 'r', encoding='utf-8') as fin:
+    #     cnmodern = json.load(fin)
     i = 1
-    for poem in cnmodern:
+    for i in range(1,5029):
+        # 判断是否有图
+        search_body = {
+            "query": {
+                "ids": {
+                    "type": "cnmodern_type",
+                    "values": [i]
+                }
+            }
+        }
+        res = es.search(index='cnmodern', doc_type='cnmodern_type', body=search_body)['hits']['hits']
+        try:
+            poem = res[0]
+        except:
+            continue
+        if poem['_source']['imgurl']:
+            continue
         # 匹配图片
-        matches, res = poem2img(poem['title'] + poem['text'])
+        matches, res = poem2img(poem['_source']['text_tokenized'])
         if len(res) == 0:
             continue
         imgurl = res[0]['imgurl']
@@ -143,7 +176,71 @@ def giveimg2cnmodern():
             }
         }
         es.update(index='cnmodern', doc_type='cnmodern_type', id=i, body=update_body)
-        i += 1
+
+# 图搜诗
+def giveimg2poem():
+    print('Give image to all poems...')
+    for i in range(1,147672+1):
+        search_body = {
+            "query": {
+                "ids": {
+                    "type": "imgasso_type",
+                    "values": [i]
+                }
+            }
+        }
+        res = es.search(index='imgasso', doc_type='imgasso_type', body=search_body)['hits']['hits']
+        try:
+            img = res[0]
+        except:
+            continue
+        # 图片标签同义词古词拓展，返回assolist
+        assolist = associator.assoSynAll(img['_source']['asso'])
+        # 根据assolist搜索古诗的文本
+        search_body = {
+            'query': {
+                'match': {
+                    'text_tokenized': ' '.join(assolist)[:1000]
+                }
+            }
+        }
+        # 搜索结果数
+        search_body['from'] = 0
+        search_body['size'] = 5
+        # 随机搜索古诗或现代诗
+        if random.randint(0,1):
+            # 古诗
+            # print('gushiwen')
+            res = es.search(index='gushiwen', doc_type='gushiwen_type', body=search_body)['hits']['hits']
+            for poem in res:
+                if poem['_source']['imgurl']:
+                    continue
+                update_body = {
+                    'doc': {
+                        'imgurl': img['_source']['imgurl']
+                    }
+                }
+                es.update(index='gushiwen', doc_type='gushiwen_type', id=poem['_id'], body=update_body)
+                # print poem['_id'],img['_source']['imgurl']
+                break
+        else:
+            # 现代诗
+            # print('cnmodern')
+            res = es.search(index='cnmodern', doc_type='cnmodern_type', body=search_body)['hits']['hits']
+            for poem in res:
+                if poem['_source']['imgurl']:
+                    continue
+                update_body = {
+                    'doc': {
+                        'imgurl': img['_source']['imgurl']
+                    }
+                }
+                es.update(index='gushiwen', doc_type='gushiwen_type', id=poem['_id'], body=update_body)
+                # print poem['_id'], img['_source']['imgurl']
+                break
+    giveimg2gishiwen()
+    giveimg2cnmodern()
+
 
 
 if __name__ == '__main__':
@@ -153,4 +250,4 @@ if __name__ == '__main__':
     #     print i
 
     # give img to gushiwen
-    giveimg2cnmodern()
+    giveimg2poem()

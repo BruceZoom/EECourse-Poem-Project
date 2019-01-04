@@ -400,9 +400,11 @@ class ChineseModernsObj:
                 self.index_type: {
                     "properties": {
                         "author": {
-                            "type": "keyword",
-                            "index": "not_analyzed",
+                            "type": "text",
+                            "index": True,
                             "store": True,
+                            "analyzer": "whitespace",
+                            "search_analyzer": "whitespace",
                         },
                         "text_tokenized": {
                             "type": "text",
@@ -546,11 +548,11 @@ if __name__ == '__main__':
     # ---生成总数据---
 
     # ---建立索引，用一次后请注释掉---
-    obj = GushiwenObj()
-    print('indexing gushiwen...')
-    with codecs.open('allpoems.json', 'r', encoding='utf-8')as fin:
-        poemList = json.load(fin)
-    obj.bulk_Gushiwen_Data(poemList)
+    # obj = GushiwenObj()
+    # print('indexing gushiwen...')
+    # with codecs.open('allpoems.json', 'r', encoding='utf-8')as fin:
+    #     poemList = json.load(fin)
+    # obj.bulk_Gushiwen_Data(poemList)
 
     # obj = AuthorObj()
     # print('indexing authors...')
@@ -558,11 +560,11 @@ if __name__ == '__main__':
     #     poemList = json.load(fin)
     # obj.bulk_Author_Data(poemList)
     #
-    # obj = ChineseModernsObj()
-    # print('indexing chinese moderns...')
-    # with codecs.open('allchinesemoderns.json', 'r', encoding='utf-8') as fin:
-    #     poemList = json.load(fin)
-    # obj.bulk_ChineseModerns_Data(poemList)
+    obj = ChineseModernsObj()
+    print('indexing chinese moderns...')
+    with codecs.open('allchinesemoderns.json', 'r', encoding='utf-8') as fin:
+        poemList = json.load(fin)
+    obj.bulk_ChineseModerns_Data(poemList)
     #
     # obj = EnglishModernsObj()
     # print('indexing english moderns...')

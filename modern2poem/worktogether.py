@@ -24,6 +24,7 @@ myinitstart=100000 # for ljy
 # myinitstart = 174003  # for wzy
 
 # myend=50000#for dhy
+
 # myend=100000 for chp
 myend=150000 # for ljy
 # myend = 198800  # for wzy
