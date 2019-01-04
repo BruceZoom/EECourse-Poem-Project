@@ -132,7 +132,8 @@ def giveimg2cnmodern():
     i = 1
     for poem in cnmodern:
         # 匹配图片
-        matches, res = poem2img(poem['title'] + poem['text'])
+        matches, res = poem2img(poem['text'])
+        # matches, res = poem2img(poem['title'] + poem['text'])
         if len(res) == 0:
             continue
         imgurl = res[0]['imgurl']
