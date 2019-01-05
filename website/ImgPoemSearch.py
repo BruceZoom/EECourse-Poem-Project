@@ -53,6 +53,7 @@ def img2gushiwen(imglabels='', cur_page=1, pp=utils.PAGI_SETTING['result_per_pag
     res = process_query_results(res_tmp, truncated)
     return matches, res
 
+
 def img2cnmodern(imglabels='', cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
     # 图片标签同义词古词拓展，返回assolist
     assolist = associator.assoSynAll(imglabels)
@@ -105,13 +106,14 @@ def poem2img(poem='', cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], trun
     res = process_img_results(res_tmp)
     return matches, res
 
+
 # 诗搜图
 def giveimg2gishiwen():
     print('Give image to unmatched gushiwen...')
     # with codecs.open('../sourcePoems/allpoems.json', 'r', encoding='utf-8') as fin:
     #     gushiwen = json.load(fin)
     i = 1
-    for i in range(1,22797+1):
+    for i in range(1, 22797 + 1):
         # 判断是否有图
         search_body = {
             "query": {
@@ -141,13 +143,14 @@ def giveimg2gishiwen():
         }
         es.update(index='gushiwen', doc_type='gushiwen_type', id=i, body=update_body)
 
+
 # 诗搜图
 def giveimg2cnmodern():
     print('Give image to unmatched cnmodern...')
     # with codecs.open('../sourcePoems/allchinesemoderns.json', 'r', encoding='utf-8') as fin:
     #     cnmodern = json.load(fin)
     i = 1
-    for i in range(1,5029):
+    for i in range(1, 5029):
         # 判断是否有图
         search_body = {
             "query": {
@@ -177,10 +180,11 @@ def giveimg2cnmodern():
         }
         es.update(index='cnmodern', doc_type='cnmodern_type', id=i, body=update_body)
 
+
 # 图搜诗
 def giveimg2poem():
     print('Give image to all poems...')
-    for i in range(1,147672+1):
+    for i in range(1, 147672 + 1):
         search_body = {
             "query": {
                 "ids": {
@@ -208,7 +212,7 @@ def giveimg2poem():
         search_body['from'] = 0
         search_body['size'] = 5
         # 随机搜索古诗或现代诗
-        if random.randint(0,1):
+        if random.randint(0, 1):
             # 古诗
             # print('gushiwen')
             res = es.search(index='gushiwen', doc_type='gushiwen_type', body=search_body)['hits']['hits']
@@ -240,7 +244,6 @@ def giveimg2poem():
                 break
     giveimg2gishiwen()
     giveimg2cnmodern()
-
 
 
 if __name__ == '__main__':
