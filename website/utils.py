@@ -2,6 +2,7 @@
 import codecs
 import os
 import jieba
+import homeContent
 
 DISPLAY_UTILS = {
     'card_max_text': 50,
@@ -23,7 +24,7 @@ PAGI_SETTING = {
     'max_page': 10,
     'result_per_page': 9,
 }
-
+LANDING_DATA = homeContent.get_landing_data()
 LANDING_DATA_DEFAULT = {
     'daily': {
         'title': 'Title',

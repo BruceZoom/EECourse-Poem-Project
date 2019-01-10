@@ -36,6 +36,7 @@ urls = (
     '/authorpage', 'authorpage',
     '/authorlist', 'authorlist',
     '/poempage', 'poempage',
+    '/notfound', 'notfound',
 )
 
 EMPTY_QUERY = 0
@@ -49,7 +50,7 @@ class index:
         data = {
             'form': utils.FORM_INIT,
             'header': utils.HEADER,
-            'landing': utils.LANDING_DATA_DEFAULT,
+            'landing': utils.LANDING_DATA,
             'footer': utils.FOOTER,
         }
         return render.index(data=data)
