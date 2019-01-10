@@ -9,12 +9,6 @@ import os
 from PIL import Image
 import random
 
-# import PoemModel as PM
-
-# from model.getImageFeature import *
-# from model.modernPoemGenerate import *
-# from model.gushiwenGenerate import *
-# from model.association import *
 import netModel as nm
 from translate import *
 
@@ -201,8 +195,6 @@ class gallery_gsw:
             keywords=newkeyword[:8]
             gsw = nm.gsw.genfromKeywords(keywords)
             return json.dumps({'gsw': gsw})
-
-
 
 class analyzed:
     def GET(self):
