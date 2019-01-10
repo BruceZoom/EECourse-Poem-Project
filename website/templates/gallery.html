@@ -22,63 +22,64 @@ $def with (data=None)
       </div>
     </div>
   </div>
-  <div class="py-4 bg-light">
-    <div class="container">
-      <div class="row">
-        $ cnt=0
-        $for entry in data['results']:
-          <div class="col-md-4 p-3">
-            <div class="card box-shadow">
-              <!--<img class="card-img-top" src="$entry['imgurl']">-->
-              <img id="card-img-$cnt" class="card-img-top" src="$entry['imgurl']">
-              <div class="card-body">
-                <p class="card-text">
-                  <a href="$entry['poemurl']">
-                  $entry['title']<br>
-                  $:entry['content']</a>
-                  &nbsp——&nbsp<a style="font-size: small" href="$entry['poeturl']">$entry['poet']</a>
-                </p>
-                <div class="row d-flex justify-content-between align-items-center">
-                  <div class="col-8">
-                  <!--<div class="btn-group">-->
-                    $for label in entry['labels']:
-                      <a href="$label['labelurl']"><span class="badge badge-success" href="">$label['label']</span></a>
-                  <!--</div>-->
+  $if len(data['results'])>0:
+    <div class="py-4 bg-light">
+      <div class="container">
+        <div class="row">
+          $ cnt=0
+          $for entry in data['results']:
+            <div class="col-md-4 p-3">
+              <div class="card box-shadow">
+                <!--<img class="card-img-top" src="$entry['imgurl']">-->
+                <img id="card-img-$cnt" class="card-img-top" src="$entry['imgurl']">
+                <div class="card-body">
+                  <p class="card-text">
+                    <a href="$entry['poemurl']">
+                    $entry['title']<br>
+                    $:entry['content']</a>
+                    &nbsp——&nbsp<a style="font-size: small" href="$entry['poeturl']">$entry['poet']</a>
+                  </p>
+                  <div class="row d-flex justify-content-between align-items-center">
+                    <div class="col-8">
+                    <!--<div class="btn-group">-->
+                      $for label in entry['labels']:
+                        <a href="$label['labelurl']"><span class="badge badge-success" href="">$label['label']</span></a>
+                    <!--</div>-->
+                    </div>
+                    <div class="col-4">
+                    <button type="button" class="btn btn-sm btn-outline-primary">
+                      <small class="text-muted">Likes&nbsp<span class="badge badge-light">$entry['likes']</span></small>
+                    </button></div>
                   </div>
-                  <div class="col-4">
-                  <button type="button" class="btn btn-sm btn-outline-primary">
-                    <small class="text-muted">Likes&nbsp<span class="badge badge-light">$entry['likes']</span></small>
-                  </button></div>
                 </div>
               </div>
             </div>
-          </div>
-          $ cnt = cnt + 1
-      </div>
-      <div class="row justify-content-center pt-3">
-        <ul class="pagination">
-          $ pagi = data['pagi']
-          $if pagi['cur_page'] > 1:
-            <li class="page-item"><a class="page-link" href="/gallery?$data['url_prefix_form']page=1">
-              $pagi['top']
-            </a></li>
-            <li class="page-item"><a class="page-link" href="/gallery?$data['url_prefix_form']page=$(pagi['cur_page']-1)">
-              $pagi['prev']
-            </a></li>
-          $for i in range(max(1, pagi['cur_page']-pagi['offset']), min(pagi['max_page'], pagi['cur_page']+pagi['offset'])+1):
-            $if i == pagi['cur_page']:
-              <li class="page-item active"><a class="page-link">$i</a></li>
-            $else:
-              <li class="page-item"><a class="page-link" href="/gallery?$data['url_prefix_form']page=$i">$i</a></li>
-          $if pagi['cur_page'] < pagi['max_page']:
-            <li class="page-item"><a class="page-link" href="/gallery?$data['url_prefix_form']page=$(pagi['cur_page']+1)">
-              $pagi['next']
-            </a></li>
-            <li class="page-item"><a class="page-link" href="/gallery?$data['url_prefix_form']page=$pagi['max_page']">
-              $pagi['bottom']
-            </a></li>
-        </ul>
-      </div>
+            $ cnt = cnt + 1
+        </div>
+        <div class="row justify-content-center pt-3">
+          <ul class="pagination">
+            $ pagi = data['pagi']
+            $if pagi['cur_page'] > 1:
+              <li class="page-item"><a class="page-link" href="/gallery?$data['url_prefix_form']page=1">
+                $pagi['top']
+              </a></li>
+              <li class="page-item"><a class="page-link" href="/gallery?$data['url_prefix_form']page=$(pagi['cur_page']-1)">
+                $pagi['prev']
+              </a></li>
+            $for i in range(max(1, pagi['cur_page']-pagi['offset']), min(pagi['max_page'], pagi['cur_page']+pagi['offset'])+1):
+              $if i == pagi['cur_page']:
+                <li class="page-item active"><a class="page-link">$i</a></li>
+              $else:
+                <li class="page-item"><a class="page-link" href="/gallery?$data['url_prefix_form']page=$i">$i</a></li>
+            $if pagi['cur_page'] < pagi['max_page']:
+              <li class="page-item"><a class="page-link" href="/gallery?$data['url_prefix_form']page=$(pagi['cur_page']+1)">
+                $pagi['next']
+              </a></li>
+              <li class="page-item"><a class="page-link" href="/gallery?$data['url_prefix_form']page=$pagi['max_page']">
+                $pagi['bottom']
+              </a></li>
+          </ul>
+        </div>
     </div>
   </div>
     $:data['footer']

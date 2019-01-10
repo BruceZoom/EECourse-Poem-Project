@@ -218,6 +218,8 @@ timestamp = len([lists for lists in os.listdir('./static/upload/')])
 UPLOAD_PREFIX = './static/upload/'
 RELU_PREFIX = './static/relu/'
 
+MAX_RESULTS = 50000
+
 def alternating(a1, a2):
     res = a2[:]
     for i in range(len(a1)):

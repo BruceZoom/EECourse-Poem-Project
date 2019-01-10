@@ -5,16 +5,17 @@ import codecs
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 import jieba
+import jieba.analyse
 
 index_analyzer = 'ik_max_word'
 search_analyzer = 'ik_smart'
 
 
-def _getkey(dict, key, seg=None):
+def _getkey(dict, key, seg=None, default=''):
     try:
         return dict[key]
     except:
-        return None
+        return default
 
 
 def _genAllPoems():
@@ -419,7 +420,7 @@ class ChineseModernsObj:
                             "store": True,
                         },
                         "label_tokenized": {
-                            "type": "text",
+                            "type": "keyword",
                             "index": True,
                             "store": False,
                             "index_analyzer": "whitespace",
@@ -447,6 +448,28 @@ class ChineseModernsObj:
                             "index": "not_analyzed",
                             "store": True,
                         },
+                        'genre_text': {
+                            "type": "text",
+                            "index": True,
+                            "store": False,
+                            "index_analyzer": index_analyzer,
+                            "search_analyzer": search_analyzer,
+                        },
+                        'genre_key': {
+                            "type": "keyword",
+                            "index": "not_analyzed",
+                            "store": True,
+                        },
+                        'time_text': {
+                            "type": "text",
+                            "index": False,
+                            "store": False,
+                        },
+                        'time_key': {
+                            "type": "keyword",
+                            "index": "not_analyzed",
+                            "store": True,
+                        }
                     }
                 }
             }
@@ -456,10 +479,12 @@ class ChineseModernsObj:
             res = self.es.indices.create(index=self.index_name, body=_index_mappings)
             print(res)
 
-    def bulk_ChineseModerns_Data(self, list, seg=jieba.cut):
+    def bulk_ChineseModerns_Data(self, list, authorInfo, seg=jieba.cut):
         ACTIONS = []
         i = 1
         for line in list:
+            author = _getkey(line, 'author')
+            labels = ' '.join(jieba.analyse.extract_tags(_getkey(line, 'text'), topK=5, withWeight=False))
             action = {
                 "_index": self.index_name,
                 "_type": self.index_type,
@@ -471,8 +496,12 @@ class ChineseModernsObj:
                     "title_tokenized": _getkey(line, 'title'),
                     "title": _getkey(line, 'title'),
                     "imgurl": _getkey(line, 'img'),
-                    "label_tokenized": _getkey(line, 'label'),
-                    "label": _getkey(line, 'label'),
+                    "label_tokenized": labels,
+                    "label": labels,
+                    "genre_text": _getkey(_getkey(authorInfo, author), 'genre', default='无'),
+                    "genre_key": _getkey(_getkey(authorInfo, author), 'genre', default='无'),
+                    "time_text": _getkey(_getkey(authorInfo, author), 'time_text', default='无'),
+                    "time_key": _getkey(_getkey(authorInfo, author), 'time_key', default='无'),
                 }
             }
             i += 1
@@ -548,29 +577,37 @@ if __name__ == '__main__':
     # ---生成总数据---
 
     # ---建立索引，用一次后请注释掉---
-    # obj = GushiwenObj()
-    # print('indexing gushiwen...')
-    # with codecs.open('allpoems.json', 'r', encoding='utf-8')as fin:
-    #     poemList = json.load(fin)
-    # obj.bulk_Gushiwen_Data(poemList)
+    obj = GushiwenObj()
+    print('indexing gushiwen...')
+    with codecs.open('allpoems.json', 'r', encoding='utf-8')as fin:
+        poemList = json.load(fin)
+    obj.bulk_Gushiwen_Data(poemList)
+    del poemList
 
-    # obj = AuthorObj()
-    # print('indexing authors...')
-    # with codecs.open('allauthors.json', 'r', encoding='utf-8') as fin:
-    #     poemList = json.load(fin)
-    # obj.bulk_Author_Data(poemList)
-    #
+    obj = AuthorObj()
+    print('indexing authors...')
+    with codecs.open('allauthors.json', 'r', encoding='utf-8') as fin:
+        poemList = json.load(fin)
+    obj.bulk_Author_Data(poemList)
+    del poemList
+
     obj = ChineseModernsObj()
     print('indexing chinese moderns...')
     with codecs.open('allchinesemoderns.json', 'r', encoding='utf-8') as fin:
         poemList = json.load(fin)
-    obj.bulk_ChineseModerns_Data(poemList)
+    with codecs.open('cnmodern_author_info.json', 'r', encoding='utf-8') as fin:
+        authorInfo = json.load(fin)
+    obj.bulk_ChineseModerns_Data(poemList, authorInfo)
+    del poemList
+    del authorInfo
+
     #
-    # obj = EnglishModernsObj()
-    # print('indexing english moderns...')
-    # with codecs.open('allenglishmoderns.json', 'r', encoding='utf-8') as fin:
-    #     poemList = json.load(fin)
-    # obj.bulk_EnglishModerns_Data(poemList)
+    obj = EnglishModernsObj()
+    print('indexing english moderns...')
+    with codecs.open('allenglishmoderns.json', 'r', encoding='utf-8') as fin:
+        poemList = json.load(fin)
+    obj.bulk_EnglishModerns_Data(poemList)
+    del poemList
     # ---建立索引---
 
     # TODO: 继续丰富上面几个类的内容，完善搜索、增删改查的功能
