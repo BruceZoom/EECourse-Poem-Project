@@ -12,7 +12,8 @@ $def with (data=None)
           <h1>我们刚刚为您分析了这张图片</h1>
           <p class="lead text-muted">您可以查看以下分析结果，或者利用这张图进一步搜索诗歌</p>
           <a id="search" href="#" class="btn btn-primary m-2">以图搜诗</a>
-          <a id="generate" href="#generate-result" class="btn btn-secondary m-2">以图作诗</a>
+          <a id="generate" href="#generate-result" class="btn btn-secondary m-2">创作现代诗</a>
+          <a id="generate-ancient" href="#generate-result-ancient" class="btn btn-secondary m-2">创作古体诗</a>
             <br><br>
           <p><input class="form-control" style="width: 300;height: 50px;" type="text" id="image-tags" hidden></p>
         </div>
@@ -60,6 +61,16 @@ $def with (data=None)
                 Loading...
             </div>
             <div class="col-md-5 offset-md-1" id="generate-result-ch" style="font-size: large">
+                Loading...
+            </div>
+          </div>
+      </div>
+  </div>
+  <button hidden id="generate-result-ancient-trigger" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#generate-result-ancient"></button>
+  <div class="py-5 bg-dark collapse" id="generate-result-ancient">
+      <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-5 offset-md-1" id="generate-result-an" style="font-size: large">
                 Loading...
             </div>
           </div>
@@ -152,7 +163,8 @@ $def with (data=None)
         //     jQuery("#search-result-trigger").click();
         // });
         jQuery("#generate").click(function () {
-            jQuery("#generate-result-trigger").click();
+            // jQuery("#generate-result-trigger").click();
+            jQuery("#generate-result").collapse('show');
             jQuery("html,body").animate({scrollTop:jQuery("#generate-result").offset().top},1000);
             jQuery.post("gallery_poem",
                 {
@@ -162,6 +174,20 @@ $def with (data=None)
                     data = eval('('+data+')');
                     jQuery("#generate-result-en").html(data['enStr']);
                     jQuery("#generate-result-ch").html(data['zhStr']);
+                }
+            );
+        });
+        jQuery("#generate-ancient").click(function () {
+            // jQuery("#generate-result-ancient-trigger").click();
+            jQuery("#generate-ancient-result").collapse('show');
+            jQuery("html,body").animate({scrollTop:jQuery("#generate-result-ancient").offset().top},1000);
+            jQuery.post("gallery_gsw",
+                {
+                    image: "$data['form']['image']"
+                },
+                function (data, status) {
+                    data = eval('('+data+')');
+                    jQuery("#generate-result-an").html(data['gsw']);
                 }
             );
         });

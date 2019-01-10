@@ -91,7 +91,7 @@ class query:
             data['total_match'], data['results'] = PSES.common_query(command_dict)
             print(data['total_match'])
             # set up pagination and form
-            data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+            data['pagi']['max_page'] = min(data['total_match'] + data['pagi']['result_per_page'] - 1, utils.MAX_RESULTS) // data['pagi'][
                 'result_per_page']
             data['pagi']['cur_page'] = 1
             data['form']['image'] = ''
@@ -154,7 +154,7 @@ class gallery:
                 print(command_dict)
                 data['total_match'], data['results'] = PSES.common_query(command_dict, cur_page=inputs['page'])
                 # print (data['total_match'], data['results'])
-                data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+                data['pagi']['max_page'] = min(data['total_match'] + data['pagi']['result_per_page'] - 1, utils.MAX_RESULTS) // data['pagi'][
                     'result_per_page']
                 # data['results'] = utils.ENTRY_SAMPLES
 
@@ -299,7 +299,7 @@ class authorlist:
 
             data['url_prefix_form'] = ''
             data['total_match'], data['results'] = PSES.search_author(cur_page=inputs['page'])
-            data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+            data['pagi']['max_page'] = min(data['total_match'] + data['pagi']['result_per_page'] - 1, utils.MAX_RESULTS) // data['pagi'][
                 'result_per_page']
             data['pagi']['cur_page'] = inputs['page']
 
@@ -338,7 +338,7 @@ class authorpage:
 
             data['total_match'], data['results'] = res
             print(data['total_match'], data['results'])
-            data['pagi']['max_page'] = (data['total_match'] + data['pagi']['result_per_page'] - 1) // data['pagi'][
+            data['pagi']['max_page'] = (min(data['total_match'], utils.MAX_RESULTS) + data['pagi']['result_per_page'] - 1) // data['pagi'][
                 'result_per_page']
             data['pagi']['cur_page'] = inputs['page']
 
@@ -376,8 +376,8 @@ class Validator:
         'modernTitle': 'title_tokenized',
         'modernAuthor': 'author',
         'modernLabel': 'label_tokenized',
-        'modernStyle': 'style',
-        'modernTime': 'time',
+        'modernStyle': 'genre_key',
+        'modernTime': 'time_key',
     }
     general_key_map = {
         'generalTitle': 'title_tokenized',
@@ -423,7 +423,7 @@ class Validator:
             return VALID_IMAGE
         flag = False
         for key in ['query', 'ancientAuthor', 'ancientTime', 'ancientLabel', 'ancientTitle',
-                    'modernTitle', 'modernAuthor', 'modernLabel', 'modernStyle',
+                    'modernTitle', 'modernAuthor', 'modernLabel', 'modernStyle', 'modernTime',
                     'generalTitle', 'generalAuthor', 'generalLabel']:
             flag = (flag or (key in form_dict.keys() and len(form_dict[key]) > 0))
         if not flag:
@@ -461,12 +461,12 @@ class Validator:
         elif input_dict['searchType'] == 'modern':
             if 'accurate' in input_dict.keys():
                 for key in ['modernTitle', 'modernAuthor', 'modernLabel', 'modernStyle', 'modernTime']:
-                    if input_dict[key] != '':
+                    if key in input_dict.keys() and input_dict[key] != '':
                         command_dict[Validator.modern_key_map[key]] = (input_dict[key], True)
         elif input_dict['searchType'] == 'all':
             if 'accurate' in input_dict.keys():
                 for key in ['generalTitle', 'generalAuthor', 'generalLabel']:
-                    if input_dict[key] != '':
+                    if key in input_dict.keys() and input_dict[key] != '':
                         command_dict[Validator.general_key_map[key]] = (input_dict[key], True)
         return command_dict
 

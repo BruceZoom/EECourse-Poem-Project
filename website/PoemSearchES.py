@@ -29,6 +29,7 @@ def process_query_results(res_tmp, truncated=True):
     # print (res_tmp[0])
     for tmp in res_tmp:
         poemurl = '/poempage?index=' + tmp['_index'] + '&id=' + tmp['_id'] + '&'
+        _id = tmp['_id']
         tmp = tmp['_source']
         if tmp['imgurl'] is None or tmp['imgurl'] == '':
             tmp['imgurl'] = '/static/image/1.jpg'
@@ -37,21 +38,34 @@ def process_query_results(res_tmp, truncated=True):
         if tmp['label'] is None:
             tmp['label'] = ''
         entry = {
+            'id': _id,
             'imgurl': tmp['imgurl'],
             'title': tmp['title'],
             'content': tmp['text'].replace('\n', '<br>'),
             'poet': tmp['author'],
             'poemurl': poemurl,
-            'poeturl': '/authorpage?author='+tmp['author'],
-            # 'labels': [],
-            'labels': [
+            'poeturl': '/authorpage?author=' + tmp['author'],
+            'likes': 0,
+        }
+        labels = [
                 {
                     'label': label,
                     'labelurl': '/gallery?searchType=all&image=&label=on&query=' + label,
                 }
-                for label in tmp['label'].split()],
-            'likes': 0,
-        }
+                for label in tmp['label'].split()]
+        if 'genre_text' in tmp.keys() and tmp['genre_text'] not in ['', '无']:
+            labels.insert(0, {
+                'label': tmp['genre_text'],
+                'labelurl': '/gallery?searchType=modern&image=&query=&accurate=&modernStyle=' + tmp['genre_text'],
+                })
+            entry['genre'] = tmp['genre_text']
+        if 'time_text' in tmp.keys() and tmp['time_text'] not in ['', '无']:
+            labels.insert(0, {
+                'label': tmp['time_text'],
+                'labelurl': '/gallery?searchType=modern&image=&query=&accurate=&modernTime=' + tmp['time_key'],
+                })
+            entry['time'] = tmp['time_text']
+        entry['labels'] = labels
         res.append(entry)
     return res
 
@@ -89,8 +103,9 @@ def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pa
             'should': [],
         },
     }}
+    print(input_dict)
     for key, value in input_dict.items():
-        if key in ['author', 'title_tokenized', 'label_tokenized', 'text_tokenized']:
+        if key in ['author', 'title_tokenized', 'label_tokenized', 'text_tokenized', 'genre_key', 'time_key']:
             match = {
                 'match_phrase': {
                     key: {

@@ -4,6 +4,7 @@ import utils
 import association
 import codecs, json
 from elasticsearch import Elasticsearch
+from elasticsearch import helpers
 from PoemSearchES import process_query_results
 import random
 
@@ -184,22 +185,44 @@ def giveimg2cnmodern():
 # 图搜诗
 def giveimg2poem():
     print('Give image to all poems...')
-    for i in range(1, 147672 + 1):
-        search_body = {
-            "query": {
-                "ids": {
-                    "type": "imgasso_type",
-                    "values": [i]
-                }
-            }
-        }
-        res = es.search(index='imgasso', doc_type='imgasso_type', body=search_body)['hits']['hits']
-        try:
-            img = res[0]
-        except:
-            continue
+    results = helpers.scan(
+        client=es,
+        query={'query': {'match_all': {}}},
+        scroll='5m',
+        index='imgasso',
+        doc_type='imgasso_type',
+        timeout='1m'
+    )
+    total = es.count(index='imgasso',
+        doc_type='imgasso_type', body={'query': {'match_all': {}}})
+    print(results)
+    # input()
+    cnt = 0
+    for res in results:
+        cnt += 1
+        if cnt % 10 == 0:
+            print('{}/{}'.format(cnt, total['count']))
+        # search_body = {
+        #     "query": {
+        #         "ids": {
+        #             "type": "imgasso_type",
+        #             "values": [i]
+        #         }
+        #     }
+        # }
+        # res = es.search(index='imgasso', doc_type='imgasso_type', body=search_body)['hits']['hits']
+        # print(res)
+        # input()
+        # try:
+        #     img = res[0]
+        #     print(img)
+        #     input()
+        # except:
+        #     continue
         # 图片标签同义词古词拓展，返回assolist
-        assolist = associator.assoSynAll(img['_source']['asso'])
+        img = res
+        assolist = img['_source']['asso']
+        # assolist = associator.assoSynAll(img['_source']['asso'])
         # 根据assolist搜索古诗的文本
         search_body = {
             'query': {

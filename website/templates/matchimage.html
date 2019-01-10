@@ -42,7 +42,7 @@ $def with (data=None)
                           item = data[1][i];
                           res += "<div class=\"col-5 mx-2 " + gbs[Math.floor(Math.random()*gbs.length)] + " pt-5 px-5 mb-3 justify-content-center\" style='height: 600px;overflow: hidden;'>" +
                               "<h2 class=\"mt-3\">" + item['desc'] + "</h2>" +
-                              "<img class=\"card-img-bottom\"  href=\""+ item['source'] +"\" src=\"" + item['imgurl'] + "\" style='width: 100%;'>" +
+                              "<img class=\"card-img-bottom\"  href=\""+ item['source'] +"\" src=\"" + item['imgurl'] + "\">" +
                               "</div>"
                       }
                       jQuery("#generate-frame").html(res);
