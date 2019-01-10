@@ -1,10 +1,11 @@
 # coding:utf-8
 
 import utils
-import codecs, json
+# import codecs, json
 from elasticsearch import Elasticsearch
-from PoemSearchES import process_query_results
-import random, datetime
+# from PoemSearchES import process_query_results
+import random
+import datetime
 
 es = Elasticsearch(['localhost:9200'])
 cnmodern_MAX = 5028
@@ -83,5 +84,7 @@ def get_landing_data():
     return data
 
 
-if __name__ == '__main__':
-    print get_landing_data()
+# LANDING_DATA = get_landing_data()
+
+# if __name__ == '__main__':
+    # print get_landing_data()

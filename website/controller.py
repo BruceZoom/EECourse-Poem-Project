@@ -14,6 +14,7 @@ from translate import *
 
 import PoemSearchES as PSES
 import ImgPoemSearch as IPS
+import homeContent as HC
 
 render = web.template.render('templates')
 
@@ -44,7 +45,7 @@ class index:
         data = {
             'form': utils.FORM_INIT,
             'header': utils.HEADER,
-            'landing': utils.LANDING_DATA,
+            'landing': HC.get_landing_data(),
             'footer': utils.FOOTER,
         }
         return render.index(data=data)
@@ -75,7 +76,7 @@ class query:
         validation = Validator.form_validate(inputs)
 
         if validation == EMPTY_QUERY:
-            data['landing'] = utils.LANDING_DATA_DEFAULT
+            data['landing'] = HC.get_landing_data()
             return render.index(data=data)
 
         elif validation == VALID_QUERY:
