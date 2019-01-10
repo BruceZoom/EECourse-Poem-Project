@@ -1,6 +1,5 @@
 # coding:utf-8
 
-import utils
 # import codecs, json
 from elasticsearch import Elasticsearch
 # from PoemSearchES import process_query_results
@@ -11,7 +10,11 @@ es = Elasticsearch(['localhost:9200'])
 cnmodern_MAX = 5028
 gushiwen_MAX = 22797
 daily_random = random.Random()
-daily_random.seed(datetime.datetime.now().strftime('%Y%m%d'))
+today=datetime.datetime.now().strftime('%Y%m%d')
+daily_random.seed(today)
+daily_cnmodern_id = daily_random.randint(1,cnmodern_MAX)
+daily_gushiwen_id = daily_random.randint(1,gushiwen_MAX)
+daily_scenery_id = daily_random.randint(1,cnmodern_MAX+gushiwen_MAX)
 labels = []
 
 
@@ -22,16 +25,11 @@ def __get_item(d, k):
         return d[k]
 
 
-def get_random_poem(poemType='cnmodern', id_max=0, daily=False):
-    if id_max < 0:
-        # 精确搜索
-        id = -id_max
+def get_random_poem(poemType='cnmodern', id_max=1, daily=False):
+    if daily:
+        id = id_max
     else:
-        # 随机搜索
-        if daily:
-            id = daily_random.randint(1, id_max)
-        else:
-            id = random.randint(1, id_max)
+        id = random.randint(1, id_max)
     body = {
         "query": {
             "ids": {
@@ -60,25 +58,29 @@ def get_random_poem(poemType='cnmodern', id_max=0, daily=False):
             labels.extend(label.split())
         return poem
     else:
-        return get_one_poem(poemType, id_max)
+        return get_random_poem(poemType, id_max)
 
 
 def get_landing_data():
     data = {}
-    data['daily'] = get_random_poem('cnmodern', cnmodern_MAX, True)
+    # check the date
+    if today != datetime.datetime.now().strftime('%Y%m%d'):
+        globals()['daily_cnmodern_id'] = daily_random.randint(1, cnmodern_MAX)
+        globals()['daily_gushiwen_id'] = daily_random.randint(1, gushiwen_MAX)
+        globals()['daily_scenery_id'] = daily_random.randint(1, cnmodern_MAX + gushiwen_MAX)
+    data['daily'] = get_random_poem('cnmodern', daily_cnmodern_id, True)
     data['random_modern'] = []
     for i in range(3):
         data['random_modern'].append(get_random_poem('cnmodern', cnmodern_MAX, False))
-    data['daily_ancient'] = get_random_poem('gushiwen', gushiwen_MAX, True)
+    data['daily_ancient'] = get_random_poem('gushiwen', daily_gushiwen_id, True)
     data['random_ancient'] = []
     for i in range(3):
         data['random_ancient'].append(get_random_poem('gushiwen', gushiwen_MAX, False))
     # get scenery
-    randnum = daily_random.randint(1, cnmodern_MAX + gushiwen_MAX)
-    if randnum <= cnmodern_MAX:
-        data['scenery'] = get_random_poem('cnmodern', -randnum)
+    if daily_scenery_id <= cnmodern_MAX:
+        data['scenery'] = get_random_poem('cnmodern', daily_scenery_id,True)
     else:
-        data['scenery'] = get_random_poem('gushiwen', -(randnum - cnmodern_MAX))
+        data['scenery'] = get_random_poem('gushiwen', daily_scenery_id - cnmodern_MAX,True)
     random.shuffle(labels)
     data['labels'] = [{'label': x, 'labelurl': '/index'} for x in labels[:5]]
     return data
@@ -87,4 +89,5 @@ def get_landing_data():
 # LANDING_DATA = get_landing_data()
 
 # if __name__ == '__main__':
-    # print get_landing_data()
+    # print get_landing_data()['daily']
+    # print get_landing_data()['daily']
