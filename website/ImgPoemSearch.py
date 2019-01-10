@@ -116,6 +116,7 @@ def giveimg2gishiwen():
     i = 1
     for i in range(1, 22797 + 1):
         # 判断是否有图
+        print('{}/{}'.format(i, 22797))
         search_body = {
             "query": {
                 "ids": {
@@ -153,6 +154,7 @@ def giveimg2cnmodern():
     i = 1
     for i in range(1, 5029):
         # 判断是否有图
+        print('{}/{}'.format(i, 5029))
         search_body = {
             "query": {
                 "ids": {
@@ -276,4 +278,6 @@ if __name__ == '__main__':
     #     print i
 
     # give img to gushiwen
-    giveimg2poem()
+    # giveimg2poem()
+    giveimg2gishiwen()
+    giveimg2cnmodern()

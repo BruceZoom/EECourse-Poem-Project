@@ -318,7 +318,8 @@ class authorpage:
                 inputs['page'] = 1
             data['desc'] = PSES.get_author_desc(inputs['author'])
             if data['desc'] == False:
-                return notfound(inputs)
+                # return notfound(inputs)
+                data['desc'] = ''
             data['url_prefix_form'] = 'author=' + inputs['author'] + '&'
             res = PSES.get_author_poems(inputs['author'], cur_page=inputs['page'], index='cnmodern')
             # print(res)
@@ -326,6 +327,7 @@ class authorpage:
                 res = PSES.get_author_poems(inputs['author'], cur_page=inputs['page'], index='gushiwen')
                 # print(res)
             if not res:
+                print('no result')
                 return notfound(inputs)
 
             data['total_match'], data['results'] = res
@@ -391,9 +393,11 @@ class Validator:
 
     @staticmethod
     def authorpage_validate(input_dict):
+        print(input_dict.keys())
         if 'author' in input_dict.keys() and input_dict['author']:
             return VALID_QUERY
         else:
+            print('Invalid query!')
             return INVALID_QUERY
 
     @staticmethod

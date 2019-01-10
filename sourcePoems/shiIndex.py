@@ -358,6 +358,26 @@ class AuthorObj:
                             "type": "keyword",
                             "index": "not_analyzed",
                             "store": True,
+                        },
+                        "genre": {
+                            "type": "keyword",
+                            "index": "not_analyzed",
+                            "store": True,
+                        },
+                        "time_key": {
+                            "type": "keyword",
+                            "index": "not_analyzed",
+                            "store": True,
+                        },
+                        "time_text": {
+                            "type": "keyword",
+                            "index": "not_analyzed",
+                            "store": True,
+                        },
+                        "type": {
+                            "type": "keyword",
+                            "index": "not_analyzed",
+                            "store": True,
                         }
                     }
                 }
@@ -368,10 +388,29 @@ class AuthorObj:
             res = self.es.indices.create(index=self.index_name, body=_index_mappings)
             print(res)
 
-    def bulk_Author_Data(self, list, seg=jieba.cut):
+    def bulk_Author_Data(self, ancient_list,modern_list, seg=jieba.cut):
         ACTIONS = []
         i = 1
-        for line in list:
+
+        for line in modern_list:
+            action = {
+                "_index": self.index_name,
+                "_type": self.index_type,
+                "_id": i,
+                "_source": {
+                    "name": _getkey(line, 'author'),
+                    "desc_tokenized": "",
+                    "desc": "",
+                    "genre":_getkey(line, 'genre'),
+                    "time_key":_getkey(line, 'time_key'),
+                    "time_text":_getkey(line, 'time_text'),
+                    "type":"modern"
+                }
+            }
+            i += 1
+            ACTIONS.append(action)
+
+        for line in ancient_list:
             action = {
                 "_index": self.index_name,
                 "_type": self.index_type,
@@ -380,10 +419,15 @@ class AuthorObj:
                     "name": _getkey(line, 'name'),
                     "desc_tokenized": _getkey(line, 'desc'),
                     "desc": _getkey(line, 'desc'),
+                    "genre":"",
+                    "time_key":"",
+                    "time_text":"",
+                    "type":"ancient"
                 }
             }
             i += 1
             ACTIONS.append(action)
+
             # 批量处理
         success, _ = bulk(self.es, ACTIONS, index=self.index_name, raise_on_error=True)
         print('Performed %d actions' % success)
@@ -577,37 +621,40 @@ if __name__ == '__main__':
     # ---生成总数据---
 
     # ---建立索引，用一次后请注释掉---
-    obj = GushiwenObj()
-    print('indexing gushiwen...')
-    with codecs.open('allpoems.json', 'r', encoding='utf-8')as fin:
-        poemList = json.load(fin)
-    obj.bulk_Gushiwen_Data(poemList)
-    del poemList
+    # obj = GushiwenObj()
+    # print('indexing gushiwen...')
+    # with codecs.open('allpoems.json', 'r', encoding='utf-8')as fin:
+    #     poemList = json.load(fin)
+    # obj.bulk_Gushiwen_Data(poemList)
+    # del poemList
 
     obj = AuthorObj()
     print('indexing authors...')
     with codecs.open('allauthors.json', 'r', encoding='utf-8') as fin:
-        poemList = json.load(fin)
-    obj.bulk_Author_Data(poemList)
-    del poemList
-
-    obj = ChineseModernsObj()
-    print('indexing chinese moderns...')
-    with codecs.open('allchinesemoderns.json', 'r', encoding='utf-8') as fin:
-        poemList = json.load(fin)
+        ancientList = json.load(fin)
     with codecs.open('cnmodern_author_info.json', 'r', encoding='utf-8') as fin:
-        authorInfo = json.load(fin)
-    obj.bulk_ChineseModerns_Data(poemList, authorInfo)
-    del poemList
-    del authorInfo
+        modernList = json.load(fin)
+    obj.bulk_Author_Data(ancientList,modernList)
+    del ancientList
+    del modernList
+
+    # obj = ChineseModernsObj()
+    # print('indexing chinese moderns...')
+    # with codecs.open('allchinesemoderns.json', 'r', encoding='utf-8') as fin:
+    #     poemList = json.load(fin)
+    # with codecs.open('cnmodern_author_info.json', 'r', encoding='utf-8') as fin:
+    #     authorInfo = json.load(fin)
+    # obj.bulk_ChineseModerns_Data(poemList, authorInfo)
+    # del poemList
+    # del authorInfo
 
     #
-    obj = EnglishModernsObj()
-    print('indexing english moderns...')
-    with codecs.open('allenglishmoderns.json', 'r', encoding='utf-8') as fin:
-        poemList = json.load(fin)
-    obj.bulk_EnglishModerns_Data(poemList)
-    del poemList
+    # obj = EnglishModernsObj()
+    # print('indexing english moderns...')
+    # with codecs.open('allenglishmoderns.json', 'r', encoding='utf-8') as fin:
+    #     poemList = json.load(fin)
+    # obj.bulk_EnglishModerns_Data(poemList)
+    # del poemList
     # ---建立索引---
 
     # TODO: 继续丰富上面几个类的内容，完善搜索、增删改查的功能

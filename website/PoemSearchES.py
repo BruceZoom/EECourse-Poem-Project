@@ -97,6 +97,7 @@ def process_author_results(res_tmp, truncated=True):
 #         totalDocs = self.chSearcher.search(querys, utils.MAX_RESULTS).scoreDocs
 
 def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
+    print('cnmodern')
     search_body = {'query': {
         'bool': {
             'must': [],
