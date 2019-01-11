@@ -40,7 +40,9 @@ def get_random_poem(poemType='cnmodern', id_max=1, daily=False):
     }
     res = es.search(index=poemType, doc_type=poemType + '_type', body=body)
     if res['hits']['total']:
-        if len(res['hits']['hits'][0]['_source']['text']) > 50:
+        if not daily:
+            return process_query_results(res['hits']['hits'])[0]
+        if len(res['hits']['hits'][0]['_source']['text']) > 200:
             return get_random_poem(poemType, id + 1, True)
         return process_query_results(res['hits']['hits'])[0]
 
