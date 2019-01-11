@@ -40,25 +40,28 @@ def get_random_poem(poemType='cnmodern', id_max=1, daily=False):
     }
     res = es.search(index=poemType, doc_type=poemType + '_type', body=body)
     if res['hits']['total']:
-        tmppoem = res['hits']['hits'][0]['_source']
-        # poem: formulated poem data
-        poem = {
-            'title': __get_item(tmppoem, 'title'),
-            'content': __get_item(tmppoem, 'text'),
-            'poet': __get_item(tmppoem, 'author'),
-            'imgurl': __get_item(tmppoem, 'imgurl'),
-            'poemurl': '/poempage?index=' + poemType + '&id=' + str(id)
-        }
-        if len(poem['content']) > 50 * 3:
+        if len(res['hits']['hits'][0]['_source']['text']) > 50:
             return get_random_poem(poemType, id + 1, True)
-        if poem['poet']:
-            poem['poeturl'] = '/authorpage?author=' + poem['poet']
-        else:
-            poem['poeturl'] = '/notfound'
-        label = __get_item(tmppoem, 'label_tokenized')
-        if label:
-            labels.extend(label.split())
-        return process_query_results(poem)
+        return process_query_results(res['hits']['hits'])[0]
+
+        # tmppoem = res['hits']['hits'][0]['_source']['text']
+        # poem: formulated poem data
+        # poem = {
+        #     'title': __get_item(tmppoem, 'title'),
+        #     'content': __get_item(tmppoem, 'text'),
+        #     'poet': __get_item(tmppoem, 'author'),
+        #     'imgurl': __get_item(tmppoem, 'imgurl'),
+        #     'poemurl': '/poempage?index=' + poemType + '&id=' + str(id)
+        # }
+        # if len(poem['content']) > 50 * 3:
+        #     return get_random_poem(poemType, id + 1, True)
+        # if poem['poet']:
+        #     poem['poeturl'] = '/authorpage?author=' + poem['poet']
+        # else:
+        #     poem['poeturl'] = '/notfound'
+        # label = __get_item(tmppoem, 'label_tokenized')
+        # if label:
+        #     labels.extend(label.split())
     else:
         return get_random_poem(poemType, id_max)
 

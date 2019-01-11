@@ -66,9 +66,13 @@ for i in range(1, le):
     result = es.get(index=index_name, doc_type=index_type, id=i)
     text = result['_source']['text']
     label = result['_source']['label']
-    print(text)
+    # print(text)
     label_tokenized = '\n'.join(guci_analyzer.extract_tags(text, topK=3, withWeight=False))
-    label = label + '\n' + label_tokenized
+    print()
+    print(label_tokenized)
+    label = [lb for lb in label.split() if '首' not in lb and '小学' not in lb and '初中' not in lb and '高中' not in lb and '精选' not in lb]
+    if len(label) <= 5:
+        label += '\n' + label_tokenized
     print(label)
     updateBody = {
         "query": {
