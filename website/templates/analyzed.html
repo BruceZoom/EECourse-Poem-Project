@@ -1,0 +1,198 @@
+$def with (data=None)
+
+<!DOCTYPE html>
+<html>
+
+
+  $:data['header']
+  <div class="text-center py-5">
+    <div class="container">
+      <div class="row my-3 justify-content-center">
+        <div class="p-4 col-lg-8">
+          <h1>我们刚刚为您分析了这张图片</h1>
+          <p class="lead text-muted">您可以查看以下分析结果，或者利用这张图进一步搜索诗歌</p>
+          <a id="search" href="#" class="btn btn-primary m-2">以图搜诗</a>
+          <a id="generate" href="#generate-result" class="btn btn-secondary m-2">创作现代诗</a>
+          <a id="generate-ancient" href="#generate-result-ancient" class="btn btn-secondary m-2">创作古体诗</a>
+            <br><br>
+          <p><input class="form-control" style="width: 300;height: 50px;" type="text" id="image-tags" hidden></p>
+        </div>
+        <div class="col-md-4 align-self-center">
+          <img width="100%" src=$(data['upload_prefix']+data['form']['image'])>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="py-4 bg-light">
+    <div class="container">
+      <div class="row my-4 justify-content-center">
+        <!--<div class="col-1"></div>-->
+        <div class="col-md-4 align-self-center">
+          <img id="heatmap" width="100%" src="/static/image/1.jpg">
+        </div>
+        <div class="p-4 col-lg-8">
+            <table>
+                <tr>
+                    <th><strong>环境：</strong></th>
+                    <td id="ioscene"></td>
+                </tr>
+                <tr>
+                    <th><strong>物体：</strong></th>
+                    <td id="object"></td>
+                </tr>
+                <tr>
+                    <th><strong>场景：</strong></th>
+                    <td id="scene"></td>
+                </tr>
+                <tr>
+                    <th><strong>感觉：</strong></th>
+                    <td id="emotion"></td>
+                </tr>
+            </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button hidden id="generate-result-trigger" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#generate-result"></button>
+  <div class="py-5 bg-dark collapse" id="generate-result">
+      <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-5 offset-md-1" id="generate-result-en" style="font-size: large">
+                Loading...
+            </div>
+            <div class="col-md-5 offset-md-1" id="generate-result-ch" style="font-size: large">
+                Loading...
+            </div>
+          </div>
+      </div>
+  </div>
+  <button hidden id="generate-result-ancient-trigger" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#generate-result-ancient"></button>
+  <div class="py-5 bg-dark collapse" id="generate-result-ancient">
+      <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-5 offset-md-1" id="generate-result-an" style="font-size: large">
+                Loading...
+            </div>
+          </div>
+      </div>
+  </div>
+    $:data['footer']
+  <script type="text/javascript">
+      var memo = null;
+      function sleep(numberMillis) {
+        var now = new Date();
+        var exitTime = now.getTime() + numberMillis;
+        while (true) {
+        now = new Date();
+        if (now.getTime() > exitTime)
+        return;
+        }
+    }
+      function trigger_pop (key, word) {
+          console.log(key + word);
+          console.log(memo);
+          for (var i in memo[key][word]) {
+              jQuery("#" + key + "-" + cnt + "-" + i).click(function () {
+                  console.log('dsafadsfasafsa');
+                  if (jQuery("#image-tags").val() === "") {
+                      jQuery("#image-tags").removeAttribute("hidden");
+                      jQuery("#image-tags").value += memo[key][word][i] + " ";
+                      jQuery("#search").attr({
+                          "href": "/gallery?label=on&searchType=all&image=&query=" + jQuery("#image-tag").value
+                      });
+                  }
+              });
+          }
+      }
+      function tag_onclick (i, j, k) {
+          if (jQuery("#image-tags").attr("hidden")) {
+              jQuery("#image-tags").removeAttr("hidden");
+              jQuery("#image-tags").val("")
+          }
+          console.log(jQuery("#"+i+"-"+j+"-"+k).html());
+          jQuery("#image-tags").val(jQuery("#image-tags").val() + jQuery("#"+i+"-"+j+"-"+k).html() + " ");
+          console.log()
+          jQuery("#search").attr({
+              "href": "/gallery?content=on&searchType=all&image=&query=" + jQuery("#image-tags").val()
+          });
+      }
+    jQuery(document).ready(function() {
+        jQuery.post("/analyzer",
+            {
+                filename: "$data['form']['image']"
+            },
+            function(data, status){
+            data = eval('('+data+')');
+            console.log(data);
+            memo = data;
+            jQuery("#heatmap").attr({
+                "src": data['heatmap']
+            });
+            jQuery("#ioscene").html(data['ioscene']);
+            var a = ['scene', 'object', 'emotion'];
+            for(var j in a) {
+                key = a[j];
+                console.log(key);
+                res = "";
+                cnt = 0;
+                for(var word in data[key]) {
+                    cnt += 1;
+                    tmp = "";
+                    for(var i in data[key][word]) {
+                        tmp += "，<a href='###' onclick='tag_onclick("+j+","+cnt+","+i+")' id='"+ j + "-" + cnt + "-" + i +"'>" + data[key][word][i] + "</a>";
+                    }
+                    res += "，<a href=\"###\" onclick=\"trigger_pop('"+ key +"','"+ cnt +"')\" data-toggle=\"popover\"" +
+                        " data-html=\"true\" data-content=\"" + tmp.substr(1) + "\">" + word + "</a>";
+                    // console.log(",<a href=\"###\" onclick=\"fill_label(\'"+ word +"\')\" data-toggle=\"popover\"" +
+                    //     " data-html=\"true\" data-content=\"<div id='"+ word +"'></div>\">" + word + "</a>");
+                }
+                // console.log(res.substr(1));
+                jQuery("#"+key).html(res.substr(1));
+            }
+            // jQuery("#object").html(data['object']);
+            // jQuery("#scene").html(data['scene']);
+            // jQuery("#emotion").html(data['emotion']);
+            jQuery("#search").attr({
+                "href": "/gallery?content=on&searchType=all&image=&query=" + data['label_complete']
+            });
+            jQuery('[data-toggle="popover"]').popover();
+
+        });
+        // jQuery("#search").click(function () {
+        //     // jQuery("html,body").animate({scrollTop:jQuery("#search-result").offset().top},1000);
+        //     jQuery("#search-result-trigger").click();
+        // });
+        jQuery("#generate").click(function () {
+            // jQuery("#generate-result-trigger").click();
+            jQuery("#generate-result").collapse('show');
+            jQuery("html,body").animate({scrollTop:jQuery("#generate-result").offset().top},1000);
+            jQuery.post("gallery_poem",
+                {
+                    image: "$data['form']['image']"
+                },
+                function (data, status) {
+                    data = eval('('+data+')');
+                    jQuery("#generate-result-en").html(data['enStr']);
+                    jQuery("#generate-result-ch").html(data['zhStr']);
+                }
+            );
+        });
+        jQuery("#generate-ancient").click(function () {
+            // jQuery("#generate-result-ancient-trigger").click();
+            jQuery("#generate-result-ancient").collapse('show');
+            jQuery("html,body").animate({scrollTop:jQuery("#generate-result-ancient").offset().top},1000);
+            jQuery.post("gallery_gsw",
+                {
+                    tags: jQuery("#image-tags").val()
+                },
+                function (data, status) {
+                    data = eval('('+data+')');
+                    jQuery("#generate-result-an").html(data['gsw']);
+                }
+            );
+        });
+    });
+  </script>
+</body>
+
+</html>
