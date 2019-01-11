@@ -61,7 +61,7 @@ index_name = 'gushiwen'
 index_type = 'gushiwen_type'
 le = len(gushiwenList)
 print("len of poems is:", le)
-for i in range(1, le):
+for i in range(13587, le):
     print("{}/{}".format(i, le))
     result = es.get(index=index_name, doc_type=index_type, id=i)
     text = result['_source']['text']
@@ -71,8 +71,10 @@ for i in range(1, le):
     print()
     print(label_tokenized)
     label = [lb for lb in label.split() if '首' not in lb and '小学' not in lb and '初中' not in lb and '高中' not in lb and '精选' not in lb]
-    if len(label) <= 5:
-        label += '\n' + label_tokenized
+    flag = (len(label) <= 5)
+    label = '\n'.join(label)
+    if flag:
+        label = label + '\n' + label_tokenized
     print(label)
     updateBody = {
         "query": {

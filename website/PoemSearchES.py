@@ -113,9 +113,7 @@ def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pa
         if key in ['author', 'title_tokenized', 'label_tokenized', 'text_tokenized', 'genre_key', 'time_key']:
             match = {
                 'match_phrase': {
-                    key: {
-                        'query': value[0],
-                    }
+                    key: value[0],
                 },
             }
             search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
@@ -144,9 +142,7 @@ def ancient_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pag
                    'shangxi_tokenized', 'yiwen_tokenized']:
             match = {
                 'match_phrase': {
-                    key: {
-                        'query': value[0],
-                    }
+                    key: value[0],
                 },
             }
             search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
