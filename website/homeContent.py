@@ -2,7 +2,7 @@
 
 # import codecs, json
 from elasticsearch import Elasticsearch
-# from PoemSearchES import process_query_results
+from PoemSearchES import process_query_results
 import random
 import datetime
 
@@ -49,6 +49,8 @@ def get_random_poem(poemType='cnmodern', id_max=1, daily=False):
             'imgurl': __get_item(tmppoem, 'imgurl'),
             'poemurl': '/poempage?index=' + poemType + '&id=' + str(id)
         }
+        if len(poem['content']) > 50 * 3:
+            return get_random_poem(poemType, id + 1, True)
         if poem['poet']:
             poem['poeturl'] = '/authorpage?author=' + poem['poet']
         else:
@@ -56,7 +58,7 @@ def get_random_poem(poemType='cnmodern', id_max=1, daily=False):
         label = __get_item(tmppoem, 'label_tokenized')
         if label:
             labels.extend(label.split())
-        return poem
+        return process_query_results(poem)
     else:
         return get_random_poem(poemType, id_max)
 
