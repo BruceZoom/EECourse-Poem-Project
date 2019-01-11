@@ -460,13 +460,14 @@ class Validator:
     def to_command_dict(input_dict):
         command_dict = dict()
         q = input_dict['query']
-        if 'synonyms' in input_dict.keys():
-            q = ' '.join(IPS.associator.assoSynAll(utils.jieba_seg(q)))
         for key in ['author', 'title', 'label', 'content', 'translate', 'shangxi']:
             if key in ['translate', 'shangxi'] and input_dict['searchType'] != 'ancient':
                 continue
             if key in input_dict.keys():
-                command_dict[Validator.switch_key_map[key]] = (q, False)
+                if 'synonyms' in input_dict.keys():
+                    command_dict[Validator.switch_key_map[key]] = (' '.join(IPS.associator.assoSynAll(utils.jieba_seg(q))), False)
+                else:
+                    command_dict[Validator.switch_key_map[key]] = (q, False)
         command_dict['searchType'] = input_dict['searchType']
         if input_dict['searchType'] == 'ancient':
             if 'accurate' in input_dict.keys():
