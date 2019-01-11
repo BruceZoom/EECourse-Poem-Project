@@ -354,6 +354,7 @@ class authorpage:
             data['pagi']['max_page'] = (min(data['total_match'], utils.MAX_RESULTS) + data['pagi']['result_per_page'] - 1) // data['pagi'][
                 'result_per_page']
             data['pagi']['cur_page'] = inputs['page']
+            data['author'] = inputs['author']
 
             return render.authorpage(data=data)
         else:

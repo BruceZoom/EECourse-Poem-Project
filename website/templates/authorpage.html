@@ -9,12 +9,12 @@ $def with (data=None)
     <div class="container">
       <div class="row my-5 justify-content-center">
         <div class="col-md-9">
-          <h1>Author example</h1>
+          <h1>$data['author']</h1>
           <p class="lead text-muted">
             这位作者共有$data['total_match']首作品。
           </p>
-          <a href="#" class="btn btn-primary m-2">Main call to action</a>
-          <a href="#" class="btn btn-secondary m-2">Secondary action</a>
+          <!--<a href="#" class="btn btn-primary m-2">Main call to action</a>-->
+          <!--<a href="#" class="btn btn-secondary m-2">Secondary action</a>-->
         </div>
       </div>
     </div>
@@ -31,9 +31,8 @@ $def with (data=None)
               <div class="card-body">
                 <p class="card-text">
                   <a href="$entry['poemurl']">
-                  $entry['title']<br>
-                  $:entry['content']</a>
-                  &nbsp——&nbsp<a style="font-size: small" href="$entry['poeturl']">$entry['poet']</a>
+                  $entry['title']</a>&nbsp——&nbsp<a style="font-size: small" href="$entry['poeturl']">$entry['poet']</a><br>
+                  <a href="$entry['poemurl']">$:entry['content']</a>
                 </p>
                 <div class="row d-flex justify-content-between align-items-center">
                   <div class="col-8">
