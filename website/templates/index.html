@@ -13,12 +13,12 @@ $def with (data=None)
               $data['landing']['daily']['title']
             </h1>
           </a>
-          <p class="lead text-primary" title="现代诗每日推荐">
-            <a href="$data['landing']['daily']['poemurl']">
+          <p class="lead text-white" title="现代诗每日推荐">
+            <a href="$data['landing']['daily']['poemurl']" style="color: #f1f1f1">
               $:data['landing']['daily']['content']
             </a>
-            <a href="$data['landing']['daily']['poeturl']">
-              <div class="blockquote-footer">$data['landing']['daily']['poet']</div>
+            <a href="$data['landing']['daily']['poeturl']" style="color: #f1f1f1">
+              <div class="blockquote-footer" style="color: #f1f1f1; font-size: large">$data['landing']['daily']['poet']</div>
             </a>
           </p>
         </div>
@@ -64,7 +64,7 @@ $def with (data=None)
               <div class="blockquote-footer">$data['landing']['scenery']['poet']</div>
             </a>
           </div>
-          <a class="btn btn-info" href="/gallery">更多</a>
+          <!--<a class="btn btn-info" href="/gallery">更多</a>-->
         </div>
         <div class="col-md-4 align-self-center">
           <img class="img-fluid d-block" src="$data['landing']['scenery']['imgurl']"> </div>

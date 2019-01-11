@@ -15,7 +15,7 @@ $def with (data=None)
           <a id="generate" href="#generate-result" class="btn btn-secondary m-2">创作现代诗</a>
           <a id="generate-ancient" href="#generate-result-ancient" class="btn btn-secondary m-2">创作古体诗</a>
             <br><br>
-          <p><input class="form-control" style="width: 300;height: 50px;" type="text" id="image-tags" hidden></p>
+          <p><input class="form-control" onchange="update_input()" style="width: 300;height: 50px;" type="text" id="image-tags" hidden></p>
         </div>
         <div class="col-md-4 align-self-center">
           <img width="100%" src=$(data['upload_prefix']+data['form']['image'])>
@@ -111,7 +111,12 @@ $def with (data=None)
           }
           console.log(jQuery("#"+i+"-"+j+"-"+k).html());
           jQuery("#image-tags").val(jQuery("#image-tags").val() + jQuery("#"+i+"-"+j+"-"+k).html() + " ");
-          console.log()
+          // console.log()
+          jQuery("#search").attr({
+              "href": "/gallery?content=on&searchType=all&image=&query=" + jQuery("#image-tags").val()
+          });
+      }
+      function update_input(){
           jQuery("#search").attr({
               "href": "/gallery?content=on&searchType=all&image=&query=" + jQuery("#image-tags").val()
           });

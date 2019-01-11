@@ -137,6 +137,7 @@ class gallery:
         }
         validation = Validator.form_validate(inputs)
         if validation == VALID_QUERY:
+            print("gallery pass")
             if 'query' in inputs.keys():
                 # data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
                 # print(inputs)
@@ -161,6 +162,7 @@ class gallery:
                 data['pagi']['cur_page'] = inputs['page']
                 return render.gallery(data=data)
         else:
+            print("gallery failed")
             return notfound(inputs)
             # data = {
             #     'form': utils.FORM_INIT,
@@ -237,10 +239,12 @@ class analyzer:
         # data['label_complete'] = objects[0][0]
         # print(data['emotion'])
         # 对于 object,scene,emotion 这三个list中任何一个词word:
+        data['label_complete'] = []
         for key in ['object', 'scene']:
             data[key] = {word[0]: [] for word in data[key] if word[0] in nm.associator.labelDict.keys()}
             # print(data['emotion'])
             for word in data[key].keys():
+                data['label_complete'].append(word)
                 wordAssoList = nm.associator.labelDict[word]
                 tmpwordAssoList = []
                 for i in range(len(wordAssoList)):
@@ -251,7 +255,7 @@ class analyzer:
         # 在用户点击某词时显示其关联古词，按权重随机取前5个
 
         data['emotion'] = '，'.join(data['emotion'])
-
+        data['label_complete'] = ' '.join(data['label_complete'])
         # 以图生成现代诗的操作和之前一样
 
 
