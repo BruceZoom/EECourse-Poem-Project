@@ -190,15 +190,21 @@ class gallery_gsw:
         inputs = web.input()
         print(inputs)
         # return json.dumps({'gsw': 'asdfasfasfsafas'})
-        users_inputs = inputs['users_input']#即图片页面用户输入框内文本,"青天 明月 秋风 信号灯",或"今天天气真好"
+        users_inputs = inputs['tags']#即图片页面用户输入框内文本,"青天 明月 秋风 信号灯",或"今天天气真好"
         keywords = users_inputs.split(' ')
         if len(keywords)>=4:
-            gsw = nm.gsw.genfromKeywords(keywords)
+            gsw=""
+            for i in range(3):
+                gsw += '<br>'.join(nm.gsw.genfromKeywords(keywords))
+                gsw += '<br><br>'
             return json.dumps({'gsw': gsw})
         else:
-            newkeyword = nm.associator.assoSynAll(users_inputs)
-            keywords=newkeyword[:8]
-            gsw = nm.gsw.genfromKeywords(keywords)
+            gsw = ""
+            for i in range(3):
+                newkeyword = nm.associator.assoSynAll(users_inputs)
+                keywords = newkeyword[:8]
+                gsw += '<br>'.join(nm.gsw.genfromKeywords(keywords))
+                gsw += '<br><br>'
             return json.dumps({'gsw': gsw})
 
 class analyzed:
