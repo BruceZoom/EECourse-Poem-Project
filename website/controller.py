@@ -32,6 +32,7 @@ urls = (
     '/authorlist', 'authorlist',
     '/poempage', 'poempage',
     '/notfound', 'notfound',
+    '/gallery_gsw', 'gallery_gsw',
 )
 
 EMPTY_QUERY = 0
@@ -187,6 +188,8 @@ class gallery_poem:
 class gallery_gsw:
     def POST(self):
         inputs = web.input()
+        print(inputs)
+        # return json.dumps({'gsw': 'asdfasfasfsafas'})
         users_inputs = inputs['users_input']#即图片页面用户输入框内文本,"青天 明月 秋风 信号灯",或"今天天气真好"
         keywords = users_inputs.split(' ')
         if len(keywords)>=4:
