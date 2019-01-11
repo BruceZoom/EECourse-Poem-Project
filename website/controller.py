@@ -150,7 +150,8 @@ class gallery:
 
                 command_dict = Validator.to_command_dict(inputs)
                 print(command_dict)
-                data['total_match'], data['results'] = PSES.common_query(command_dict, cur_page=inputs['page'])
+                flag = ('board' in inputs.keys())
+                data['total_match'], data['results'] = PSES.common_query(command_dict, cur_page=inputs['page'], flag)
                 # print (data['total_match'], data['results'])
                 data['pagi']['max_page'] = min(data['total_match'] + data['pagi']['result_per_page'] - 1, utils.MAX_RESULTS) // data['pagi'][
                     'result_per_page']

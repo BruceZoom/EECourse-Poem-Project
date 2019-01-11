@@ -98,7 +98,7 @@ $def with (data=None)
                       jQuery("#image-tags").removeAttribute("hidden");
                       jQuery("#image-tags").value += memo[key][word][i] + " ";
                       jQuery("#search").attr({
-                          "href": "/gallery?label=on&searchType=all&image=&query=" + jQuery("#image-tag").value
+                          "href": "/gallery?board=&label=on&searchType=all&image=&query=" + jQuery("#image-tag").value
                       });
                   }
               });
@@ -113,12 +113,12 @@ $def with (data=None)
           jQuery("#image-tags").val(jQuery("#image-tags").val() + jQuery("#"+i+"-"+j+"-"+k).html() + " ");
           // console.log()
           jQuery("#search").attr({
-              "href": "/gallery?content=on&searchType=all&image=&query=" + jQuery("#image-tags").val()
+              "href": "/gallery?board=&content=on&searchType=all&image=&query=" + jQuery("#image-tags").val()
           });
       }
       function update_input(){
           jQuery("#search").attr({
-              "href": "/gallery?content=on&searchType=all&image=&query=" + jQuery("#image-tags").val()
+              "href": "/gallery?board=&content=on&searchType=all&image=&query=" + jQuery("#image-tags").val()
           });
       }
     jQuery(document).ready(function() {

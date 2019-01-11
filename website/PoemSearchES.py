@@ -12,14 +12,14 @@ def __get_item(d, k):
     else:
         return d[k]
 
-def common_query(input_dict, cur_page=1):
+def common_query(input_dict, cur_page=1, board=False):
     # vm_env.attachCurrentThread()
     if input_dict['searchType'] == "ancient":
-        return ancient_search(input_dict, cur_page)
+        return ancient_search(input_dict, cur_page, board=board)
     elif input_dict['searchType'] == "modern":
-        return cnmodern_search(input_dict, cur_page)
+        return cnmodern_search(input_dict, cur_page, board=board)
     elif input_dict['searchType'] == "all":
-        return mixed_search(input_dict, cur_page)
+        return mixed_search(input_dict, cur_page, board=board)
     else:
         raise ValueError("Undefined Search Type")
 
@@ -100,7 +100,7 @@ def process_author_results(res_tmp, truncated=True):
 #                 querys.add(query, BooleanClause.Occur.SHOULD)
 #         totalDocs = self.chSearcher.search(querys, utils.MAX_RESULTS).scoreDocs
 
-def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
+def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True, board=False):
     print('cnmodern')
     search_body = {'query': {
         'bool': {
@@ -116,6 +116,12 @@ def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pa
                     key: value[0],
                 },
             }
+            if board:
+                match = {
+                    'match': {
+                        key: value[0],
+                    },
+                }
             search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
     # matches, res_tmp = MPS.ch_seach(input_dict, target_range=((cur_page-1)*pp, cur_page*pp))
     try:
@@ -130,7 +136,7 @@ def cnmodern_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pa
     return matches, res
 
 
-def ancient_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
+def ancient_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True, board=False):
     search_body = {'query': {
         'bool': {
             'must': [],
@@ -145,6 +151,12 @@ def ancient_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pag
                     key: value[0],
                 },
             }
+            if board:
+                match = {
+                    'match': {
+                        key: value[0],
+                    },
+                }
             search_body['query']['bool'][{True: 'must', False: 'should'}[value[1]]].append(match)
             print(match)
     try:
@@ -162,9 +174,9 @@ def ancient_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_pag
     return matches, res
 
 
-def mixed_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True):
-    matches_modern, res_modern = cnmodern_search(input_dict, cur_page, pp//2, truncated)
-    matches_ancient, res_ancient = ancient_search(input_dict, cur_page, pp//2, truncated)
+def mixed_search(input_dict, cur_page=1, pp=utils.PAGI_SETTING['result_per_page'], truncated=True, board=False):
+    matches_modern, res_modern = cnmodern_search(input_dict, cur_page, pp//2, truncated, board=board)
+    matches_ancient, res_ancient = ancient_search(input_dict, cur_page, pp//2, truncated, board=board)
     res = utils.alternating(res_modern, res_ancient)
     matches = matches_modern + matches_ancient
     return matches, res
