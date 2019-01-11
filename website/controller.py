@@ -456,7 +456,7 @@ class Validator:
         command_dict = dict()
         q = input_dict['query']
         if 'synonyms' in input_dict.keys():
-            q = IPS.associator.assoSynAll(utils.jieba_seg(q))
+            q = ' '.join(IPS.associator.assoSynAll(utils.jieba_seg(q)))
         for key in ['author', 'title', 'label', 'content', 'translate', 'shangxi']:
             if key in ['translate', 'shangxi'] and input_dict['searchType'] != 'ancient':
                 continue
