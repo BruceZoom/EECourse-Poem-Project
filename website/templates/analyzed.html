@@ -129,7 +129,8 @@ $def with (data=None)
                 "src": data['heatmap']
             });
             jQuery("#ioscene").html(data['ioscene']);
-            var a = ['scene', 'object', 'emotion'];
+            jQuery("#emotion").html(data['emotion']);
+            var a = ['scene', 'object'];
             for(var j in a) {
                 key = a[j];
                 console.log(key);
@@ -156,7 +157,6 @@ $def with (data=None)
                 "href": "/gallery?content=on&searchType=all&image=&query=" + data['label_complete']
             });
             jQuery('[data-toggle="popover"]').popover();
-
         });
         // jQuery("#search").click(function () {
         //     // jQuery("html,body").animate({scrollTop:jQuery("#search-result").offset().top},1000);

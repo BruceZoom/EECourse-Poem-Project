@@ -229,10 +229,11 @@ class analyzer:
 
         # data['object'], data['scene'], data['emotion'] = objectStr, sceneStr, attributesStr
         # data['label_complete'] = objects[0][0]
-
+        # print(data['emotion'])
         # 对于 object,scene,emotion 这三个list中任何一个词word:
-        for key in ['object', 'scene', 'emotion']:
+        for key in ['object', 'scene']:
             data[key] = {word[0]: [] for word in data[key] if word[0] in nm.associator.labelDict.keys()}
+            # print(data['emotion'])
             for word in data[key].keys():
                 wordAssoList = nm.associator.labelDict[word]
                 tmpwordAssoList = []
@@ -240,7 +241,10 @@ class analyzer:
                     tmpwordAssoList.append((wordAssoList[i],i+1))
                 wordAssoList = sorted(tmpwordAssoList, key=lambda x: x[1] * random.random())
                 data[key][word] = [x[0] for x in wordAssoList[:5]]
+        # print(data['emotion'])
         # 在用户点击某词时显示其关联古词，按权重随机取前5个
+
+        data['emotion'] = '，'.join(data['emotion'])
 
         # 以图生成现代诗的操作和之前一样
 
