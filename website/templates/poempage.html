@@ -7,7 +7,8 @@ $def with (data=None)
     <div class="p-5 d-flex flex-column bg-light" >
     <div class="container">
       <div class="row">
-        <div class="col-md-8 mx-auto">
+        <div class="col-1"></div>
+        <div class="col-5 mx-auto">
             <br>
           <h1 class="cover-heading"><b>$data['result']['title']</b></h1>
           <h5><a href="$data['result']['poeturl']">$data['result']['poet']</a></h5>
@@ -15,6 +16,11 @@ $def with (data=None)
           $for label in data['result']['labels']:
             <a href="$label['labelurl']"><span class="badge badge-success" href="">$label['label']</span></a>
         </div>
+          <!--<div class="container">-->
+          <div class="col-6 mx-auto align-self-center">
+              <img class="img-fluid d-block" src="$data['result']['imgurl']" />
+          </div>
+          <!--</div>-->
       </div>
     </div>
   </div>

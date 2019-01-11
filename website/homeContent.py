@@ -49,10 +49,10 @@ def get_random_poem(poemType='cnmodern', id_max=0, daily=False):
             'content': __get_item(tmppoem, 'text'),
             'poet': __get_item(tmppoem, 'author'),
             'imgurl': __get_item(tmppoem, 'imgurl'),
-            'poemurl': '/poempage?index=' + poemType + '&id=[' + str(id) + ']'
+            'poemurl': '/poempage?index=' + poemType + '&id=' + str(id)
         }
         if poem['poet']:
-            poem['poeturl'] = '/authorpage?author=[' + poem['poet'] + ']'
+            poem['poeturl'] = '/authorpage?author=' + poem['poet']
         else:
             poem['poeturl'] = '/notfound'
         label = __get_item(tmppoem, 'label_tokenized')
