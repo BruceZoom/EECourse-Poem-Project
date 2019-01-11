@@ -179,11 +179,11 @@ $def with (data=None)
         });
         jQuery("#generate-ancient").click(function () {
             // jQuery("#generate-result-ancient-trigger").click();
-            jQuery("#generate-ancient-result").collapse('show');
+            jQuery("#generate-result-ancient").collapse('show');
             jQuery("html,body").animate({scrollTop:jQuery("#generate-result-ancient").offset().top},1000);
             jQuery.post("gallery_gsw",
                 {
-                    image: "$data['form']['image']"
+                    tags: jQuery("#image-tags").val()
                 },
                 function (data, status) {
                     data = eval('('+data+')');

@@ -47,12 +47,12 @@ def get_random_poem(poemType='cnmodern', id_max=1, daily=False):
             'content': __get_item(tmppoem, 'text'),
             'poet': __get_item(tmppoem, 'author'),
             'imgurl': __get_item(tmppoem, 'imgurl'),
-            'poemurl': '/poempage?index=' + poemType + '&id=[' + str(id) + ']'
+            'poemurl': '/poempage?index=' + poemType + '&id=' + str(id)
         }
         if len(poem['content']) > 50 * 3:
             return get_random_poem(poemType, id + 1, True)
         if poem['poet']:
-            poem['poeturl'] = '/authorpage?author=[' + poem['poet'] + ']'
+            poem['poeturl'] = '/authorpage?author=' + poem['poet']
         else:
             poem['poeturl'] = '/notfound'
         label = __get_item(tmppoem, 'label_tokenized')
@@ -66,8 +66,9 @@ def get_random_poem(poemType='cnmodern', id_max=1, daily=False):
 def get_landing_data():
     data = {}
     # check the date
+    global today
     if today != datetime.datetime.now().strftime('%Y%m%d'):
-        globals()['today'] = datetime.datetime.now().strftime('%Y%m%d')
+        today = datetime.datetime.now().strftime('%Y%m%d')
         daily_random.seed(today)
         globals()['daily_cnmodern_id'] = daily_random.randint(1, cnmodern_MAX)
         globals()['daily_gushiwen_id'] = daily_random.randint(1, gushiwen_MAX)

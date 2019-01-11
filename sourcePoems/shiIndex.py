@@ -293,6 +293,8 @@ class GushiwenObj:
         ACTIONS = []
         i = 1
         for line in list:
+            if len(_getkey(line, 'text')) <= 0:
+                continue
             action = {
                 "_index": self.index_name,
                 "_type": self.index_type,
@@ -621,22 +623,22 @@ if __name__ == '__main__':
     # ---生成总数据---
 
     # ---建立索引，用一次后请注释掉---
-    # obj = GushiwenObj()
-    # print('indexing gushiwen...')
-    # with codecs.open('allpoems.json', 'r', encoding='utf-8')as fin:
-    #     poemList = json.load(fin)
-    # obj.bulk_Gushiwen_Data(poemList)
-    # del poemList
+    obj = GushiwenObj()
+    print('indexing gushiwen...')
+    with codecs.open('allpoems.json', 'r', encoding='utf-8')as fin:
+        poemList = json.load(fin)
+    obj.bulk_Gushiwen_Data(poemList)
+    del poemList
 
-    obj = AuthorObj()
-    print('indexing authors...')
-    with codecs.open('allauthors.json', 'r', encoding='utf-8') as fin:
-        ancientList = json.load(fin)
-    with codecs.open('cnmodern_author_info.json', 'r', encoding='utf-8') as fin:
-        modernList = json.load(fin)
-    obj.bulk_Author_Data(ancientList,modernList)
-    del ancientList
-    del modernList
+    # obj = AuthorObj()
+    # print('indexing authors...')
+    # with codecs.open('allauthors.json', 'r', encoding='utf-8') as fin:
+    #     ancientList = json.load(fin)
+    # with codecs.open('cnmodern_author_info.json', 'r', encoding='utf-8') as fin:
+    #     modernList = json.load(fin)
+    # obj.bulk_Author_Data(ancientList,modernList)
+    # del ancientList
+    # del modernList
 
     # obj = ChineseModernsObj()
     # print('indexing chinese moderns...')

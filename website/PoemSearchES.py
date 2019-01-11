@@ -24,7 +24,7 @@ def common_query(input_dict, cur_page=1):
         raise ValueError("Undefined Search Type")
 
 
-def process_query_results(res_tmp, truncated=True):
+def process_query_results(res_tmp, truncated=True, fillto=None, searchType='all'):
     res = []
     # print (res_tmp[0])
     for tmp in res_tmp:
@@ -33,8 +33,12 @@ def process_query_results(res_tmp, truncated=True):
         tmp = tmp['_source']
         if tmp['imgurl'] is None or tmp['imgurl'] == '':
             tmp['imgurl'] = '/static/image/1.jpg'
-        if truncated and len(tmp['text']) > utils.DISPLAY_UTILS['card_max_text']:
-            tmp['text'] = tmp['text'][:utils.DISPLAY_UTILS['card_max_text']] + '...'
+        if fillto:
+            if len(tmp['text']) < fillto:
+                tmp['text'] += ' ' * fillto
+        else:
+            if truncated and len(tmp['text']) > utils.DISPLAY_UTILS['card_max_text']:
+                tmp['text'] = tmp['text'][:utils.DISPLAY_UTILS['card_max_text']] + '...'
         if tmp['label'] is None:
             tmp['label'] = ''
         entry = {
@@ -50,7 +54,7 @@ def process_query_results(res_tmp, truncated=True):
         labels = [
                 {
                     'label': label,
-                    'labelurl': '/gallery?searchType=all&image=&label=on&query=' + label,
+                    'labelurl': '/gallery?searchType=' + searchType + '&image=&label=on&query=' + label,
                 }
                 for label in tmp['label'].split()]
         if 'genre_text' in tmp.keys() and tmp['genre_text'] not in ['', '无']:
