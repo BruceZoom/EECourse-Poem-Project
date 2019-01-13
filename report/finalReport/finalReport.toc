@@ -1,26 +1,25 @@
 \contentsline {section}{\numberline {1}项目综述}{2}{section.1}
-\contentsline {section}{\numberline {2}成果展示}{3}{section.2}
-\contentsline {section}{\numberline {3}信息获取及整理}{11}{section.3}
-\contentsline {subsection}{\numberline {3.1}信息获取——爬虫}{11}{subsection.3.1}
-\contentsline {paragraph}{古诗文网爬取}{11}{section*.8}
-\contentsline {paragraph}{VEER图片数据爬取}{11}{section*.9}
-\contentsline {subsection}{\numberline {3.2}信息整理}{12}{subsection.3.2}
-\contentsline {paragraph}{网页信息提取}{12}{section*.10}
-\contentsline {paragraph}{多源信息整合}{12}{section*.11}
+\contentsline {section}{\numberline {2}成果展示}{2}{section.2}
+\contentsline {section}{\numberline {3}数据爬取及处理}{11}{section.3}
+\contentsline {subsection}{\numberline {3.1}数据爬取}{11}{subsection.3.1}
+\contentsline {paragraph}{中国诗歌网}{11}{section*.6}
+\contentsline {paragraph}{古诗文网爬取}{11}{section*.7}
+\contentsline {paragraph}{VEER图片数据爬取}{11}{section*.8}
+\contentsline {subsection}{\numberline {3.2}数据处理}{12}{subsection.3.2}
+\contentsline {paragraph}{网页信息提取}{12}{section*.9}
+\contentsline {paragraph}{多源信息整合}{12}{section*.10}
 \contentsline {section}{\numberline {4}建立索引}{12}{section.4}
-\contentsline {subsection}{\numberline {4.1}Lucene的尝试}{12}{subsection.4.1}
-\contentsline {subsection}{\numberline {4.2}ES建立最终索引}{12}{subsection.4.2}
-\contentsline {subsubsection}{\numberline {4.2.1}初步索引}{12}{subsubsection.4.2.1}
-\contentsline {subsubsection}{\numberline {4.2.2}更新索引}{13}{subsubsection.4.2.2}
-\contentsline {subsubsection}{\numberline {4.2.3}给诗配图}{13}{subsubsection.4.2.3}
+\contentsline {subsection}{\numberline {4.1}初步索引}{12}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}更新索引}{12}{subsection.4.2}
+\contentsline {subsection}{\numberline {4.3}给诗配图}{13}{subsection.4.3}
 \contentsline {section}{\numberline {5}后端实现}{14}{section.5}
 \contentsline {subsection}{\numberline {5.1}网站架构}{14}{subsection.5.1}
 \contentsline {subsection}{\numberline {5.2}索引搜索}{15}{subsection.5.2}
-\contentsline {subsubsection}{\numberline {5.2.1}文本搜索}{15}{subsubsection.5.2.1}
-\contentsline {subsubsection}{\numberline {5.2.2}图片搜索}{17}{subsubsection.5.2.2}
 \contentsline {section}{\numberline {6}图片-诗歌生成模型}{17}{section.6}
 \contentsline {subsection}{\numberline {6.1}图像特征提取}{17}{subsection.6.1}
 \contentsline {subsection}{\numberline {6.2}特征词义拓展}{18}{subsection.6.2}
-\contentsline {subsection}{\numberline {6.3}古诗文生成}{21}{subsection.6.3}
+\contentsline {subsection}{\numberline {6.3}古诗文生成}{20}{subsection.6.3}
 \contentsline {subsection}{\numberline {6.4}现代诗生成}{24}{subsection.6.4}
-\contentsline {section}{\numberline {7}项目分工}{25}{section.7}
+\contentsline {section}{\numberline {7}总结}{26}{section.7}
+\contentsline {section}{\numberline {A}项目分工}{26}{附录.a.A}
+\contentsline {section}{\numberline {B}项目地址}{27}{附录.a.B}

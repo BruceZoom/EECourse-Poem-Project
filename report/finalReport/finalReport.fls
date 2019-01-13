@@ -1,4 +1,4 @@
-PWD D:/GitHub/EECourse-Poem-Project/report/finalReport
+PWD D:/GitHub/finalReport
 INPUT c:/texlive/2017/texmf-var/web2c/xetex/xelatex.fmt
 INPUT ./finalReport.tex
 OUTPUT finalReport.log
@@ -234,7 +234,8 @@ INPUT c:/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT c:/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm
 OUTPUT finalReport.toc
 OUTPUT finalReport.xdv
-INPUT fig/demo_landing.png
+INPUT fig/landing1.jpg
+INPUT fig/landing2.jpg
 INPUT fig/demo_searchbar.png
 INPUT fig/demo_accres.png
 INPUT fig/demo_poempage.png
@@ -251,4 +252,5 @@ INPUT imgs/5.png
 INPUT imgs/6.png
 INPUT imgs/7.png
 INPUT imgs/8.png
+INPUT imgs/9.png
 INPUT finalReport.aux
