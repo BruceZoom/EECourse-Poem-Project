@@ -23,8 +23,8 @@ urls = (
     '/index', 'index',
     '/query', 'query',
     '/gallery', 'gallery',
-    '/gallery_image', 'gallery_image',
     '/gallery_poem', 'gallery_poem',
+    '/gallery_gsw', 'gallery_gsw',
     '/analyzed', 'analyzed',
     '/analyzer', 'analyzer',
     '/matchimage', 'matchimage',
@@ -32,7 +32,6 @@ urls = (
     '/authorlist', 'authorlist',
     '/poempage', 'poempage',
     '/notfound', 'notfound',
-    '/gallery_gsw', 'gallery_gsw',
 )
 
 EMPTY_QUERY = 0
@@ -98,7 +97,6 @@ class query:
 
         elif validation == VALID_IMAGE:
             image_inputs = web.input(image={})
-            # filename = image_inputs.image.filename.replace('\\', '/').split('/')[-1]
             utils.timestamp += 1
 
             _basename = os.path.basename(image_inputs.image.filename)
@@ -139,8 +137,6 @@ class gallery:
         if validation == VALID_QUERY:
             print("gallery pass")
             if 'query' in inputs.keys():
-                # data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
-                # print(inputs)
                 data['form'] = inputs.copy()
                 try:
                     inputs['page'] = int(inputs['page'])
@@ -152,10 +148,8 @@ class gallery:
                 print(command_dict)
                 flag = ('board' in inputs.keys())
                 data['total_match'], data['results'] = PSES.common_query(command_dict, cur_page=inputs['page'], board=flag)
-                # print (data['total_match'], data['results'])
                 data['pagi']['max_page'] = min(data['total_match'] + data['pagi']['result_per_page'] - 1, utils.MAX_RESULTS) // data['pagi'][
                     'result_per_page']
-                # data['results'] = utils.ENTRY_SAMPLES
 
                 data['form']['image'] = ''
                 data['url_prefix_form'] = '&'.join([key + '=' + data['form'][key] for key in data['form'].keys()]) + '&'
@@ -165,12 +159,6 @@ class gallery:
         else:
             print("gallery failed")
             return notfound(inputs)
-            # data = {
-            #     'form': utils.FORM_INIT,
-            #     'header': utils.HEADER,
-            #     'landing': utils.LANDING_DATA_DEFAULT,
-            # }
-            # return render.index(data=data)
 
 
 class gallery_poem:
@@ -192,7 +180,6 @@ class gallery_gsw:
     def POST(self):
         inputs = web.input()
         print(inputs)
-        # return json.dumps({'gsw': 'asdfasfasfsafas'})
         users_inputs = inputs['tags']#即图片页面用户输入框内文本,"青天 明月 秋风 信号灯",或"今天天气真好"
         keywords = users_inputs.split(' ')
         if len(keywords)>=4:
@@ -225,21 +212,6 @@ class analyzer:
 
         data['object'], data['relu'] = nm.getObjectFeature(filename)
         data['scene'], data['emotion'], data['heatmap'], data['ioscene'] = nm.getSceneFeature(filename)
-
-        # data['ioscene'] = 'ioscene'
-        # data['heatmap'] = utils.UPLOAD_PREFIX + filename
-        # objects = ['a', 'b', 'c']
-        # scene = ['a', 'b', 'c']
-        # attributes = ['a', 'b', 'c']
-
-        # objectStr = ' ' + ', '.join([x[0] for x in objects])
-        # sceneStr = ' ' + ', '.join([x[0] for x in scene])
-        # attributesStr = ' ' + ', '.join(attributes)
-
-        # data['object'], data['scene'], data['emotion'] = objectStr, sceneStr, attributesStr
-        # data['label_complete'] = objects[0][0]
-        # print(data['emotion'])
-        # 对于 object,scene,emotion 这三个list中任何一个词word:
         data['label_complete'] = []
         for key in ['object', 'scene']:
             data[key] = {word[0]: [] for word in data[key] if word[0] in nm.associator.labelDict.keys()}
@@ -252,27 +224,8 @@ class analyzer:
                     tmpwordAssoList.append((wordAssoList[i],i+1))
                 wordAssoList = sorted(tmpwordAssoList, key=lambda x: x[1] * random.random())
                 data[key][word] = [x[0] for x in wordAssoList[:5]]
-        # print(data['emotion'])
-        # 在用户点击某词时显示其关联古词，按权重随机取前5个
-
         data['emotion'] = '，'.join(data['emotion'])
         data['label_complete'] = ' '.join(data['label_complete'])
-        # 以图生成现代诗的操作和之前一样
-
-
-        # 以图搜索古代诗的方式就是通过226行的方法，用产生的联想词去搜，可以对每个词都联想，随机取
-
-        # 以图生成古代诗就是对于得到的keywordList(长度至少为4，最好取8)，该keywordList可以如中烨所说，让用户选择
-        # print(nm.gsw.genfromKeywords(wordAssoList))
-
-        # 用户直接输入一句话，比如“日光照在青草上，今天天气真好”，生成古代诗，就是
-        # print(nm.gsw.genfromSentence(self,"日光照在青草上，今天天气真好"))
-
-        # 以上部分可能出现路径错误，需请调试，可先在gushiwenGenerate.py中看使用方法
-
-        # print json.dumps(data)
-        # return data
-        # time.sleep(3)
         return json.dumps(data)
 
 
@@ -342,10 +295,8 @@ class authorpage:
                 data['desc'] = ''
             data['url_prefix_form'] = 'author=' + inputs['author'] + '&'
             res = PSES.get_author_poems(inputs['author'], cur_page=inputs['page'], index='cnmodern')
-            # print(res)
             if not res:
                 res = PSES.get_author_poems(inputs['author'], cur_page=inputs['page'], index='gushiwen')
-                # print(res)
             if not res:
                 print('no result')
                 return notfound(inputs)
@@ -472,7 +423,6 @@ class Validator:
         command_dict['searchType'] = input_dict['searchType']
         if input_dict['searchType'] == 'ancient':
             if 'accurate' in input_dict.keys():
-                # for key in ['ancientAuthor', 'ancientTime', 'ancientType', 'ancientLabel', 'ancientTitle']:
                 for key in ['ancientAuthor', 'ancientTime', 'ancientLabel', 'ancientTitle']:
                     if input_dict[key] != '':
                         command_dict[Validator.ancient_key_map[key]] = (input_dict[key], True)

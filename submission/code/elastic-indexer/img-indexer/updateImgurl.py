@@ -137,7 +137,6 @@ def giveimg2poem():
     total = es.count(index='imgasso',
         doc_type='imgasso_type', body={'query': {'match_all': {}}})
     print(results)
-    # input()
     cnt = 0
     for res in results:
         cnt += 1
@@ -160,7 +159,6 @@ def giveimg2poem():
         # 随机搜索古诗或现代诗
         if random.randint(0, 1):
             # 古诗
-            # print('gushiwen')
             res = es.search(index='gushiwen', doc_type='gushiwen_type', body=search_body)['hits']['hits']
             for poem in res:
                 if poem['_source']['imgurl']:
@@ -174,7 +172,6 @@ def giveimg2poem():
                 break
         else:
             # 现代诗
-            # print('cnmodern')
             res = es.search(index='cnmodern', doc_type='cnmodern_type', body=search_body)['hits']['hits']
             for poem in res:
                 if poem['_source']['imgurl']:

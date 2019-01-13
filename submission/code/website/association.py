@@ -103,17 +103,3 @@ class Associator(object):
         finalRes=list(set(assoRes))
         finalRes.sort(key=assoRes.index)
         return finalRes
-
-    # TODO:将这部分内容转移到搜索的索引中，可以通过搜现代汉语得到联想的古词意象，进而搜索诗句
-    # TODO:加速的方法，比如直接搜词，不再分词
-
-# For testing purpose.
-if __name__ == '__main__':
-
-    associator=Associator()
-    while(1):
-        str=input("请输入现代汉语：")
-        print(' '.join(associator.assoAll(str)))
-
-
-

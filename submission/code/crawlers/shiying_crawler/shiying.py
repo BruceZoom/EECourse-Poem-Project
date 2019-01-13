@@ -100,7 +100,6 @@ def fetch_info(path):
             src=img.get('src')
             item['img']=base_url+src
             isTitle=True
-            # print src
         # if is author info
         if p.text and len(p.text)>60:
             break
@@ -110,7 +109,6 @@ def fetch_info(path):
                 item['title']=p.text.encode('utf8')
                 isTitle=False
                 continue
-                # print p.text
             # if is text
             if not isTitle:
                 item['text']+=(p.text+'\n')

@@ -22,7 +22,6 @@ def get_shiwen_page(base, url, driver=None, skip=False):
 			try:
 				sons = left[1].findAll('div', {'class': r'sons'})
 			except:
-				# print 'no division named "left" is found'
 				sons = soup.findAll('div', {'class': r'sons'})
 			for son in sons:
 				#  retrieve basic info
@@ -41,7 +40,6 @@ def get_shiwen_page(base, url, driver=None, skip=False):
 
 				#  retrieve song content
 				try:
-					# song = [sent.strip() for sent in contsons.contents[::2]]
 					song = []
 					for sent in contsons.contents:
 						try:
@@ -57,7 +55,6 @@ def get_shiwen_page(base, url, driver=None, skip=False):
 							pass
 					assert ''.join(song) != ''
 				except:
-					# print 'song format changed to <p>'
 					song = []
 					for p in contsons.findAll('p'):
 						try:
@@ -97,7 +94,6 @@ def get_shiwen_page(base, url, driver=None, skip=False):
 				try:
 					tags = [tag.string for tag in son.find('div', {'class': r'tag'}).findAll('a')]
 				except:
-					# print 'no division named "tag" is found'
 					tags = []
 
 				res.append({
@@ -157,10 +153,6 @@ def crawl_loop_js(get_one_page, seed, max_loop=-1, skip_to=None, batch=10):
 			_, next_url = get_one_page(seed, next_url, driver, skip=True)
 			if cnt >= skip_to * batch:
 				skip_to = None
-			# if cnt > 0 and cnt % batch == 0:
-			# 	skip_to -= 1
-			# 	if skip_to < 1:
-			# 		skip_to = None
 		cnt += 1
 		print 'current progress: ', cnt
 	driver.quit()

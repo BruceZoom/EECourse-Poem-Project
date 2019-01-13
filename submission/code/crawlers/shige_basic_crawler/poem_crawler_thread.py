@@ -28,34 +28,18 @@ def crawl():
                 poet = soup.find('div', {'class': "col-xs-12"}).contents[1].get_text(strip=True)
                 poet = poet.replace('\t', '').replace('作者：\n', '')
                 date = soup.find('div', {'class': "col-xs-12"}).contents[2].get_text(strip=True)
-                # note=soup.find('div',{'class':"noteCon"})
                 viewed = soup.find('span', {'id': re.compile('^hitcount')}).get_text()
-                # if not note:
-                #    note='none'
-                # else:
-                #    note=note.get_text()
 
                 item = {}
                 item['poem'] = poem
                 item['poet'] = poet
                 item['date'] = date
                 item['title'] = title
-                # item['note']=note
                 item['viewed'] = viewed
-                # print "poem:",poem
-                # print "poet:",poet
-                # print "date:",date
-                # print "title:",title
-                # print "note:",note
-                # print "viewed:",viewed.get_text()
-                # print type(title)   unicode
                 j = soup.find('div', {'class': "m-md b-t b-light text-left"})
                 next_url_pos = j.findAll('a')[1]
                 next_url = next_url_pos.get('href')
                 next_url = urlparse.urljoin('http://www.zgshige.com/', next_url)
-                # print "next_url:",next_url
-                # global next_page
-
                 if varLock.acquire():
                     count+=1
                     print count
@@ -70,11 +54,9 @@ def crawl():
                     varLock.release()
                 q.task_done()
             except:
-                # print page
                 pass
 
 def get_seed(resNum):
-    # resNum=126, starts from pageNum=10000
     pageNum = (resNum - 1) * 25
     seeds=[]
     for i in range(pageNum,pageNum+24,3):
@@ -111,7 +93,6 @@ threads = []
 varLock = threading.Lock()
 
 for i in pages:
-    #print i
     q.put(i)
 
 for i in range(NUM):
