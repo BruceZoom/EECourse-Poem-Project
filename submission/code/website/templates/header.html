@@ -1,0 +1,292 @@
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- PAGE settings -->
+  <link rel="icon" href="https://templates.pingendo.com/assets/Pingendo_favicon.ico">
+  <title>Landing</title>
+  <meta name="description" content="Wireframe design of a landing page by Pingendo">
+  <meta name="keywords" content="Pingendo bootstrap example template wireframe landing">
+  <meta name="author" content="Pingendo">
+
+  <!-- CSS dependencies -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="/static/css/wireframe.css">
+
+  <!-- jQuery dependencies -->
+  <script type="text/javascript" src="/static/js/jquery/jquery.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/static/js/dynamicform.js"></script>
+
+  <!-- Auxiliary resources -->
+  <link rel="stylesheet" href="/static/css/auxiliary.css">
+  <script type="text/javascript" src="/static/js/auxiliary.js"></script>
+
+  <!-- switch css -->
+  <link rel="stylesheet" href="/static/css/switch.css">
+
+  <!-- dynamic form js -->
+  <script type="text/javascript">
+    function formchange () {
+        var searchType = document.getElementById("search-type");
+        console.log(searchType.options[searchType.selectedIndex].text);
+        if (jQuery("#accurate").prop("checked")) {
+            if (jQuery("#search-type").val() === "ancient") {
+                jQuery("#general-search-advanced").collapse("hide");
+                jQuery("#ancient-search-advanced").collapse("show");
+                jQuery("#modern-search-advanced").collapse("hide");
+            }
+            else if (jQuery("#search-type").val() === "modern") {
+                jQuery("#general-search-advanced").collapse("hide");
+                jQuery("#ancient-search-advanced").collapse("hide");
+                jQuery("#modern-search-advanced").collapse("show");
+            }
+            else {
+                jQuery("#general-search-advanced").collapse("show");
+                jQuery("#ancient-search-advanced").collapse("hide");
+                jQuery("#modern-search-advanced").collapse("hide");
+            }
+        }
+        else {
+            jQuery("#general-search-advanced").collapse("hide");
+            jQuery("#ancient-search-advanced").collapse("hide");
+            jQuery("#modern-search-advanced").collapse("hide");
+        }
+        if (jQuery("#search-type").val() === "ancient") {
+            jQuery("#shared-shangxi").removeAttr("disabled");
+            jQuery("#shared-translate").removeAttr("disabled");
+            if (!jQuery("#shared-shangxi").attr('checked')) {
+                jQuery("#shared-shangxi").attr("checked", true);
+            }
+            if (!jQuery("#shared-translate").attr('checked')){
+              jQuery("#shared-translate").attr("checked", true);
+            }
+        }
+        else {
+            if (jQuery("#shared-shangxi").attr('checked')) {
+                jQuery("#shared-shangxi").removeAttr("checked");
+            }
+            if (jQuery("#shared-translate").attr('checked')) {
+                jQuery("#shared-translate").removeAttr("checked");
+            }
+            jQuery("#shared-shangxi").attr("disabled", true);
+            jQuery("#shared-translate").attr("disabled", true);
+        }
+    }
+
+    jQuery(document).ready(function () {
+        formchange();
+    });
+  </script>
+</head>
+<body class="">
+<form action="/query" method="post" enctype="multipart/form-data">
+<div class="navbar navbar-dark bg-dark" id="nav-header">
+  <div class="container d-flex justify-content-between">
+    <div class="form-inline my-2 my-lg-0">
+      <table>
+        <tr>
+        <td>
+          <div class="navbar-expand-sm">
+            <div class="navbar-collapse text-center justify-content-between" id="navbar2SupportedContent">
+              <ul class="navbar-nav" style="flex-direction: row;">
+                <li class="nav-item">
+                  <a class="navbar-brand" href="/index"><i class="fa d-inline fa-lg fa-bullseye">&nbspPoems</i></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link mx-2" href="/matchimage">配图</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </td>
+        </tr>
+        <tr>
+        <td>
+          <select id="search-type" name="searchType" class="form-control" style="width: 85px;padding: 5px" onchange="formchange()">
+              <option value="all" selected>全部</option>
+              <option value="ancient">古诗文</option>
+              <option value="modern">现代诗</option>
+          </select>&nbsp
+          <input class="form-control" type="text" name="query" style="width: 200px;" id="queryTextInput">
+          <button class="btn btn-link my-2 my-sm-0" type="submit"><i class="fa d-inline fa-lg fa-search text-primary"></i></button>
+          <span class="fileinput-span">
+            <span><i class="navbar-brand fa d-inline fa-camera mr-2"></i></span>
+            <input type="file" name="image" capture="camera" accept="image/" onchange="imageUploadChanged('queryTextInput')">
+          </span>
+        </td></tr>
+      </table>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  </div>
+</div>
+<div class="collapse bg-dark" id="navbarHeader" style="opacity: 0.8">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 py-4">
+        <h4>高级</h4>
+        在以下选项中搜索：
+        <table>
+          <tr>
+            <td>内容&nbsp</td>
+            <td>
+              <section class="model-15">
+                <div class="checkbox">
+                  <input type="checkbox" name="content" id="shared-content" checked>
+                  <label></label>
+                </div>
+              </section>
+            </td>
+            <td>&nbsp&nbsp标题&nbsp</td>
+            <td>
+              <section class="model-15">
+                <div class="checkbox">
+                  <input type="checkbox" name="title" id="shared-title" checked>
+                  <label></label>
+                </div>
+              </section>
+            </td>
+          </tr>
+          <tr>
+            <td>作者&nbsp</td>
+            <td>
+              <section class="model-15">
+                <div class="checkbox">
+                  <input type="checkbox" name="author" id="shared-author" checked>
+                  <label></label>
+                </div>
+              </section>
+            <td>&nbsp&nbsp标签&nbsp</td>
+            <td>
+              <section class="model-15">
+                <div class="checkbox">
+                  <input type="checkbox" name="label" id="shared-label" checked>
+                  <label></label>
+                </div>
+              </section>
+            </td>
+          </tr>
+          <tr>
+            <td>翻译&nbsp</td>
+            <td>
+              <section class="model-15">
+                <div class="checkbox">
+                  <input type="checkbox" name="translate" id="shared-translate" checked>
+                  <label></label>
+                </div>
+              </section>
+            <td>&nbsp&nbsp赏析&nbsp</td>
+            <td>
+              <section class="model-15">
+                <div class="checkbox">
+                  <input type="checkbox" name="shangxi" id="shared-shangxi" checked>
+                  <label></label>
+                </div>
+              </section>
+            </td>
+          </tr>
+        </table>
+        <br>
+        <div class="form-check-inline">
+            启用同义词扩展：
+            <section class="model-15">
+			  <div class="checkbox">
+			    <input type="checkbox" id="synonyms" name="synonyms"/>
+			    <label></label>
+			  </div></section>
+        </div>
+        <br>
+        <br>
+        <div class="form-check-inline">
+            启用精确搜索：
+            <section class="model-15">
+			  <div class="checkbox">
+			    <input type="checkbox" id="accurate" name="accurate" onchange="formchange()"/>
+			    <label></label>
+			  </div></section>
+        </div>
+      </div>
+      <div class="col-md-4 py-4">
+        <br>
+        <div id="general-search-advanced" class="collapse">
+          <div class="form-group">
+          标题：<input class="form-control-sm" type="text" name="generalTitle" style="width: 150px;">
+          </div>
+          <div class="form-group">
+          作者：<input class="form-control-sm" type="text" name="generalAuthor" style="width: 150px;">
+          </div>
+          <div class="form-group">
+          标签：<input class="form-control-sm" type="text" name="generalLabel" style="width: 150px;">
+          </div>
+        </div>
+        <div id="ancient-search-advanced" class="collapse">
+          <div class="form-group">
+          标题：<input class="form-control-sm" type="text" name="ancientTitle" style="width: 150px;">
+          </div>
+          <div class="form-group">
+          作者：<input class="form-control-sm" type="text" name="ancientAuthor" style="width: 150px;">
+          </div>
+          <div class="form-group">
+          标签：<input class="form-control-sm" type="text" name="ancientLabel" style="width: 150px;">
+          </div>
+          <div class="form-group">
+          朝代：<input class="form-control-sm" type="text" name="ancientTime" style="width: 150px;">
+          </div>
+          <div class="form-group">
+            类型：<select name="ancientType" class="form-control-sm" style="width: 85px;">
+                <option value="all" selected>全部</option>
+                <option value="shi">诗</option>
+                <option value="ci">词</option>
+                <option value="wen">古文</option>
+                <option value="other">其他</option>
+            </select>
+          </div>
+        </div>
+        <div id="modern-search-advanced" class="collapse">
+          <div class="form-group">
+            标题：<input class="form-control-sm" type="text" name="modernTitle" style="width: 150px;">
+          </div>
+          <div class="form-group">
+            作者：<input class="form-control-sm" type="text" name="modernAuthor" style="width: 150px;">
+          </div>
+          <div class="form-group">
+            标签：<input class="form-control-sm" type="text" name="modernLabel" style="width: 150px;">
+          </div>
+          <div class="form-group">
+            流派：<input class="form-control-sm" type="text" name="modernStyle" style="width: 150px;">
+          </div>
+          <div class="form-group">
+            时代：<select name="modernTime" class="form-control-sm" style="width: 150px;">
+                <option value="all" selected>全部</option>
+                <option value="20-20">20世纪20年代</option>
+                <option value="20-30">20世纪30年代</option>
+                <option value="20-40">20世纪40年代</option>
+                <option value="20-50">20世纪50年代</option>
+                <option value="20-60">20世纪60年代</option>
+                <option value="20-70">20世纪70年代</option>
+                <option value="20-80-0">20世纪80年代上</option>
+                <option value="20-80-1">20世纪80年代下</option>
+                <option value="20-90-0">20世纪90年代上</option>
+                <option value="20-90-1">20世纪90年代下</option>
+                <option value="21-00">21世纪初</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 offset-md-1 py-4">
+        <h4>帮助</h4>
+        <p class="text-info">
+          通过下拉框可以选择搜索诗歌的类型<br>
+          可以通过开关选择在哪些域中搜索<br>
+          启用同义词扩展可以将用户的输入进行同义词扩展后<br>
+          启用精确搜索精确匹配诗歌某一部分的信息<br>
+          不同的诗歌有不同类型的信息供用户查询<br>
+          精确搜索的信息可以配合上方的模糊搜索输入框搜索<br>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+</form>

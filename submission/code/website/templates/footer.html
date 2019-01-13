@@ -1,0 +1,19 @@
+<footer class="text-muted py-5">
+<div class="container">
+  <p class="float-right">
+    <a id="back-to-top" href="###" onclick="" >Back to top</a>
+  </p>
+  <p>
+    Copyright © 2019-2023.&nbsp<br><a href="#">Poem Inspire</a> is created by Bruce Wang, Mark Dana, Jimmy Li, Apple Chen.
+    <br>Have fun reading poems!
+  </p>
+</div>
+</footer>
+<script type="text/javascript">
+  jQuery(document).ready(function () {
+      jQuery("#back-to-top").click(function () {
+          jQuery("html,body").animate({scrollTop:jQuery("#nav-header").offset().top},1000);
+          console.log('jump');
+      });
+  });
+</script>
