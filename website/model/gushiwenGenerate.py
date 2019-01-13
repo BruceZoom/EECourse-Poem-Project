@@ -225,6 +225,7 @@ class GushiwenGenerator(object):
             flag = 1
             endSign = {-1: "，", 1: "。"}
             poem = ''
+            poemList=[]
 
             poemLen=len(keywords)//4*4
             keywords=random.sample(keywords,poemLen)
@@ -254,11 +255,20 @@ class GushiwenGenerator(object):
                 if endSign[flag] == '。':
                     probs2, state = self.sess.run([self.probs, self.finalState],
                                              feed_dict={self.gtX: np.array([[self.trainData.wordToID["。"]]]), self.initState: state})
-                    poem += '\n'
+                    # poem += '\n'
+                    if(len(poemList)==0):
+                        poemList.append(poem)
+                    else:
+                        onestr=poem[-1*len(poemList[0]):]
+                        if onestr[0]=='。':
+                            poemList.append(onestr[1:])
+                        else:
+                            poemList.append(onestr)
                 else:
                     probs2, state = self.sess.run([self.probs, self.finalState],
                                              feed_dict={self.gtX: np.array([[self.trainData.wordToID["，"]]]), self.initState: state})
-            return poem
+
+            return poemList
 
 
     # def genfromSentence(self,sentence):

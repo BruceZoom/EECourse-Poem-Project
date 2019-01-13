@@ -13,12 +13,12 @@ $def with (data=None)
               $data['landing']['daily']['title']
             </h1>
           </a>
-          <p class="lead text-primary" title="现代诗每日推荐">
-            <a href="$data['landing']['daily']['poemurl']">
+          <p class="lead text-white" title="现代诗每日推荐">
+            <a href="$data['landing']['daily']['poemurl']" style="color: #f1f1f1">
               $:data['landing']['daily']['content']
             </a>
-            <a href="$data['landing']['daily']['poeturl']">
-              <div class="blockquote-footer">$data['landing']['daily']['poet']</div>
+            <a href="$data['landing']['daily']['poeturl']" style="color: #f1f1f1">
+              <div class="blockquote-footer" style="color: #f1f1f1; font-size: large">$data['landing']['daily']['poet']</div>
             </a>
           </p>
         </div>
@@ -31,16 +31,16 @@ $def with (data=None)
         $for poem in data['landing']['random_modern']:
           <div class="p-4 col-lg-4 col-md-6">
             <a href="$poem['poemurl']">
-              <h4><b>$poem['title']</b></h4>
+              <h4><b>《$poem['title']》</b></h4>
             </a>
             <p title="随机现代诗">
               <a href="$poem['poemurl']">
                 $:poem['content']
               </a>
-              <a href="$poem['poeturl']">
-                <div class="blockquote-footer">$poem['poet']</div>
-              </a>
             </p>
+            <a href="$poem['poeturl']">
+              <div class="blockquote-footer">$poem['poet']</div>
+            </a>
           </div>
       </div>
     </div>
@@ -53,7 +53,7 @@ $def with (data=None)
           <h4 class="mb-3 display-4 text-white">诗情画意</h4>
           <div class="blockquote text-muted">
             <a href="$data['landing']['scenery']['poemurl']">
-              <h4><b>$data['landing']['scenery']['title']</b></h4>
+              <h4><b>《$data['landing']['scenery']['title']》</b></h4>
             </a>
             <a href="$data['landing']['scenery']['poemurl']">
               <p class="mb-0"  title="诗画每日推荐">
@@ -64,7 +64,7 @@ $def with (data=None)
               <div class="blockquote-footer">$data['landing']['scenery']['poet']</div>
             </a>
           </div>
-          <a class="btn btn-info" href="/gallery">更多</a>
+          <!--<a class="btn btn-info" href="/gallery">更多</a>-->
         </div>
         <div class="col-md-4 align-self-center">
           <img class="img-fluid d-block" src="$data['landing']['scenery']['imgurl']"> </div>
@@ -75,16 +75,16 @@ $def with (data=None)
     <div class="container">
       <div class="row mb-3">
         <div class="text-center mx-auto p-4 bg-secondary col-lg-6 col-md-10">
-          <a href="$data['landing']['daily_ancient']['poemurl']">
-            <h2 class="text-white">$data['landing']['daily_ancient']['title']</h2>
-          </a>
+          <h2 class="text-white">
+            <a href="$data['landing']['daily_ancient']['poemurl']">
+              《$data['landing']['daily_ancient']['title']》
+            </a>
+          </h2>
+          <a href="$data['landing']['daily_ancient']['poeturl']">$data['landing']['daily_ancient']['poet']</a>
           <a href="$data['landing']['daily_ancient']['poemurl']">
             <p class="text-light" title="古诗每日推荐">
               $:data['landing']['daily_ancient']['content']
             </p>
-          </a>
-          <a href="$data['landing']['daily_ancient']['poeturl']">
-            <div class="blockquote-footer">$data['landing']['daily_ancient']['poet']</div>
           </a>
         </div>
       </div>
@@ -92,7 +92,9 @@ $def with (data=None)
         <div class="p-4 col-lg-4">
           <h4 class="mb-3"><b>你可能对这些标签感兴趣</b></h4>
           $for label in data['landing']['labels']:
-            <a style="font-size: large;" href="$label['labelurl']"><span class="badge badge-success" href="">$label['label']</span></a>
+            <a style="font-size: large;" href="$label['labelurl']">
+              <span class="badge badge-success" href="">$label['label']</span>
+            </a>
         </div>
         <div class="p-md-4 col-lg-8">
           <!--<h4 class="mb-3"><b>Bold Heading 4</b></h4>-->
@@ -113,12 +115,12 @@ $def with (data=None)
                   <div class="carousel-item p-5">
                 <div class="blockquote text-muted mb-0 px-2">
                     <p class="mb-0" title="随机古诗">
-                        <a class="mb-0" href="$poem['poemurl']">$poem['title']<br> </a>
+                        <a class="mb-0" href="$poem['poemurl']">《$poem['title']》<br> </a>
                         <a class="mb-0" href="$poem['poemurl']">
                           $:poem['content']
                         </a>
+                        <a href="$poem['poeturl']"><div class="blockquote-footer">$poem['poet']</div></a>
                     </p>
-                  <a href="$poem['poeturl']"><div class="blockquote-footer">$poem['poet']</div></a>
                 </div>
                 </div>
                 $ first = False

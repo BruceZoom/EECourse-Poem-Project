@@ -280,4 +280,4 @@ if __name__ == '__main__':
     # give img to gushiwen
     # giveimg2poem()
     giveimg2gishiwen()
-    giveimg2cnmodern()
+    # giveimg2cnmodern()

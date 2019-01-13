@@ -22,7 +22,7 @@ PAGI_SETTING = {
     'bottom': '尾页',
     'cur_page': 1,
     'max_page': 10,
-    'result_per_page': 9,
+    'result_per_page': 6,
 }
 # LANDING_DATA = homeContent.get_landing_data()
 LANDING_DATA_DEFAULT = {

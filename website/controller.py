@@ -137,6 +137,7 @@ class gallery:
         }
         validation = Validator.form_validate(inputs)
         if validation == VALID_QUERY:
+            print("gallery pass")
             if 'query' in inputs.keys():
                 # data['form'] = {key: inputs[key] for key in utils.FORM_INIT.keys()}
                 # print(inputs)
@@ -149,7 +150,8 @@ class gallery:
 
                 command_dict = Validator.to_command_dict(inputs)
                 print(command_dict)
-                data['total_match'], data['results'] = PSES.common_query(command_dict, cur_page=inputs['page'])
+                flag = ('board' in inputs.keys())
+                data['total_match'], data['results'] = PSES.common_query(command_dict, cur_page=inputs['page'], board=flag)
                 # print (data['total_match'], data['results'])
                 data['pagi']['max_page'] = min(data['total_match'] + data['pagi']['result_per_page'] - 1, utils.MAX_RESULTS) // data['pagi'][
                     'result_per_page']
@@ -161,6 +163,7 @@ class gallery:
                 data['pagi']['cur_page'] = inputs['page']
                 return render.gallery(data=data)
         else:
+            print("gallery failed")
             return notfound(inputs)
             # data = {
             #     'form': utils.FORM_INIT,
@@ -190,15 +193,21 @@ class gallery_gsw:
         inputs = web.input()
         print(inputs)
         # return json.dumps({'gsw': 'asdfasfasfsafas'})
-        users_inputs = inputs['users_input']#即图片页面用户输入框内文本,"青天 明月 秋风 信号灯",或"今天天气真好"
+        users_inputs = inputs['tags']#即图片页面用户输入框内文本,"青天 明月 秋风 信号灯",或"今天天气真好"
         keywords = users_inputs.split(' ')
         if len(keywords)>=4:
-            gsw = nm.gsw.genfromKeywords(keywords)
+            gsw=""
+            for i in range(3):
+                gsw += '<br>'.join(nm.gsw.genfromKeywords(keywords))
+                gsw += '<br><br>'
             return json.dumps({'gsw': gsw})
         else:
-            newkeyword = nm.associator.assoSynAll(users_inputs)
-            keywords=newkeyword[:8]
-            gsw = nm.gsw.genfromKeywords(keywords)
+            gsw = ""
+            for i in range(3):
+                newkeyword = nm.associator.assoSynAll(users_inputs)
+                keywords = newkeyword[:8]
+                gsw += '<br>'.join(nm.gsw.genfromKeywords(keywords))
+                gsw += '<br><br>'
             return json.dumps({'gsw': gsw})
 
 class analyzed:
@@ -229,19 +238,25 @@ class analyzer:
 
         # data['object'], data['scene'], data['emotion'] = objectStr, sceneStr, attributesStr
         # data['label_complete'] = objects[0][0]
-
+        # print(data['emotion'])
         # 对于 object,scene,emotion 这三个list中任何一个词word:
-        for key in ['object', 'scene', 'emotion']:
+        data['label_complete'] = []
+        for key in ['object', 'scene']:
             data[key] = {word[0]: [] for word in data[key] if word[0] in nm.associator.labelDict.keys()}
+            # print(data['emotion'])
             for word in data[key].keys():
+                data['label_complete'].append(word)
                 wordAssoList = nm.associator.labelDict[word]
                 tmpwordAssoList = []
                 for i in range(len(wordAssoList)):
                     tmpwordAssoList.append((wordAssoList[i],i+1))
                 wordAssoList = sorted(tmpwordAssoList, key=lambda x: x[1] * random.random())
                 data[key][word] = [x[0] for x in wordAssoList[:5]]
+        # print(data['emotion'])
         # 在用户点击某词时显示其关联古词，按权重随机取前5个
 
+        data['emotion'] = '，'.join(data['emotion'])
+        data['label_complete'] = ' '.join(data['label_complete'])
         # 以图生成现代诗的操作和之前一样
 
 
@@ -340,6 +355,7 @@ class authorpage:
             data['pagi']['max_page'] = (min(data['total_match'], utils.MAX_RESULTS) + data['pagi']['result_per_page'] - 1) // data['pagi'][
                 'result_per_page']
             data['pagi']['cur_page'] = inputs['page']
+            data['author'] = inputs['author']
 
             return render.authorpage(data=data)
         else:
@@ -445,13 +461,14 @@ class Validator:
     def to_command_dict(input_dict):
         command_dict = dict()
         q = input_dict['query']
-        if 'synonyms' in input_dict.keys():
-            q = IPS.associator.assoSynAll(utils.jieba_seg(q))
         for key in ['author', 'title', 'label', 'content', 'translate', 'shangxi']:
             if key in ['translate', 'shangxi'] and input_dict['searchType'] != 'ancient':
                 continue
             if key in input_dict.keys():
-                command_dict[Validator.switch_key_map[key]] = (q, False)
+                if 'synonyms' in input_dict.keys():
+                    command_dict[Validator.switch_key_map[key]] = (' '.join(IPS.associator.assoSynAll(utils.jieba_seg(q))), False)
+                else:
+                    command_dict[Validator.switch_key_map[key]] = (q, False)
         command_dict['searchType'] = input_dict['searchType']
         if input_dict['searchType'] == 'ancient':
             if 'accurate' in input_dict.keys():
