@@ -1,4 +1,4 @@
-PWD D:/GitHub/EECourse-Poem-Project/report/大作业报告
+PWD D:/GitHub/EECourse-Poem-Project/report/finalReport
 INPUT c:/texlive/2017/texmf-var/web2c/xetex/xelatex.fmt
 INPUT ./finalReport.tex
 OUTPUT finalReport.log
@@ -170,6 +170,8 @@ INPUT c:/texlive/2017/texmf-dist/tex/generic/oberdiek/stringenc.sty
 INPUT c:/texlive/2017/texmf-dist/tex/generic/oberdiek/stringenc.sty
 INPUT c:/texlive/2017/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty
 INPUT c:/texlive/2017/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty
+INPUT c:/texlive/2017/texmf-dist/tex/latex/framed/framed.sty
+INPUT c:/texlive/2017/texmf-dist/tex/latex/framed/framed.sty
 INPUT c:/texlive/2017/texmf-dist/tex/latex/multirow/multirow.sty
 INPUT c:/texlive/2017/texmf-dist/tex/latex/multirow/multirow.sty
 INPUT c:/texlive/2017/texmf-dist/tex/latex/algorithms/algorithm.sty
@@ -220,7 +222,8 @@ INPUT c:/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT c:/texlive/2017/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
 INPUT c:/texlive/2017/texmf-dist/fonts/tfm/public/cm/cmr8.tfm
 INPUT c:/texlive/2017/texmf-dist/fonts/tfm/public/cm/cmr6.tfm
-OUTPUT finalReport.xdv
+INPUT finalReport.toc
+INPUT finalReport.toc
 INPUT c:/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT c:/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT c:/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm
@@ -229,8 +232,8 @@ INPUT c:/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam5.tfm
 INPUT c:/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT c:/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT c:/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm
-INPUT fig/poemimg.png
-INPUT fig/web_struct.png
+OUTPUT finalReport.toc
+OUTPUT finalReport.xdv
 INPUT fig/demo_landing.png
 INPUT fig/demo_searchbar.png
 INPUT fig/demo_accres.png
@@ -238,4 +241,14 @@ INPUT fig/demo_poempage.png
 INPUT fig/demo_vagueres.png
 INPUT fig/demo_analyze.png
 INPUT fig/demo_matchimage.png
+INPUT fig/poemimg.png
+INPUT fig/web_struct.png
+INPUT imgs/1.png
+INPUT imgs/2.png
+INPUT imgs/3.png
+INPUT imgs/4.png
+INPUT imgs/5.png
+INPUT imgs/6.png
+INPUT imgs/7.png
+INPUT imgs/8.png
 INPUT finalReport.aux
