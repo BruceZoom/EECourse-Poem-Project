@@ -1,0 +1,69 @@
+$def with (data=None)
+
+<!DOCTYPE html>
+<html>
+
+
+  $:data['header']
+  <div class="text-center py-5">
+    <div class="container">
+      <div class="row my-5 justify-content-center">
+        <div class="col-md-9">
+          <h1>Author example</h1>
+          <p class="lead text-muted">
+            我们为您找到了$data['total_match']位诗人。
+          </p>
+          <a href="#" class="btn btn-primary m-2">Main call to action</a>
+          <a href="#" class="btn btn-secondary m-2">Secondary action</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="py-4 bg-light">
+    <div class="container">
+      <div class="row">
+        $ cnt=0
+        $for entry in data['results']:
+          <div class="col-md-4 p-3">
+            <div class="card box-shadow">
+              <div class="card-body">
+                <p class="card-text">
+                  <a href="$entry['poeturl']">
+                  $entry['name']<br>
+                  $:entry['desc']</a>
+                </p>
+              </div>
+            </div>
+          </div>
+          $ cnt = cnt + 1
+      </div>
+      <div class="row justify-content-center pt-3">
+        <ul class="pagination">
+          $ pagi = data['pagi']
+          $if pagi['cur_page'] > 1:
+            <li class="page-item"><a class="page-link" href="/authorlist?$data['url_prefix_form']page=1">
+              $pagi['top']
+            </a></li>
+            <li class="page-item"><a class="page-link" href="/authorlist?$data['url_prefix_form']page=$(pagi['cur_page']-1)">
+              $pagi['prev']
+            </a></li>
+          $for i in range(max(1, pagi['cur_page']-pagi['offset']), min(pagi['max_page'], pagi['cur_page']+pagi['offset'])+1):
+            $if i == pagi['cur_page']:
+              <li class="page-item active"><a class="page-link">$i</a></li>
+            $else:
+              <li class="page-item"><a class="page-link" href="/authorlist?$data['url_prefix_form']page=$i">$i</a></li>
+          $if pagi['cur_page'] < pagi['max_page']:
+            <li class="page-item"><a class="page-link" href="/authorlist?$data['url_prefix_form']page=$(pagi['cur_page']+1)">
+              $pagi['next']
+            </a></li>
+            <li class="page-item"><a class="page-link" href="/authorlist?$data['url_prefix_form']page=$pagi['max_page']">
+              $pagi['bottom']
+            </a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+    $:data['footer']
+</body>
+
+</html>

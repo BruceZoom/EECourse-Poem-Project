@@ -1,0 +1,22 @@
+$def with (data=None)
+
+<!DOCTYPE html>
+<html>
+
+    $:data['header']
+    <div class="p-5 h-100 d-flex flex-column text-center bg-light" >
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 mx-auto">
+            <br>
+            <br>
+          <h1 class="cover-heading"><b>404 Page Not Found</b></h1>
+          <p class="lead">抱歉，我们未能找到符合要求的内容！</p>
+          <a href="/index" class="btn btn-lg btn-primary"><b class="">返回首页</b></a>
+        </div>
+      </div>
+    </div>
+  </div>
+    $:data['footer']
+</body>
+</html>

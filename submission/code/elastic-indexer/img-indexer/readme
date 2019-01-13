@@ -1,0 +1,1 @@
+这部分程序是用来对VEER图片建立索引的，worktogether.py是我们将爬取的图片描述数据经过扩展后得到标签，imAssoIndex.py对扩展后的图片建立elastic索引，updateImgurl是用来为诗歌索引中每首诗歌匹配合适的图片的
