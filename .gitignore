@@ -17,6 +17,7 @@ sourcePoems/all*
 modern2poem/myresult/
 website/static/relu/
 website/static/heatmap/
+*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
