@@ -7,8 +7,8 @@ import random
 import datetime
 
 es = Elasticsearch(['localhost:9200'])
-cnmodern_MAX = 5028
-gushiwen_MAX = 22797
+cnmodern_MAX = es.count(index='cnmodern', doc_type='cnmodern_type', body={'query': {'match_all': {}}})['count']
+gushiwen_MAX = es.count(index='gushiwen', doc_type='gushiwen_type', body={'query': {'match_all': {}}})['count']
 daily_random = random.Random()
 today = datetime.datetime.now().strftime('%Y%m%d')
 daily_random.seed(today)
